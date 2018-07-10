@@ -1,0 +1,16 @@
+Domain:
+True
+False
+Names:
+David
+Noga
+Ziv
+Sarah
+Benzion
+Constraints:
+David 4 3
+Noga 3 2
+Noga 1 2
+Ziv 1 2
+Sarah 1 2
+Sarah 2 3
