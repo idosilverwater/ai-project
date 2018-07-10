@@ -9,8 +9,8 @@ class CSP:
     # TODO determine what input the constructor should have.
     def __init__(self, domain, variables, soft_constraints):
         self.variables = {}  # the dictionary holds name=string: Variable instance.
-        self.all_constraints = Constraints()  # TODO.
-        self.visible_constraints = Constraints()
+        self.all_constraints = soft_constraints
+        self.visible_constraints = [] # empty list (at the beggining there are no visible...)
         self.domain_dictionary = {}  # holds name: frozenSet OfValues.
         self.variable_heuristic = None  # TODO.
         self.constraint_heurstic = None  # should choose the next constraint to add.

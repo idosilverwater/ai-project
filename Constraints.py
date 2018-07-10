@@ -67,4 +67,4 @@ class Constraints:
 p = [(1,2,3)]
 vars = [(1,2,3)]
 
-c = Constraints(p,vars)
+#c = Constraints(p,vars)
