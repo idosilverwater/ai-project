@@ -14,17 +14,26 @@ he would prefer working at.
 
 The file that contains the problem should look as follows.
 
-For The People Name1, Name2, Name3, Name4
-And the constraints:
-Name1 In Tuesday wants to work in the second shift
-Name1 In Thursday wants to work in the first shift
-Name2 In Sunday wants to work in the first shift
-Name3 In Wednesday wants to work in the first shift
-Name3 In Tuesday wants to work in the first shift
-Name3 In Sunday wants to work in the second shift
-Name3 In Monday wants to work in the second shift
+For The workers David, Benzion, Rivka, Sarah.
 
-(As you can see Name4 hasn't any special requests)
+And the constraints:
+
+David In Tuesday wants to work in the second shift
+
+David In Thursday wants to work in the first shift
+
+Benzion In Sunday wants to work in the first shift
+
+Rivka In Wednesday wants to work in the first shift
+
+Rivka In Tuesday wants to work in the first shift
+
+Rivka In Sunday wants to work in the second shift
+
+Rivka In Monday wants to work in the second shift
+
+(As you can see Sarah hasn't any special requests)
+
 (Sunday gets 0, throw Saturday gets 6
 Also First shift gets 0, throw Third shift that gets 2)
 
@@ -33,18 +42,18 @@ Domain:
 True
 False
 Names:
-Name1
-Name2
-Name3
-Name4
+David
+Benzion
+Rivka
+Sarah
 Constraints:
-Name1 2 1
-Name1 4 0
-Name2 0 0
-Name3 3 0
-Name3 2 0
-Name3 0 1
-Name3 1 1
+David 2 1
+David 4 0
+Benzion 0 0
+Rivka 3 0
+Rivka 2 0
+Rivka 0 1
+Rivka 1 1
 ```
 
 The file should be kept in the folder named examples.
