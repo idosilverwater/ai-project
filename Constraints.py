@@ -20,7 +20,7 @@ class Constraints:
         self.__variable_names = variable_names
         self.__all_constraints = {}  # (Variable names): [constraints on variables]
         self.__visible_constraints = {}  # (Variable names): [constraints on variables]
-        self.__constraints_by_var = {}  # (var name): [constrains on var]
+        self.__constraints_by_var = {}  # var name: [constrains on var]
         self.__build_all_constraints()
 
     ###################
@@ -34,11 +34,36 @@ class Constraints:
         self.__generate_hard_const()
         self.__generate_soft_const()
 
+    def __variable_names_by_shift(self, day, shift_number):
+        """
+        This function generates a tuple of variable names that are relevant for
+        a certain shift.
+
+        ============
+        For Example:
+        ============
+        1) A variable name that is relevant to the first shift on Sunday is:
+        (5,1,1).
+        2) A variable name that is not relevant is: (5,2,3)
+        :return: A tuple of variable names
+        """
+        relevant_vars = []
+        for name in self.__variable_names:
+            if name.endswith(str(day) + " " + str(shift_number)):
+                relevant_vars.append(name)
+        return tuple(relevant_vars)
+
     def __generate_hard_const(self):
         """
         Generates the hard constraints and updates self.constraints.
+        For now the only hard constraint is: "There should be a least one worker
+        in each shift."
         """
-        pass
+        # Creates a variable list that is relevant to a certain shift:
+        # TODO(Noy): Find a better way to do it.
+        for i in range(7):  # For each day
+            for j in range(3):  # For each shift.
+                relevant_variables = self. __variable_names_by_shift(i, j)
 
     def __generate_soft_const(self):
         """
@@ -65,6 +90,9 @@ class Constraints:
 
     def set_visible_constrains(self):
         pass
+
+    def get_constraints_by_variable(self, variable_name):
+        return self.__constraints_by_var[variable_name]
 
 
 #########
