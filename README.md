@@ -18,13 +18,13 @@ For The workers David, Benzion, Rivka, Sarah.
 
 And the constraints:
 
-*David In Tuesday wants to work in the second shift
-*David In Thursday wants to work in the first shift
-*Benzion In Sunday wants to work in the first shift
-*Rivka In Wednesday wants to work in the first shift
-*Rivka In Tuesday wants to work in the first shift
-*Rivka In Sunday wants to work in the second shift
-*Rivka In Monday wants to work in the second shift
+* David In Tuesday wants to work in the second shift
+* David In Thursday wants to work in the first shift
+* Benzion In Sunday wants to work in the first shift
+* Rivka In Wednesday wants to work in the first shift
+* Rivka In Tuesday wants to work in the first shift
+* Rivka In Sunday wants to work in the second shift
+* Rivka In Monday wants to work in the second shift
 
 (As you can see Sarah hasn't any special requests)
 
