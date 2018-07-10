@@ -16,7 +16,7 @@ The file that contains the problem should look as follows.
 
 For The workers David, Benzion, Rivka, Sarah.
 
-And the constraints:
+And the preferences:
 
 * David In Tuesday wants to work in the second shift
 * David In Thursday wants to work in the first shift
@@ -40,7 +40,7 @@ David
 Benzion
 Rivka
 Sarah
-Constraints:
+Preferences:
 David 2 1
 David 4 0
 Benzion 0 0

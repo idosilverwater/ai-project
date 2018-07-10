@@ -1,4 +1,5 @@
 from Constraints import *
+from Variable import *
 
 
 class CSP:
@@ -7,31 +8,54 @@ class CSP:
     """
 
     # TODO determine what input the constructor should have.
-    def __init__(self, domain, variables, soft_constraints):
-        self.variables = {}  # the dictionary holds name=string: Variable instance.
-        self.all_constraints = Constraints()  # TODO.
-        self.visible_constraints = Constraints()
-        self.domain_dictionary = {}  # holds name: frozenSet OfValues.
+    def __init__(self, domain, variables, constraints):
+        """
+
+        :param domain: a lists of lists such that list i corresponds with variable name i.
+        :param variables: a list of variable names.
+        :param constraints: a constraints function that coresponds with the names of the variables.
+        """
+        self.constraints = constraints
+        # builds a dictionary of variables.
+        self.domains = {}  # a domain for each variable to be used somehow later on. # TODO consider to delete.
+        self.variables = {}
+        self._generate_variables(variables, domain)
+
         self.variable_heuristic = None  # TODO.
-        self.constraint_heurstic = None  # should choose the next constraint to add.
         self.domain_heuristic = None  # TODO.
-        self._forward_checking_flag = None  # TODO.
-        self.build_CSP(domain, variables, soft_constraints)
 
-    def build_CSP(self, domain, variables, constraints):  # TODO implement
-        """
-        should build the csp constraints and whatnot...
-        :return:
-        """
+        self._forward_checking_flag = False  # TODO.
 
-        pass
+    def _generate_variables(self, names, domain):
+        """
+        generate variables instances and tie them to a name.
+        lastly creates neighbours for every variable - related variables by constraints.
+        :param names: the names of the variables. (list)
+        :param domain: the values for each variable (list of lists as in the __init__ func).
+        :return: None.
+        """
+        for i, name in enumerate(names):
+            constraints = self.constraints.get_constraints_by_variable(name)
+            var = Variable(name, domain[i], constraints)
+            if var not in self.variables:
+                self.variables[name] = var
+                self.domains[name] = domain[i]
+
+                # adding neighbours to a variable:
+                neighbours_names = set()
+                for constraint in constraints:
+                    neighbours_names.add([neighbour for neighbour in constraint.variables])
+                neighbours_names.remove(name)
+                self.variables[name].add_neighbours(neighbours_names)
+            else:
+                raise Exception("Variable name repeats twice!")
 
     def make_visible(self):
         """
         makes all constraints visible.
         :return: None
         """
-        pass
+        self.constraints.set_visible_constrains()
 
     def order_domain_values(self, variable_name):
         """
@@ -39,14 +63,17 @@ class CSP:
         :param variable_name: the name of the variable to get it's domain value from.
         :return: a list of values to assign.
         """
-        pass
+        return self.domain_heuristic.get_order_domain(variable_name, self.domains, self.constraints)
 
     def select_unassigned_variable(self):
         """
         uses heuristic to choose a variable.
-        :return: full variable.
+        :return: full variable name.
         """
-        pass
+        return self.variable_heuristic.select_unassigned_variable(self.variables)
+
+    def assign_variable(self, var_name, value):
+        pass  # TODO should assign value, and update every friend of variable of it's new domain.
 
     def is_consistent(self, variable_name, value):
         """
@@ -60,11 +87,13 @@ class CSP:
     def add_constraint(self):
         """
         add constraint to the visible constraint list.
-        :return: True if it addded, False otherwise ( can return false if nothing to add).
+        :return: True if it added, False otherwise ( can return false if nothing to add).
         """
+
+        # TODO: constraints class should output the constraint in order to update which variables are related to it.
         pass
 
-    def unassign_variable(self, variable_name, value):
+    def un_assign_variable(self, variable_name, value):
         """
         does necessary updates to the csp object if the value should be un assigned.
         :param variable_name:
