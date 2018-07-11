@@ -9,7 +9,7 @@ class Constraint:
         Builds a new constraint object.
         :param variables: a set of variable names, in a list. [name1, name2, name3]
         :param possible_values: a list of possible values: (assuming we have 2 variables)
-                [(var_1_possible_val, var_2_possible_val), (var_1_possible_val, var_2_possible_val)...,]
+                [[var_1_possible_val, var_2_possible_val], [var_1_possible_val, var_2_possible_val]...,]
                 Which means a list of all possible combinations of values.
         assignment to the variables.
         :param softness: 1 if soft constraint, o.w. 0.
