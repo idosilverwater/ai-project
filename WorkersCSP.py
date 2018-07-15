@@ -1,6 +1,5 @@
 from CSP import CSP
-import Constraints
-
+from Constraints import *
 def parser(lines):
     """
     parse the workers csp file lines into:

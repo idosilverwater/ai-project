@@ -7,7 +7,7 @@ class Constraints:
     parser's output.
     """
 
-    def __init__(self, preferences, variable_names, constraint_heuristic):
+    def __init__(self, preferences, variable_names, constraint_heuristic=None):
         """
         Creates several dictionaries of constraints.
         :param preferences: A list of the workers preferences. For example:
@@ -100,7 +100,7 @@ class Constraints:
         Generates the soft constraints and updates self.constraints.
         """
         for preference in self.__preferences:
-            var_name = preference
+            var_name = str(preference)
             # Adding constraint to all_constraints:
             new_constraint = Constraint(var_name, [[True]], 1)
             self.__all_constraints[var_name] = [new_constraint]
@@ -133,8 +133,8 @@ class Constraints:
 #########
 # Tests #
 #########
-p = ["(1, 2, 2)", "(4, 5, 1)"]
-vars = ["(1, 2, 2)", "(2, 2, 2)", "(4, 5, 1)"]
-h = None
-c = Constraints(p, vars, h)
-print(c.get_all_constraints())
+# p = ["(1, 2, 2)", "(4, 5, 1)"]
+# vars = ["(1, 2, 2)", "(2, 2, 2)", "(4, 5, 1)"]
+# h = None
+# c = Constraints(p, vars, h)
+# print(c.get_all_constraints())

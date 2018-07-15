@@ -36,3 +36,10 @@ class Variable:
     def check_value_assignment(self, value):
         # TODO : should check all constraints if this value is legit. (intersection of consrtaints).
         pass
+
+    #####################
+    # Getters & Setters #
+    #####################
+
+    def get_neighbors(self):
+        return self.neighboursNames
