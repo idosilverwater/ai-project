@@ -43,3 +43,6 @@ class Variable:
 
     def get_neighbors(self):
         return self.neighboursNames
+
+    def get_possible_domain(self):
+        return self.possible_domain
