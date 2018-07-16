@@ -6,6 +6,29 @@ import sys
 
 class LeastConstrainingValue(DomainHeuristic):
 
+    def neighbor_constriction(self, variable, value):
+        """
+        This returns the amount of domain values that have been blocked off for the neighboring variables.
+        :return:
+        """
+
+        # TODO finish this
+
+        neighbors = variable.get_neighbors()
+
+        count = 0
+
+        for neighbor in neighbors:
+
+            neighbor.get_constraints()
+
+
+        return count
+
+
+
+
+
     def select_value(self, variable):
         """
         Selects the value for variable, that is least constricting to variables neighbors.
@@ -13,10 +36,12 @@ class LeastConstrainingValue(DomainHeuristic):
         :param variable: The variable we want to assign a value to.
         :return: A value for variable according to the heuristic
         """
-        min_conflicted_value = variable.domain[0]
-        min_conflicts = float('inf')
-        for d in variable.domain[1:]:
-            cur = variable.conflicted_constraints(d)
+
+        min_constraining_value = variable.domain[0]
+        min_constrain = float('inf')
+
+        for d in variable.domain:
+            cur = self.neighbor_constriction(variable, d)
             if min_conflicts > cur:
                 min_conflicted_value = d
                 min_conflicts = cur

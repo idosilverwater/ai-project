@@ -7,7 +7,7 @@ class Variable:
         """
         :param name: name of the variable
         :param domain_values: a frozenSet containing possible values. values should be imutable.
-        :param constraints: list of constraints objects.
+        :param constraints: list of constraints objects the variable is in them.
         """
         # basic attributes:
         self.name = name
@@ -34,7 +34,7 @@ class Variable:
         self.affecting_value = None
 
     def check_value_assignment(self, value):
-        # TODO : should check all constraints if this value is legit. (intersection of consrtaints).
+        # TODO : should check all constraints if this value is legit. (intersection of constraints).
         pass
 
 
@@ -45,9 +45,13 @@ class Variable:
         """"""
         pass
 
+
     #####################
     # Getters & Setters #
     #####################
 
     def get_neighbors(self):
         return self.neighboursNames
+
+    def get_constraints(self):
+        return self.constraints
