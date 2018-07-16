@@ -45,7 +45,8 @@ class CSP:
                 neighbours_names = set()
                 for constraint in constraints:
                     neighbours_names.add([neighbour for neighbour in constraint.variables])
-                neighbours_names.remove(name)
+                if name in neighbours_names:  # I added this if because it isn't guaranteed (ido)
+                    neighbours_names.remove(name)
                 self.variables[name].add_neighbours(neighbours_names)
             else:
                 raise Exception("Variable name repeats twice!")

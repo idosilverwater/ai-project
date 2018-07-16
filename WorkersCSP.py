@@ -48,8 +48,6 @@ def create_workers_csp(filename):
             for s in range(3):
                 variables.append(str(name) + " " + str(d) + " " + str(s))
 
-
-
     constraints = Constraints(preferences, variables)
 
     return CSP(domain, variables, constraints)
