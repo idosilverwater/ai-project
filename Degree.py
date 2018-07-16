@@ -1,7 +1,8 @@
 from WorkersCSP import *  # TODO(Noy): Remove later
+from VariableHeuristic import *
 
 
-class Degree:
+class Degree(VariableHeuristic):
     """
     This class represents Degree Heuristic.
     """
@@ -12,33 +13,27 @@ class Degree:
         :param variables: A list of variable objects.
         :param constraints: Al ist of constraints objects.
         """
-        self.__variables = variables
-        self.__constraints = constraints
-        self.__variables_by_neighbors = self.__init_var_by_neighbors()
+        VariableHeuristic.__init__(self, variables, constraints)
 
-    def __init_var_by_neighbors(self):
+    def init_sorted_variables(self):
         """
-        Initializes a list of tuples: (variable name, number of neighbors)
-        :return: A list of tuples as described.
+        Initializes a list of variables according to the heuristic - the
+        variable with most neighbors is first and so on.
         """
-        variables_by_neighbors = []
-        for variable in self.__variables:
+        variables_by_neighbors = []  # A list of (var_name, |neighbors|)
+        for variable in self.variables:
             number_of_neighbors = len(variable.get_neighbores())
             name = variable.get_name()
             variables_by_neighbors.append((name, number_of_neighbors))
-        return variables_by_neighbors
 
-    def sort_variables(self):
-        """ Selects the variable that influences more variables first"""
+        # In this part we sort the variables according to the heuristic:
         comparator = lambda x, y: x[1] > y[1]
-        self._variables_by_neighbors = sorted(self.__variables_by_neighbors,
+        variables_by_neighbors = sorted(variables_by_neighbors,
                                               comparator)
-        return [*map(lambda x: x[0], self.__variables_by_neighbors)]
+        self.sorted_variables = [*map(lambda x: x[0], variables_by_neighbors)]
+
 
 
 #########
 # TESTS #
 #########
-csp = create_workers_csp("examples\example1.csp")
-d = Degree(csp.variables, csp.constraints)
-print(d.sort_variables())

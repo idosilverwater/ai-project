@@ -55,3 +55,6 @@ class Variable:
 
     def get_constraints(self):
         return self.constraints
+
+    def get_possible_domain(self):
+        return self.possible_domain
