@@ -1,3 +1,4 @@
+
 class DomainHeuristic:
     """This class represents a domain heuristic"""
 

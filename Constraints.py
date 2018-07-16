@@ -24,6 +24,8 @@ class Constraints:
         self.__constraints_by_var = {}  # var name: [constrains on var]
         self.__build_all_constraints()
 
+        self.__set_constraint_by_var()  # todo NOY, should this be called here? (ido)
+
     ###################
     # Private Methods #
     ###################
@@ -106,7 +108,20 @@ class Constraints:
             self.__all_constraints[var_name] = [new_constraint]
 
     def __set_constraint_by_var(self):
-        pass
+        """
+        After the initialization of visible_constraints
+        creates a dictionary with variable names as keys
+        and a list of constraints the key is in as a value.
+        :return:
+        """
+        for variable in self.__variable_names:
+            self.__constraints_by_var[variable] = list()
+
+        for constraint in self.__visible_constraints:
+            for variable in constraint:
+                self.__constraints_by_var[variable].append(constraint)
+
+
 
     #####################
     # Getters & Setters #
