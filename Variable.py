@@ -37,14 +37,12 @@ class Variable:
         # TODO : should check all constraints if this value is legit. (intersection of constraints).
         pass
 
-
     #
     # todo very much like check_value_assignment. I think maybe we need only this one... (ido)
     #
     def conflicted_constraints(self, value):
         """"""
         pass
-
 
     #####################
     # Getters & Setters #
@@ -58,3 +56,6 @@ class Variable:
 
     def get_possible_domain(self):
         return self.possible_domain
+
+    def get_name(self):
+        return self.name

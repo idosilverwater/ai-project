@@ -22,18 +22,10 @@ class Degree(VariableHeuristic):
         """
         variables_by_neighbors = []  # A list of (var_name, |neighbors|)
         for variable in self.variables:
-            number_of_neighbors = len(variable.get_neighbores())
+            number_of_neighbors = len(variable.get_neighbors())
             name = variable.get_name()
             variables_by_neighbors.append((name, number_of_neighbors))
 
         # In this part we sort the variables according to the heuristic:
-        comparator = lambda x, y: x[1] > y[1]
-        variables_by_neighbors = sorted(variables_by_neighbors,
-                                              comparator)
+        variables_by_neighbors.sort(key=lambda tup: tup[1])
         self.sorted_variables = [*map(lambda x: x[0], variables_by_neighbors)]
-
-
-
-#########
-# TESTS #
-#########
