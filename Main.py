@@ -11,5 +11,5 @@ if __name__ == "__main__":
 # TESTS #
 #########
 csp = create_workers_csp("examples\example1.csp")
-h = Degree(list(csp.variables.values()), csp.constraints)
+h = Degree(list(csp.variables.values()))
 print(h.get_sorted_variables())

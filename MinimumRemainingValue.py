@@ -6,8 +6,8 @@ class MinimumRemainingValue(VariableHeuristic):
     This class represents Degree Heuristic.
     """
 
-    def __init__(self, variables, constraints):
-        VariableHeuristic.__init__(self, variables, constraints)
+    def __init__(self, variables):
+        VariableHeuristic.__init__(self, variables)
 
     def init_sorted_variables(self):
         """

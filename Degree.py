@@ -7,13 +7,12 @@ class Degree(VariableHeuristic):
     This class represents Degree Heuristic.
     """
 
-    def __init__(self, variables, constraints):
+    def __init__(self, variables):
         """
         Creates a new degree heuristic object.
         :param variables: A list of variable objects.
-        :param constraints: Al ist of constraints objects.
         """
-        VariableHeuristic.__init__(self, variables, constraints)
+        VariableHeuristic.__init__(self, variables)
 
     def init_sorted_variables(self):
         """
@@ -29,3 +28,4 @@ class Degree(VariableHeuristic):
         # In this part we sort the variables according to the heuristic:
         variables_by_neighbors = sorted(variables_by_neighbors, key=lambda tup: tup[1], reverse=True)
         self.sorted_variables = [*map(lambda x: x[0], variables_by_neighbors)]
+

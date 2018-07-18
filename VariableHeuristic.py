@@ -1,10 +1,9 @@
 class VariableHeuristic:
     """This class represents a domain heuristic"""
 
-    def __init__(self, variables, constraints):
+    def __init__(self, variables):
         """Defines a new heuristic"""
         self.variables = variables
-        self.constraints = constraints
         self.sorted_variables = []
         self.init_sorted_variables()
 

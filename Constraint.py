@@ -20,3 +20,9 @@ class Constraint:
 
     def is_value_legit(self, variable_name, value):
         pass  # TODO should make it's checks if the value is okay with this
+
+    def get_variables(self):
+        return self.variables
+
+    def get_possible_values(self):
+        return self.possible_values

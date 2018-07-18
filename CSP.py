@@ -83,7 +83,13 @@ class CSP:
         :param value: value to try and assign to the variable.
         :return: True if it's okay, False otherwise.
         """
-        pass
+        constraints_on_var = self.constraints.get_constraints_by_variable(variable_name)
+        all_values = [set(x.get_possible_values()) for x in constraints_on_var]
+        legal_values = {}
+
+        for values in all_values:
+            legal_values = legal_values & values
+        return value in legal_values
 
     def add_constraint(self):
         """
