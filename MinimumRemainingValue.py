@@ -21,7 +21,5 @@ class MinimumRemainingValue(VariableHeuristic):
             variables_by_values.append((name, possible_values))
 
         # In this part we sort the variables according to the heuristic:
-        comparator = lambda x, y: x[1] < y[1]
-        variables_by_values = sorted(variables_by_values,
-                                        comparator)
+        variables_by_values.sort(key=lambda tup: tup[1])
         self.sorted_variables = [*map(lambda x: x[0], variables_by_values)]

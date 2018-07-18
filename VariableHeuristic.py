@@ -5,7 +5,8 @@ class VariableHeuristic:
         """Defines a new heuristic"""
         self.variables = variables
         self.constraints = constraints
-        self.sorted_variables = self.init_sorted_variables()
+        self.sorted_variables = []
+        self.init_sorted_variables()
 
     def init_sorted_variables(self):
         """
