@@ -2,7 +2,7 @@ from Constraints import *
 from Variable import *
 
 
-class CSP:
+# class CSP:
     """
     main CSP handler. should be main authority for handling variables, domains and constraints.
     """

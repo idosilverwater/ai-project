@@ -25,7 +25,7 @@ class Variable:
         for neighbour in set_of_neighbours:
             self.neighboursNames.add(neighbour)
 
-    def forwad_checking_restore_self(self):
+    def forward_checking_restore_self(self):
         """
         declares the variable as non affecting anybody, should be called when forward checking is done.
         :return: None.
