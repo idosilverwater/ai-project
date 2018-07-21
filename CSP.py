@@ -45,7 +45,8 @@ from Variable import *
                 neighbours_names = set()
                 for constraint in constraints:
                     neighbours_names.add([neighbour for neighbour in constraint.variables])
-                neighbours_names.remove(name)
+                if name in neighbours_names:  # I added this if because it isn't guaranteed (ido)
+                    neighbours_names.remove(name)
                 self.variables[name].add_neighbours(neighbours_names)
             else:
                 raise Exception("Variable name repeats twice!")
@@ -82,7 +83,13 @@ from Variable import *
         :param value: value to try and assign to the variable.
         :return: True if it's okay, False otherwise.
         """
-        pass
+        constraints_on_var = self.constraints.get_constraints_by_variable(variable_name)
+        all_values = [set(x.get_possible_values()) for x in constraints_on_var]
+        legal_values = {}
+
+        for values in all_values:
+            legal_values = legal_values & values
+        return value in legal_values
 
     def add_constraint(self):
         """
