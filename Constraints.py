@@ -1,5 +1,12 @@
 from Constraint import *
 
+# TODO Critical, notice statement below:
+"""
+We have to make the hard constraints more complicated, at the moment we are looking at hard constraint that can be
+ satisfied with True to every one. This isn't a hard problem at all, and I think we should add more constraints or 
+  change the constraints later on in the project to make different outcomes.
+"""
+
 
 class Constraints:
     """
@@ -22,8 +29,13 @@ class Constraints:
         self.__all_constraints = {}  # (Variable names): [constraints on variables]
         self.__visible_constraints = {}  # (Variable names): [constraints on variables]
         self.__constraints_by_var = {}  # var name: [constrains on var]
+        # J added this to save runtime:
+        self.__dictionary_of_possible_assignments = {}
         self.__build_all_constraints()
+        self.__dictionary_of_possible_assignments = {}
 
+        # TODO: delete this later, this is for debugging purpose of csp:
+        self.make_visible_for_walksat()
         self.__set_constraint_by_var()  # todo NOY, should this be called here? (ido)
 
     ###################
@@ -53,7 +65,7 @@ class Constraints:
         """
         relevant_vars = []
         for name in self.__variable_names:
-            if name.endswith(str(day) + ", " + str(shift_number) + ")"):
+            if name.endswith(str(day) + " " + str(shift_number)):
                 relevant_vars.append(name)
         return tuple(relevant_vars)
 
@@ -76,9 +88,14 @@ class Constraints:
         :return: A list of possible assignments.
         For Example(three workers): [[True,True,False],[False,True,False]]
         """
+        # J: the previous function was to expensive, i added memory components to save runtime.
+        if number_of_workers in self.__dictionary_of_possible_assignments:
+            return self.__dictionary_of_possible_assignments[number_of_workers]
+
         lst = []
         self.__one_worker_helper(number_of_workers, 0, lst, [])
         lst.pop()
+        self.__dictionary_of_possible_assignments[number_of_workers] = lst
         return lst
 
     def __generate_hard_const(self):
@@ -91,8 +108,7 @@ class Constraints:
         for i in range(7):  # For each day
             for j in range(3):  # For each shift.
                 relevant_variables = self.__variable_names_by_shift(i, j)
-                possible_assignments = self.__generate_assignments_for_at_least_one_worker(
-                    len(relevant_variables))
+                possible_assignments = self.__generate_assignments_for_at_least_one_worker(len(relevant_variables))
                 new_constraint = Constraint(relevant_variables,
                                             possible_assignments, 0)
                 self.__all_constraints[relevant_variables] = new_constraint
@@ -102,10 +118,10 @@ class Constraints:
         Generates the soft constraints and updates self.constraints.
         """
         for preference in self.__preferences:
-            var_name = str(preference)
+            var_name = (" ".join(preference),)  # TODO find a better way to turn into a tuple...
             # Adding constraint to all_constraints:
             new_constraint = Constraint(var_name, [[True]], 1)
-            self.__all_constraints[var_name] = [new_constraint]
+            self.__all_constraints[var_name] = new_constraint
 
     def __set_constraint_by_var(self):
         """
@@ -116,12 +132,9 @@ class Constraints:
         """
         for variable in self.__variable_names:
             self.__constraints_by_var[variable] = list()
-
-        for constraint in self.__visible_constraints:
-            for variable in constraint:
-                self.__constraints_by_var[variable].append(constraint)
-
-
+        for key in self.__visible_constraints:
+            for variable in key:
+                self.__constraints_by_var[variable].append(self.__visible_constraints[key])
 
     #####################
     # Getters & Setters #
@@ -139,11 +152,11 @@ class Constraints:
     def update_visible(self):
         variables, constraint = self.__constraint_heuristic(
             self.__visible_constraints, self.__all_constraints)
+        # TODO! NOTICE that these constraint should be added to constraints by var and the likes.
         self.__visible_constraints[variables] = constraint
 
     def get_constraints_by_variable(self, variable_name):
         return self.__constraints_by_var[variable_name]
-
 
 #########
 # Tests #

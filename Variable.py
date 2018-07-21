@@ -19,11 +19,14 @@ class Variable:
         self.affected_variables = []  # remembers the variables that were affected by forward checking.
         self.affecting_value = None  # remember the value to return in the end of forward checking restoration.
 
-        self.neighboursNames = set()
+        self.neighbours_names = set()
+
+    def set_neighbours(self, set_of_neighbours):
+        self.neighbours_names = set_of_neighbours
 
     def add_neighbours(self, set_of_neighbours):
         for neighbour in set_of_neighbours:
-            self.neighboursNames.add(neighbour)
+            self.neighbours_names.add(neighbour)
 
     def forward_checking_restore_self(self):
         """
@@ -49,7 +52,7 @@ class Variable:
     #####################
 
     def get_neighbors(self):
-        return self.neighboursNames
+        return self.neighbours_names
 
     def get_constraints(self):
         return self.constraints

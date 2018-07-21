@@ -2,7 +2,7 @@ from Constraints import *
 from Variable import *
 
 
-# class CSP:
+class CSP:
     """
     main CSP handler. should be main authority for handling variables, domains and constraints.
     """
@@ -40,14 +40,14 @@ from Variable import *
             if var not in self.variables:
                 self.variables[name] = var
                 self.domains[name] = domain[i]
-
                 # adding neighbours to a variable:
                 neighbours_names = set()
                 for constraint in constraints:
-                    neighbours_names.add([neighbour for neighbour in constraint.variables])
-                if name in neighbours_names:  # I added this if because it isn't guaranteed (ido)
+                    for neighbour in constraint.variables:
+                        neighbours_names.add(neighbour)
+                if name in neighbours_names:  # I added this if because it isn't guaranteed (ido).
                     neighbours_names.remove(name)
-                self.variables[name].add_neighbours(neighbours_names)
+                self.variables[name].set_neighbours(neighbours_names)  # give a reference to the set.
             else:
                 raise Exception("Variable name repeats twice!")
 
