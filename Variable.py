@@ -14,6 +14,7 @@ class Variable:
         self.domain = domain_values
         self.constraints = constraints
         self.possible_domain = self.domain  # will get smaller or larger in time.
+        self.value = None
 
         # forward checking relevant attributes:
         self.affected_variables = []  # remembers the variables that were affected by forward checking.
@@ -36,9 +37,13 @@ class Variable:
         self.affected_variables = []
         self.affecting_value = None
 
-    def check_value_assignment(self, value):
-        # TODO : should check all constraints if this value is legit. (intersection of constraints).
-        pass
+    def is_value_legit(self, value):
+        """
+        checks if a given value is in the domain of this variable, and if the value is in the possible domain.
+        :param value: any object.
+        :return: True or False.
+        """
+        return value in self.domain and value in self.possible_domain
 
     #
     # todo very much like check_value_assignment. I think maybe we need only this one... (ido)
@@ -62,3 +67,9 @@ class Variable:
 
     def get_name(self):
         return self.name
+
+    def set_value(self, value):
+        self.value = value
+
+    def get_value(self):
+        return self.value

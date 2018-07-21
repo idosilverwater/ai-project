@@ -152,7 +152,7 @@ class Constraints:
     def update_visible(self):
         variables, constraint = self.__constraint_heuristic(
             self.__visible_constraints, self.__all_constraints)
-        # TODO! NOTICE that these constraint should be added to constraints by var and the likes.
+        # TODO! NOTICE that these constraint should be added to constraints by var and the too.
         self.__visible_constraints[variables] = constraint
 
     def get_constraints_by_variable(self, variable_name):

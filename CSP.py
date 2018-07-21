@@ -74,6 +74,18 @@ class CSP:
         return self.variable_heuristic.select_unassigned_variable(self.variables)
 
     def assign_variable(self, var_name, value):
+        """
+        function assumes that the value is consistent and can be added to the var name.
+        :param var_name:
+        :param value:
+        :return:
+        """
+        # add assignment of one value
+        variable = self.variables[var_name]
+        variable.set_value(value)
+        # add forward checking:
+        if self._forward_checking_flag:
+            pass
         pass  # TODO should assign value, and update every friend of variable of it's new domain.
 
     def is_consistent(self, variable_name, value):
@@ -83,13 +95,21 @@ class CSP:
         :param value: value to try and assign to the variable.
         :return: True if it's okay, False otherwise.
         """
-        constraints_on_var = self.constraints.get_constraints_by_variable(variable_name)
-        all_values = [set(x.get_possible_values()) for x in constraints_on_var]
-        legal_values = {}
+        # checking if value is in domain and in possible domain:
+        variable = self.variables[variable_name]
+        if not variable.is_value_legit(value):
+            return False
+        
+        # TODO continue.
+        pass
 
-        for values in all_values:
-            legal_values = legal_values & values
-        return value in legal_values
+        # constraints_on_var = self.constraints.get_constraints_by_variable(variable_name)
+        # all_values = [set(x.get_possible_values()) for x in constraints_on_var]
+        # legal_values = {}
+        #
+        # for values in all_values:
+        #     legal_values = legal_values & values
+        # return value in legal_values
 
     def add_constraint(self):
         """
@@ -100,11 +120,18 @@ class CSP:
         # TODO: constraints class should output the constraint in order to update which variables are related to it.
         pass
 
-    def un_assign_variable(self, variable_name, value):
+    def un_assign_variable(self, variable_name):
         """
         does necessary updates to the csp object if the value should be un assigned.
         :param variable_name:
         :param value:
         :return:
         """
+        variable = self.variables[variable_name]
+        current_Value = variable.get_value()  # should be relevant in forward checking.
+        variable.set_value(None)
+
+        # forward checking:
+        if self._forward_checking_flag:
+            pass
         pass
