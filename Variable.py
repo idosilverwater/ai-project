@@ -45,6 +45,14 @@ class Variable:
         """
         return value in self.domain and value in self.possible_domain
 
+    def is_satisfied(self):
+        """
+        checks if this variable is satisfied, which means it's value is legit and
+        it a possible value in all of it's constraints.
+        :return: true or false
+        """
+        pass  # TODO This should be done for the walksat solver...
+
     #
     # todo very much like check_value_assignment. I think maybe we need only this one... (ido)
     #

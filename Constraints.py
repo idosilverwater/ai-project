@@ -3,8 +3,8 @@ from Constraint import *
 # TODO Critical, notice statement below:
 """
 We have to make the hard constraints more complicated, at the moment we are looking at hard constraint that can be
- satisfied with True to every one. This isn't a hard problem at all, and I think we should add more constraints or 
-  change the constraints later on in the project to make different outcomes.
+ satisfied with True to every one. This isn't a hard problem at all. I think we should add more HARD constraints, 
+ for example: workers that cannot by any means work at certain shift \ day. 
 """
 
 

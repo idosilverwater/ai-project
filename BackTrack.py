@@ -39,7 +39,7 @@ class Backtrack(Solver):
         tries and solve for the csp problem while adding more and more constraints to the problem.
         :return: False if there isn't a solution, True otherwise.
         """
-        res = self.__backtracking()
+        res = self.__backtracking()  # TODO check if it does backtrack only on hard constraints here.
         if not res:
             return False
 
