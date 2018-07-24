@@ -1,6 +1,6 @@
 from Constraint import *
 
-# TODO Critical, notice statement below:
+# TODO Critical! notice statement below:
 """
 We have to make the hard constraints more complicated, at the moment we are looking at hard constraint that can be
  satisfied with True to every one. This isn't a hard problem at all. I think we should add more HARD constraints, 
@@ -8,6 +8,7 @@ We have to make the hard constraints more complicated, at the moment we are look
 """
 
 
+# TODO add hard constraints such as: "Name Y cannot work on X shift".
 class Constraints:
     """
     This class is generating the soft and hard constrains according to the
@@ -118,7 +119,7 @@ class Constraints:
         Generates the soft constraints and updates self.constraints.
         """
         for preference in self.__preferences:
-            var_name = (" ".join(preference),)  # TODO find a better way to turn into a tuple...
+            var_name = (" ".join(preference),)
             # Adding constraint to all_constraints:
             new_constraint = Constraint(var_name, [[True]], 1)
             self.__all_constraints[var_name] = new_constraint
@@ -132,6 +133,7 @@ class Constraints:
         """
         for variable in self.__variable_names:
             self.__constraints_by_var[variable] = list()
+
         for key in self.__visible_constraints:
             for variable in key:
                 self.__constraints_by_var[variable].append(self.__visible_constraints[key])

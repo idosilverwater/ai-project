@@ -85,8 +85,8 @@ class CSP:
         variable.set_value(value)
         # add forward checking:
         if self._forward_checking_flag:
-            pass
-        pass  # TODO should assign value, and update every friend of variable of it's new domain.
+            pass  # TODO forward checking : should assign value, and update every friend of variable of it's new domain.
+        pass
 
     def is_consistent(self, variable_name, value):
         """
@@ -99,17 +99,19 @@ class CSP:
         variable = self.variables[variable_name]
         if not variable.is_value_legit(value):
             return False
-        
-        # TODO continue.
-        pass
 
-        # constraints_on_var = self.constraints.get_constraints_by_variable(variable_name)
-        # all_values = [set(x.get_possible_values()) for x in constraints_on_var]
-        # legal_values = {}
-        #
-        # for values in all_values:
-        #     legal_values = legal_values & values
-        # return value in legal_values
+        # Should check every constraint relevant to this variable name and check if the value is allowed there!
+        # if one constraint returns no that means this value is not allowed and it contradicts the other
+        # values it currently hold.
+
+        variable_set = set()
+        all_constraints = self.variables[variable_name].get_constraints()
+        for constraint in all_constraints:
+            variable_set.add(constraint.get_variables())  # TODO check if this does as expected.
+
+        assignment = {variable_name: self.variables[variable_name].get_value() for variable_name in variable_set}
+        # TODO try and optimise this whole operation. Maybe with threads or something. (can thread this function)
+        return self.__check_constraint_agreement(all_constraints, assignment)
 
     def add_constraint(self):
         """
@@ -124,14 +126,36 @@ class CSP:
         """
         does necessary updates to the csp object if the value should be un assigned.
         :param variable_name:
-        :param value:
         :return:
         """
         variable = self.variables[variable_name]
         current_Value = variable.get_value()  # should be relevant in forward checking.
         variable.set_value(None)
-
+        # TODO cont:
+        visited_var = set()
+        for constraint in self.variables[variable_name].get_constraints():
+            for variable in constraint.get_variables():
+                if not variable in visited_var:
+                    pass  # TODO
         # forward checking:
         if self._forward_checking_flag:
             pass
         pass
+
+    # TODO check if assignment is a legit one. means that for every constrain, check if all values are possible together
+    def check_assignment(self, variable_assignment):
+        """
+        checks the full assignment over all constraints
+        :param variable_assignment:
+        :return:
+        """
+        return self.__check_constraint_agreement(self.constraints.get_all_constraints(), variable_assignment)
+
+    def __check_constraint_agreement(self, constraints, assignment):
+        """
+        gets a bunch of constraints and an assignment and checks wether all constraints are not violated or not.
+        """
+        for constraint in constraints:
+            if not constraint.check_assignment(assignment):
+                return False
+        return True

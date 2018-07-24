@@ -12,18 +12,20 @@ class Backtrack(Solver):
         """
         super(Backtrack, self).__init__(csp)
 
-    def __backtracking(self):
+    def backtrack(self):
         """
-        backtrack algorithm.
+        backtrack algorithm for the given csp problem.
         :return: True if assignment is possible. False otherwise
         """
-        if super(Backtrack, self).is_assignment_complete():
-            return True
+        if self.is_assignment_complete():
+            if self.assignment_legit():
+                return True
+            return False
         var_name = self.csp.select_unassigned_variable()
         for value in self.csp.order_domain_values(var_name):
             if self.csp.is_consistent(var_name, value):
                 self.assign_value(var_name, value)
-                if not self.__backtracking():
+                if not self.backtrack():
                     self.remove_value(var_name)
         return False
 
@@ -39,13 +41,13 @@ class Backtrack(Solver):
         tries and solve for the csp problem while adding more and more constraints to the problem.
         :return: False if there isn't a solution, True otherwise.
         """
-        res = self.__backtracking()  # TODO check if it does backtrack only on hard constraints here.
+        res = self.backtrack()  # TODO check if it does backtrack only on hard constraints here.
         if not res:
             return False
 
         while res and self.csp.add_constraint():  # while we can still add constraints - continues
             self.__reset_assignment()
-            res = self.__backtracking()
+            res = self.backtrack()
         return True
 
 

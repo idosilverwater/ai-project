@@ -15,7 +15,7 @@ class Solver:
     #########################
 
     def solve(self):
-        pass  # TODO should be implemented by the inheriting solvers.
+        pass  # should be implemented by the inheriting solvers.
 
     def get_assignment(self):
         return self.assignment
@@ -36,6 +36,9 @@ class Solver:
             if self.assignment[var_name] is None:
                 return False
         return True
+
+    def assignment_legit(self):
+        return self.csp.check_assignment(self.assignment)
 
     def assign_value(self, var, value):
         self.assignment[var] = value
