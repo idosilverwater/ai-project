@@ -16,4 +16,10 @@ if __name__ == "__main__":
     # J check ups:
     ##############
     csp = create_workers_csp("/Users/yonatanweiss/PycharmProjects/ai-project/examples/example1.csp")
+    # print(csp.is_consistent('Sarah 6 1', 'False'))
+    csp.assign_variable('Sarah 6 1', 'False')
+    for name in ['Ziv 6 1', 'Noga 6 1', 'David 6 1', 'Benzion 6 1']:
+        # print(csp.is_consistent(name, 'False'))
+        csp.assign_variable(name, 'False')
 
+    # print(c)

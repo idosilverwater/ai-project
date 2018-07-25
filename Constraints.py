@@ -76,9 +76,9 @@ class Constraints:
             result_lst.append(current_list)
         else:
             self.__one_worker_helper(number_of_workers, curr + 1, result_lst,
-                                     current_list + [True])
+                                     current_list + ['True'])
             self.__one_worker_helper(number_of_workers, curr + 1, result_lst,
-                                     current_list + [False])
+                                     current_list + ['False'])
 
     def __generate_assignments_for_at_least_one_worker(self,
                                                        number_of_workers):

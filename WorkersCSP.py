@@ -1,5 +1,7 @@
 from CSP import CSP
 from Constraints import *
+
+
 def parser(lines):
     """
     parse the workers csp file lines into:
@@ -23,7 +25,8 @@ def parser(lines):
     for preference in preferences:
         new_preferences.append(preference.split())
 
-    return domain, names,  new_preferences
+    return domain, names, new_preferences
+
 
 def create_workers_csp(filename):
     """
@@ -39,8 +42,6 @@ def create_workers_csp(filename):
     domain, names, preferences = parser(lines)
 
     domain = [domain] * (len(names) * 7 * 3)
-
-
 
     variables = list()
     for name in names:

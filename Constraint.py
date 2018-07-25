@@ -47,8 +47,9 @@ class Constraint:
                         counter += 1
                 else:
                     counter += 1
-            if counter == len(assignment) - 1:  # TODO need to test this, not sure about the len - 1 thingy.
+            if counter == len(assignment):  # TODO need to test this, not sure about the len - 1 thingy.
                 return True
+        return False
 
     # TODO i think this is totally non relevant, and maybe should be removed.
     def is_value_legit(self, variable_name, value):
