@@ -12,6 +12,7 @@ class Constraint:
         self.variables = variables
         self.possible_values = possible_values
         self.is_soft = softness
+        self.set_of_variables = set(variables)
 
     # TODO not tested.
     def check_assignment(self, assignment):
@@ -20,13 +21,12 @@ class Constraint:
         :param assignment: a dictionary of {var_name, value,....} value is None if variable is unassigned.
         :return: True is assignment is okay, or false other wise.
         """
-        all_none = True
-        for var_value in assignment.values():
-            if var_value is not None:
-                all_none = False
-                break
-
-        if all_none:  # TODO not sure if above and this check are necessary (all of above in this func can be deleted?)
+        # first, check if the variables relevant to this constraint are assigned. if not  we don't have a problem
+        none_counter = 0
+        for var_name in self.variables:
+            if assignment[var_name] is None:
+                none_counter += 1
+        if none_counter == len(self.variables):
             return True
 
         list_of_assignments = []
@@ -47,7 +47,7 @@ class Constraint:
                         counter += 1
                 else:
                     counter += 1
-            if counter == len(assignment):  # TODO need to test this, not sure about the len - 1 thingy.
+            if counter == len(assignment):
                 return True
         return False
 
@@ -65,6 +65,8 @@ class Constraint:
         return True  # this constraint doesn't care..
 
     def get_variable_pos(self, var_name):
+        if var_name not in self.set_of_variables:
+            return -1
         return self.variables.index(var_name)
 
     def get_variables(self):

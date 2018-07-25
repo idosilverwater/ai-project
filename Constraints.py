@@ -36,7 +36,7 @@ class Constraints:
         self.__dictionary_of_possible_assignments = {}
 
         # TODO: delete this later, this is for debugging purpose of csp:
-        self.make_visible_for_walksat()
+        self.set_constraints_visible()
         self.__set_constraint_by_var()  # todo NOY, should this be called here? (ido)
 
     ###################
@@ -47,6 +47,7 @@ class Constraints:
         """
         Generates all of the constraints.
         """
+        # TODO i think visible constraints should have all the HARD constraints from the start.
         self.__generate_hard_const()
         self.__generate_soft_const()
 
@@ -72,6 +73,10 @@ class Constraints:
 
     def __one_worker_helper(self, number_of_workers, curr, result_lst,
                             current_list):
+        """
+        A recursive function that returns a list of lists with all possible values for the bakery constraint problem
+        [[T,T,T,T,T..T], [T,T,T,T,T..F,T], ...,[F,F,F,F,...,F]].
+        """
         if number_of_workers == curr:
             result_lst.append(current_list)
         else:
@@ -141,20 +146,19 @@ class Constraints:
     #####################
     # Getters & Setters #
     #####################
-
     def get_visible_constraints(self):
-        pass
+        return self.__visible_constraints
 
     def get_all_constraints(self):
         return self.__all_constraints
 
-    def make_visible_for_walksat(self):
+    def set_constraints_visible(self):
         self.__visible_constraints = self.__all_constraints
 
-    def update_visible(self):
+    def add_constraint(self):
         variables, constraint = self.__constraint_heuristic(
             self.__visible_constraints, self.__all_constraints)
-        # TODO! NOTICE that these constraint should be added to constraints by var and the too.
+        # TODO! NOTICE that these constraint should be added to constraints by var too.
         self.__visible_constraints[variables] = constraint
 
     def get_constraints_by_variable(self, variable_name):

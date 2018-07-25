@@ -11,9 +11,9 @@ class Variable:
         """
         # basic attributes:
         self.name = name
-        self.domain = domain_values
+        self.domain = set(domain_values)  # this is in order for check inside the domain values.
         self.constraints = constraints
-        self.possible_domain = self.domain  # will get smaller or larger in time.
+        self.possible_domain = self.domain.copy()  # will get smaller or larger in time.
         self.value = None
 
         # forward checking relevant attributes:

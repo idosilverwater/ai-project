@@ -23,3 +23,7 @@ class MinimumRemainingValue(VariableHeuristic):
         # In this part we sort the variables according to the heuristic:
         variables_by_values.sort(key=lambda tup: tup[1])
         self.sorted_variables = [*map(lambda x: x[0], variables_by_values)]
+
+
+def minimum_remaining_value_heuristic_factory(variables):
+    return MinimumRemainingValue(variables)

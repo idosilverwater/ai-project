@@ -2,6 +2,9 @@ from Constraints import *
 from Variable import *
 
 
+# import DomainHeuristic, LeastConstrainingValue, MinimumConflict, MinimumRemainingValue
+
+
 # TODO bug - variables hold string values currently and the constraints hold non string values
 class CSP:
     """
@@ -9,7 +12,7 @@ class CSP:
     """
 
     # TODO determine what input the constructor should have.
-    def __init__(self, domain, variables, constraints):
+    def __init__(self, domain, variables, constraints, forward_checking_flag=False):
         """
 
         :param domain: a lists of lists such that list i corresponds with variable name i.
@@ -22,10 +25,10 @@ class CSP:
         self.variables = {}
         self._generate_variables(variables, domain)
 
-        self.variable_heuristic = None  # TODO.
-        self.domain_heuristic = None  # TODO.
+        self.variable_heuristic = None  # variable_heuristic_factory(self.variables)
+        self.domain_heuristic = None  # domain_heuristic_factory(self.variables, self.constraints)
 
-        self._forward_checking_flag = False  # TODO.
+        self._forward_checking_flag = forward_checking_flag
 
     def _generate_variables(self, names, domain):
         """
@@ -57,7 +60,7 @@ class CSP:
         makes all constraints visible.
         :return: None
         """
-        self.constraints.set_visible_constrains()
+        self.constraints.set_constraints_visible()
 
     def order_domain_values(self, variable_name):
         """
@@ -84,8 +87,8 @@ class CSP:
         # add assignment of one value
         variable = self.variables[var_name]
         variable.set_value(value)
-        # add forward checking:
 
+        # add forward checking:
         if self._forward_checking_flag:
             pass  # TODO forward checking: should assign value, and update every friend of variable of it's new domain.
         pass
@@ -115,6 +118,7 @@ class CSP:
         variable_set = variable.get_neighbors()
         assignment = {variable_name: self.variables[variable_name].get_value() for variable_name in variable_set}
         assignment[variable_name] = value  # Assignment should have the 'new' value.
+
         # TODO try and optimise this whole operation. Maybe with threads or something. (can thread this function)
         return self.__check_constraint_agreement(all_constraints, assignment)
 
@@ -123,15 +127,12 @@ class CSP:
         add constraint to the visible constraint list.
         :return: True if it added, False otherwise ( can return false if nothing to add).
         """
-
-        # TODO: constraints class should output the constraint in order to update which variables are related to it.
-        pass
+        self.add_constraint()
 
     def un_assign_variable(self, variable_name):
         """
         does necessary updates to the csp object if the value should be un assigned.
         :param variable_name:
-        :return:
         """
         variable = self.variables[variable_name]
         current_Value = variable.get_value()  # should be relevant in forward checking.
@@ -149,14 +150,14 @@ class CSP:
         :param variable_assignment:
         :return:
         """
-        # Notice this function is very heavy in demands.
-        return self.__check_constraint_agreement(self.constraints.get_all_constraints(), variable_assignment)
+        return self.__check_constraint_agreement(self.constraints.get_all_constraints().values(), variable_assignment)
 
     @staticmethod
     def __check_constraint_agreement(constraints, assignment):
         """
         gets a bunch of constraints and an assignment and checks wether all constraints are not violated or not.
         """
+        # if we wish to parallel this function-we need to split the dictionary of constraints and give it to each thread
         for constraint in constraints:
             if not constraint.check_assignment(assignment):
                 return False

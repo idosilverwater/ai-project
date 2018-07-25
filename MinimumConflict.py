@@ -1,5 +1,6 @@
 import DomainHeuristic
 
+
 # please notice that this doesn't need an init. the init is in it's parent class DomainHeuristic (ido)
 
 
@@ -24,4 +25,5 @@ class MinimumConflict(DomainHeuristic):
         return min_conflicted_value
 
 
-
+def minimum_conflict_heuristic_factory(variables, constraints):
+    return MinimumConflict(variables, constraints)

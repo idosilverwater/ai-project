@@ -29,3 +29,6 @@ class Degree(VariableHeuristic):
         variables_by_neighbors = sorted(variables_by_neighbors, key=lambda tup: tup[1], reverse=True)
         self.sorted_variables = [*map(lambda x: x[0], variables_by_neighbors)]
 
+
+def degree_heuristic_factory(variables):
+    return Degree(variables)
