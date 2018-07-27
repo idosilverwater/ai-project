@@ -1,10 +1,14 @@
 class DomainHeuristic:
     """This class represents a domain heuristic"""
 
-    def __init__(self, variables, constraints):
-        """Defines a new heuristic"""
-        self.variables = variables
-        self.constraints = constraints
+    # def __init__(self, variables, constraints):
+    #     """Defines a new heuristic"""
+        # self.variables = variables
+        # self.constraints = constraints
+
+
+    def __init__(self):
+        pass
 
     def select_value(self, variable):
         """

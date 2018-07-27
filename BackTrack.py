@@ -21,7 +21,15 @@ class Backtrack(Solver):
             if self.assignment_legit():
                 return True
             return False
-        var_name = self.csp.select_unassigned_variable()
+
+        var_name = None
+        for var in self.csp.select_unassigned_variable():  # choose the variable that isn't assigned.
+            if self.assignment[var] is None:
+                var_name = var
+                break
+        if var_name is None:  # TODO remove after tests. (sanity check)
+            raise Exception("problem in base check of this function")
+
         for value in self.csp.order_domain_values(var_name):
             if self.csp.is_consistent(var_name, value):
                 self.assign_value(var_name, value)

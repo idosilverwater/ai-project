@@ -18,14 +18,15 @@ def parser(lines):
 
     domain = new_lines[1:new_lines.index('Names:')]
     names = new_lines[new_lines.index('Names:') + 1:new_lines.index('Preferences:')]
-    preferences = new_lines[new_lines.index('Preferences:') + 1:]
+    preferences = new_lines[new_lines.index('Preferences:') + 1:new_lines.index('NonWorkShift:')]
+    non_work_shift = new_lines[new_lines.index('NonWorkShift:') + 1:]
 
     new_preferences = list()
 
     for preference in preferences:
         new_preferences.append(preference.split())
 
-    return domain, names, new_preferences
+    return domain, names, new_preferences, non_work_shift
 
 
 def create_workers_csp(filename):
@@ -39,7 +40,7 @@ def create_workers_csp(filename):
     with open(filename, 'r') as csp_file:
         lines = csp_file.readlines()
 
-    domain, names, preferences = parser(lines)
+    domain, names, preferences, non_work_shift = parser(lines)
 
     domain = [domain] * (len(names) * 7 * 3)
 
@@ -49,6 +50,6 @@ def create_workers_csp(filename):
             for s in range(3):
                 variables.append(str(name) + " " + str(d) + " " + str(s))
 
-    constraints = Constraints(preferences, variables)
+    constraints = Constraints(preferences, non_work_shift, variables)
 
     return CSP(domain, variables, constraints)

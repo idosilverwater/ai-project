@@ -15,7 +15,7 @@ class Constraints:
     parser's output.
     """
 
-    def __init__(self, preferences, variable_names, constraint_heuristic=None):
+    def __init__(self, preferences, non_workable_shifts, variable_names, constraint_heuristic=None):
         """
         Creates several dictionaries of constraints.
         :param preferences: A list of the workers preferences. For example:
@@ -25,15 +25,18 @@ class Constraints:
         example would be "(1,2,3)"
         """
         self.__preferences = preferences
+        self.__non_workable_shifts = non_workable_shifts
         self.__variable_names = variable_names
         self.__constraint_heuristic = constraint_heuristic
+
         self.__all_constraints = {}  # (Variable names): [constraints on variables]
         self.__visible_constraints = {}  # (Variable names): [constraints on variables]
         self.__constraints_by_var = {}  # var name: [constrains on var]
+
         # J added this to save runtime:
         self.__dictionary_of_possible_assignments = {}
         self.__build_all_constraints()
-        self.__dictionary_of_possible_assignments = {}
+        self.__dictionary_of_possible_assignments = {}  # restarting the dictionary.
 
         # TODO: delete this later, this is for debugging purpose of csp:
         self.set_constraints_visible()
@@ -104,11 +107,10 @@ class Constraints:
         self.__dictionary_of_possible_assignments[number_of_workers] = lst
         return lst
 
-    def __generate_hard_const(self):
+    def __at_least_one_worker_a_day(self):
         """
-        Generates the hard constraints and updates self.constraints.
-        For now the only hard constraint is: "There should be a least one worker
-        in each shift."
+        generate hard constraints of at least one worker a day.
+        :return:
         """
         # Creates a variable list that is relevant to a certain shift:
         for i in range(7):  # For each day
@@ -119,6 +121,23 @@ class Constraints:
                                             possible_assignments, 0)
                 self.__all_constraints[relevant_variables] = new_constraint
 
+    def __generate_non_workable_days(self):
+        for name in self.__non_workable_shifts:
+            # pass
+            var_name = (name,)
+            new_constraint = Constraint(var_name,
+                                        [[False]], 0)  # hard const that cant be assigned.
+            self.__all_constraints[var_name] = new_constraint
+
+    def __generate_hard_const(self):
+        """
+        Generates the hard constraints and updates self.constraints.
+        For now the only hard constraint is: "There should be a least one worker
+        in each shift."
+        """
+        self.__at_least_one_worker_a_day()
+        self.__generate_non_workable_days()
+
     def __generate_soft_const(self):
         """
         Generates the soft constraints and updates self.constraints.
@@ -127,6 +146,10 @@ class Constraints:
             var_name = (" ".join(preference),)
             # Adding constraint to all_constraints:
             new_constraint = Constraint(var_name, [[True]], 1)
+            if var_name in self.__all_constraints:
+                raise Exception("Same day cannot be preferred by same individual.")
+                pass  # TODO! this dictionary may contain the same day. for now it is an exception.
+
             self.__all_constraints[var_name] = new_constraint
 
     def __set_constraint_by_var(self):

@@ -1,5 +1,9 @@
 from Constraints import *
 from Variable import *
+import Degree
+
+
+# import LeastConstrainingValue
 
 
 # import DomainHeuristic, LeastConstrainingValue, MinimumConflict, MinimumRemainingValue
@@ -23,9 +27,10 @@ class CSP:
         # builds a dictionary of variables.
         self.domains = {}  # a domain for each variable to be used somehow later on. # TODO consider to delete.
         self.variables = {}
-        self._generate_variables(variables, domain)
 
-        self.variable_heuristic = None  # variable_heuristic_factory(self.variables)
+        self._generate_variables(variables, domain)
+        # TODO need this to be generic!
+        self.variable_heuristic = Degree.Degree(self.variables)  # variable_heuristic_factory(self.variables)
         self.domain_heuristic = None  # domain_heuristic_factory(self.variables, self.constraints)
 
         self._forward_checking_flag = forward_checking_flag
@@ -146,7 +151,7 @@ class CSP:
     # TODO check if assignment is a legit one. means that for every constrain, check if all values are possible together
     def check_assignment(self, variable_assignment):
         """
-        checks the full assignment over all constraints
+        # checks the full assignment over all constraints
         :param variable_assignment:
         :return:
         """

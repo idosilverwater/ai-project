@@ -1,5 +1,5 @@
-import DomainHeuristic
-import sys
+from DomainHeuristic import DomainHeuristic
+
 
 # please notice that this doesn't need an init. the init is in it's parent class DomainHeuristic (ido)
 
@@ -19,15 +19,9 @@ class LeastConstrainingValue(DomainHeuristic):
         count = 0
 
         for neighbor in neighbors:
-
             neighbor.get_constraints()
 
-
         return count
-
-
-
-
 
     def select_value(self, variable):
         """
@@ -47,5 +41,3 @@ class LeastConstrainingValue(DomainHeuristic):
                 min_conflicts = cur
 
         return min_conflicted_value
-
-
