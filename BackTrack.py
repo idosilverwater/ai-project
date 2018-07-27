@@ -19,7 +19,9 @@ class Backtrack(Solver):
         """
         if self.is_assignment_complete():
             if self.assignment_legit():
+                print("YAS")
                 return True
+            print("Damn")
             return False
 
         var_name = None
@@ -33,8 +35,11 @@ class Backtrack(Solver):
         for value in self.csp.order_domain_values(var_name):
             if self.csp.is_consistent(var_name, value):
                 self.assign_value(var_name, value)
-                if not self.backtrack():
+                res = self.backtrack()
+                if not res:
                     self.remove_value(var_name)
+                else:
+                    return True
         return False
 
     def __reset_assignment(self):

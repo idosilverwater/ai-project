@@ -18,9 +18,9 @@ if __name__ == "__main__":
     ##############
     import time
 
-    csp = create_workers_csp("/Users/yonatanweiss/PycharmProjects/ai-project/examples/example1.csp")
+    csp = create_workers_csp("/Users/yonatanweiss/PycharmProjects/ai-project/examples/example2.csp")
     b = Backtrack(csp)
-    b.backtrack()
+    print(b.backtrack())
     # print(csp.is_consistent('Sarah 6 1', 'True'))
     # assignment = {name: None for name in csp.variables.keys()}
     # for k in assignment:

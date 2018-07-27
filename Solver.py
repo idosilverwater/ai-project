@@ -7,6 +7,7 @@ class Solver:
         # Notice: these variables are protected values and are meant to be used by the derivative classes.
         self.csp = csp
         self.assignment = {}
+        self.num_of_assigned = 0
         for var_name in csp.variables:
             self.assignment[var_name] = None
 
@@ -26,16 +27,15 @@ class Solver:
     def remove_value(self, var):
         self.assignment[var] = None
         self.csp.un_assign_variable(var)
+        self.num_of_assigned -= 1
 
     def is_assignment_complete(self):
         """
         checks if there is an assignment to all variables.
         :return: True if there is.
         """
-        for var_name in self.assignment:
-            if self.assignment[var_name] is None:
-                return False
-        return True
+        # TODO make it faster by putting a number of items that are assigned. this way no need for a loop
+        return self.num_of_assigned == len(self.assignment)
 
     def assignment_legit(self):
         return self.csp.check_assignment(self.assignment)
@@ -43,3 +43,4 @@ class Solver:
     def assign_value(self, var, value):
         self.assignment[var] = value
         self.csp.assign_variable(var, value)
+        self.num_of_assigned += 1

@@ -25,7 +25,10 @@ def parser(lines):
 
     for preference in preferences:
         new_preferences.append(preference.split())
-
+    # if non_work_shift[0] == '':
+    #     non_work_shift = []
+    # if preference[0] == '':
+    #     preference = []
     return domain, names, new_preferences, non_work_shift
 
 

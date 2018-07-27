@@ -1,6 +1,6 @@
 from Constraint import *
 
-# TODO Critical! notice statement below:
+# TODO notice statement below:
 """
 We have to make the hard constraints more complicated, at the moment we are looking at hard constraint that can be
  satisfied with True to every one. This isn't a hard problem at all. I think we should add more HARD constraints, 
@@ -8,7 +8,8 @@ We have to make the hard constraints more complicated, at the moment we are look
 """
 
 
-# TODO add hard constraints such as: "Name Y cannot work on X shift".
+# TODO bug: variables can more than one constraint, need to fix it and insert a list of constraint in all constraints, instead of just one line
+
 class Constraints:
     """
     This class is generating the soft and hard constrains according to the
@@ -41,6 +42,7 @@ class Constraints:
         # TODO: delete this later, this is for debugging purpose of csp:
         self.set_constraints_visible()
         self.__set_constraint_by_var()  # todo NOY, should this be called here? (ido)
+        pass
 
     ###################
     # Private Methods #
@@ -52,7 +54,7 @@ class Constraints:
         """
         # TODO i think visible constraints should have all the HARD constraints from the start.
         self.__generate_hard_const()
-        self.__generate_soft_const()
+        # self.__generate_soft_const()  # TODO work with this later on.
 
     def __variable_names_by_shift(self, day, shift_number):
         """
@@ -107,6 +109,17 @@ class Constraints:
         self.__dictionary_of_possible_assignments[number_of_workers] = lst
         return lst
 
+    @staticmethod
+    def __add_constraint(dictionary, key, value):
+        """
+        Helper function for the hard constraints adding items.
+        """
+        if key in dictionary:
+            dictionary[key].append(value)
+        else:
+            dictionary[key] = [value]
+        pass
+
     def __at_least_one_worker_a_day(self):
         """
         generate hard constraints of at least one worker a day.
@@ -117,17 +130,17 @@ class Constraints:
             for j in range(3):  # For each shift.
                 relevant_variables = self.__variable_names_by_shift(i, j)
                 possible_assignments = self.__generate_assignments_for_at_least_one_worker(len(relevant_variables))
-                new_constraint = Constraint(relevant_variables,
-                                            possible_assignments, 0)
-                self.__all_constraints[relevant_variables] = new_constraint
+                new_constraint = Constraint(relevant_variables, possible_assignments, 0)
+                self.__add_constraint(self.__all_constraints, relevant_variables, new_constraint)
 
     def __generate_non_workable_days(self):
+        """
+        Create constraints for days that a worker cannot work at.
+        """
         for name in self.__non_workable_shifts:
-            # pass
             var_name = (name,)
-            new_constraint = Constraint(var_name,
-                                        [[False]], 0)  # hard const that cant be assigned.
-            self.__all_constraints[var_name] = new_constraint
+            new_constraint = Constraint(var_name, [[False]], 0)  # hard const that cant be assigned.
+            self.__add_constraint(self.__all_constraints, var_name, new_constraint)
 
     def __generate_hard_const(self):
         """
@@ -137,6 +150,7 @@ class Constraints:
         """
         self.__at_least_one_worker_a_day()
         self.__generate_non_workable_days()
+        pass
 
     def __generate_soft_const(self):
         """
@@ -159,12 +173,14 @@ class Constraints:
         and a list of constraints the key is in as a value.
         :return:
         """
-        for variable in self.__variable_names:
-            self.__constraints_by_var[variable] = list()
-
+        # TODO FIX fcken bug. adds [constraint, [constraint],...] and i want:[constraint, constraint,...]
         for key in self.__visible_constraints:
             for variable in key:
-                self.__constraints_by_var[variable].append(self.__visible_constraints[key])
+                if variable in self.__constraints_by_var:
+                    self.__constraints_by_var[variable].append(self.__visible_constraints[key])
+                else:
+                    # if type(self.__visible_constraints[key]) == type(list()):
+                    self.__constraints_by_var[variable] = self.__visible_constraints[key]
 
     #####################
     # Getters & Setters #
@@ -186,12 +202,3 @@ class Constraints:
 
     def get_constraints_by_variable(self, variable_name):
         return self.__constraints_by_var[variable_name]
-
-#########
-# Tests #
-#########
-# p = ["(1, 2, 2)", "(4, 5, 1)"]
-# vars = ["(1, 2, 2)", "(2, 2, 2)", "(4, 5, 1)"]
-# h = None
-# c = Constraints(p, vars, h)
-# print(c.get_all_constraints())

@@ -28,7 +28,7 @@ class Constraint:
                 none_counter += 1
         if none_counter == len(self.variables):
             return True
-
+        # Gather all possible assignments that have the same value as of the values in the assignment.
         list_of_assignments = []
         for variable_name in assignment:
             pos = self.get_variable_pos(variable_name)

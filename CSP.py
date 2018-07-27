@@ -18,7 +18,6 @@ class CSP:
     # TODO determine what input the constructor should have.
     def __init__(self, domain, variables, constraints, forward_checking_flag=False):
         """
-
         :param domain: a lists of lists such that list i corresponds with variable name i.
         :param variables: a list of variable names.
         :param constraints: a constraints function that coresponds with the names of the variables.
@@ -73,7 +72,8 @@ class CSP:
         :param variable_name: the name of the variable to get it's domain value from.
         :return: a list of values to assign.
         """
-        return self.domain_heuristic.get_order_domain(variable_name, self.domains, self.constraints)
+        return self.variables[variable_name].get_possible_domain()
+        # return self.domain_heuristic.get_order_domain(variable_name, self.domains, self.constraints)
 
     def select_unassigned_variable(self):
         """
@@ -155,7 +155,13 @@ class CSP:
         :param variable_assignment:
         :return:
         """
-        return self.__check_constraint_agreement(self.constraints.get_all_constraints().values(), variable_assignment)
+        # We reached this hence we failed.
+        all_constraints_dict = self.constraints.get_all_constraints()
+        all_consts_lst = []
+        for key in all_constraints_dict:
+            all_consts_lst += all_constraints_dict[key]
+        return self.__check_constraint_agreement(all_consts_lst,
+                                                 variable_assignment)
 
     @staticmethod
     def __check_constraint_agreement(constraints, assignment):
