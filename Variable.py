@@ -17,7 +17,7 @@ class Variable:
         self.value = None
 
         # forward checking relevant attributes:
-        self.affected_variables = []  # remembers the variables that were affected by forward checking.
+        # self.affected_variables = []  # remembers the variables that were affected by forward checking.
         self.affecting_value = None  # remember the value to return in the end of forward checking restoration.
 
         self.neighbours_names = set()
@@ -60,6 +60,9 @@ class Variable:
         """"""
         pass
 
+    def is_not_assigned(self):
+        return self.value is None
+
     #####################
     # Getters & Setters #
     #####################
@@ -81,3 +84,9 @@ class Variable:
 
     def get_value(self):
         return self.value
+
+    def set_affecting_value(self, value):
+        self.affecting_value = value
+
+    def get_affecting_value(self):
+        return self.affecting_value

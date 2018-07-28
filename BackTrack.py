@@ -19,9 +19,7 @@ class Backtrack(Solver):
         """
         if self.is_assignment_complete():
             if self.assignment_legit():
-                print("YAS")
                 return True
-            print("Damn")
             return False
 
         var_name = None

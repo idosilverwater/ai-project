@@ -2,11 +2,19 @@ from Constraints import *
 from Variable import *
 import Degree
 
-
 # import LeastConstrainingValue
 
 
 # import DomainHeuristic, LeastConstrainingValue, MinimumConflict, MinimumRemainingValue
+# TODO arc consistency.
+"""
+HOW to do arc consistency- copy current CSP. than do ar consistency on the non copied.
+This way we can "rewrite" back to the old csp when the backtrack fails. problem is: costly on memory. 
+but fuck it, we've got at least 4GB of mem...
+"""
+
+
+# TODO forward checking.
 
 
 # TODO bug - variables hold string values currently and the constraints hold non string values
@@ -94,9 +102,17 @@ class CSP:
         variable.set_value(value)
 
         # add forward checking:
-        if self._forward_checking_flag:
-            pass  # TODO forward checking: should assign value, and update every friend of variable of it's new domain.
+        pass  # TODO forward checking: should assign value, and update every friend of variable of it's new domain.
         pass
+
+    def __forward_check_consistent(self, variable_name):
+        # TODO
+        variable = self.variables[variable_name]
+        # variable.set_affecting_value(value)
+        affected_variables = []
+        for neighbour in variable.get_neighbors():
+            if self.variables[neighbour].is_not_assigned:
+                affected_variables.append(neighbour)
 
     def is_consistent(self, variable_name, value):
         """
@@ -114,6 +130,9 @@ class CSP:
         variable = self.variables[variable_name]
         if not variable.is_value_legit(value):
             return False
+
+        # if self._forward_checking_flag: #TODO understand how to forward checking god dammnit.
+        #     self.__forward_check_consitent(variable_name)
 
         all_constraints = self.variables[variable_name].get_constraints()
         # As suggested by Noy: I take insted the neighbours.

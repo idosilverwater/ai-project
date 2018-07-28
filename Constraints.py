@@ -139,7 +139,7 @@ class Constraints:
         """
         for name in self.__non_workable_shifts:
             var_name = (name,)
-            new_constraint = Constraint(var_name, [[False]], 0)  # hard const that cant be assigned.
+            new_constraint = Constraint(var_name, [['False']], 0)  # hard const that cant be assigned.
             self.__add_constraint(self.__all_constraints, var_name, new_constraint)
 
     def __generate_hard_const(self):
@@ -162,7 +162,7 @@ class Constraints:
             new_constraint = Constraint(var_name, [[True]], 1)
             if var_name in self.__all_constraints:
                 raise Exception("Same day cannot be preferred by same individual.")
-                pass  # TODO! this dictionary may contain the same day. for now it is an exception.
+            # TODO! this dictionary may contain the same day. for now it is an exception. i think i fixed but not sure.
 
             self.__all_constraints[var_name] = new_constraint
 
@@ -173,11 +173,10 @@ class Constraints:
         and a list of constraints the key is in as a value.
         :return:
         """
-        # TODO FIX fcken bug. adds [constraint, [constraint],...] and i want:[constraint, constraint,...]
         for key in self.__visible_constraints:
             for variable in key:
                 if variable in self.__constraints_by_var:
-                    self.__constraints_by_var[variable].append(self.__visible_constraints[key])
+                    self.__constraints_by_var[variable] += [item for item in self.__visible_constraints[key]]
                 else:
                     # if type(self.__visible_constraints[key]) == type(list()):
                     self.__constraints_by_var[variable] = self.__visible_constraints[key]

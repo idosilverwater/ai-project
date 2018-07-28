@@ -27,6 +27,7 @@ class Degree(VariableHeuristic):
 
         # In this part we sort the variables according to the heuristic:
         variables_by_neighbors = sorted(variables_by_neighbors, key=lambda tup: tup[1], reverse=True)
+        # (J) Notice that there can be many variables with same neighbour, thus the order between them isn't determined.
         self.sorted_variables = [*map(lambda x: x[0], variables_by_neighbors)]
 
     def select_unassigned_variable(self, _):  # TODO find suitable way to do this function, and speak about it with me.
