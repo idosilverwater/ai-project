@@ -18,7 +18,7 @@ if __name__ == "__main__":
     ##############
     import time
 
-    csp = create_workers_csp("/Users/yonatanweiss/PycharmProjects/ai-project/examples/example2.csp")
+    csp = create_workers_csp("C:/Users/Noy/Desktop/Uni/year2/AI-proj/ai-project/examples/example2.csp")
     b = Backtrack(csp)
     print(b.backtrack())
     # print(csp.is_consistent('Sarah 6 1', 'True'))

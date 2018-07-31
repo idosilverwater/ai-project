@@ -1,5 +1,7 @@
 from CSP import CSP
 from Constraints import *
+from Degree import *
+from MinimumRemainingValue import *
 
 
 def parser(lines):
@@ -54,5 +56,4 @@ def create_workers_csp(filename):
                 variables.append(str(name) + " " + str(d) + " " + str(s))
 
     constraints = Constraints(preferences, non_work_shift, variables)
-
-    return CSP(domain, variables, constraints)
+    return CSP(domain, variables, constraints, minimum_remaining_value_heuristic_factory)
