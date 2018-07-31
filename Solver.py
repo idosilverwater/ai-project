@@ -21,6 +21,13 @@ class Solver:
     def get_assignment(self):
         return self.assignment
 
+    def reset_assignment(self):
+        """
+        resets the current assignment.
+        :return: None
+        """
+        self.assignment = self.assignment.fromkeys(self.assignment, None)
+
     #########################
     # Protected functions Not to be used by other than derivative classes:
     #########################

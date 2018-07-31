@@ -20,7 +20,12 @@ if __name__ == "__main__":
 
     csp = create_workers_csp("C:/Users/Noy/Desktop/Uni/year2/AI-proj/ai-project/examples/example2.csp")
     b = Backtrack(csp)
-    print(b.backtrack())
+    if b.backtrack():
+        print("True")
+        print(b.get_assignment())
+    else:
+        print("False")
+    print("Done")
     # print(csp.is_consistent('Sarah 6 1', 'True'))
     # assignment = {name: None for name in csp.variables.keys()}
     # for k in assignment:

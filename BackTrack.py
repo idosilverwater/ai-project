@@ -42,12 +42,6 @@ class Backtrack(Solver):
                     return True
         return False
 
-    def __reset_assignment(self):
-        """
-        resets the current assignment.
-        :return: None
-        """
-        self.assignment = self.assignment.fromkeys(self.assignment, None)
 
     def solve(self):
         """
@@ -59,7 +53,7 @@ class Backtrack(Solver):
             return False
 
         while res and self.csp.add_constraint():  # while we can still add constraints - continues
-            self.__reset_assignment()
+            self.reset_assignment()
             res = self.backtrack()
         return True
 

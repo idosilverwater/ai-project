@@ -54,7 +54,7 @@ class Constraints:
         """
         # TODO i think visible constraints should have all the HARD constraints from the start.
         self.__generate_hard_const()
-        # self.__generate_soft_const()  # TODO work with this later on.
+        self.__generate_soft_const()  # TODO work with this later on.
 
     def __variable_names_by_shift(self, day, shift_number):
         """
@@ -175,7 +175,8 @@ class Constraints:
         for key in self.__visible_constraints:
             for variable in key:
                 if variable in self.__constraints_by_var:
-                    self.__constraints_by_var[variable] += [item for item in self.__visible_constraints[key]]
+                    print(self.__visible_constraints[key])
+                    self.__constraints_by_var[variable] += [self.__visible_constraints[key]]
                 else:
                     self.__constraints_by_var[variable] = self.__visible_constraints[key]
 
