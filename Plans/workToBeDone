@@ -24,3 +24,16 @@ VariableHeurstic:
 
 Main:
 1. Not yet.
+
+
+
+
+
+Heuristic:
+
+variables.
+variables_constraints_num = {varName:0}
+
+variable.count_constraints
+variable.get_constraints.
+constaint.count_possible_Assignment(var_name, current_assignment)
