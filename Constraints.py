@@ -1,4 +1,5 @@
 from Constraint import *
+import WorkersCSP
 
 # TODO notice statement below:
 """
@@ -40,7 +41,7 @@ class Constraints:
         self.__dictionary_of_possible_assignments = {}  # restarting the dictionary.
 
         # TODO: delete this later, this is for debugging purpose of csp:
-        self.set_constraints_visible()
+        # self.set_constraints_visible()
         self.__set_constraint_by_var()  # todo NOY, should this be called here? (ido)
         pass
 
@@ -52,9 +53,9 @@ class Constraints:
         """
         Generates all of the constraints.
         """
-        # TODO i think visible constraints should have all the HARD constraints from the start.
         self.__generate_hard_const()
-        self.__generate_soft_const()  # TODO work with this later on.
+        self.set_constraints_visible()
+        self.__generate_soft_const()
 
     def __variable_names_by_shift(self, day, shift_number):
         """
@@ -110,7 +111,7 @@ class Constraints:
         return lst
 
     @staticmethod
-    def __add_constraint(dictionary, key, value):
+    def __add_constraint_to_all_constraints_dict(dictionary, key, value):
         """
         Helper function for the hard constraints adding items.
         """
@@ -126,12 +127,13 @@ class Constraints:
         :return:
         """
         # Creates a variable list that is relevant to a certain shift:
-        for i in range(7):  # For each day
-            for j in range(3):  # For each shift.
+        for i in range(WorkersCSP.DAYS):  # For each day
+            for j in range(WorkersCSP.SHIFTS):  # For each shift.
                 relevant_variables = self.__variable_names_by_shift(i, j)
                 possible_assignments = self.__generate_assignments_for_at_least_one_worker(len(relevant_variables))
                 new_constraint = Constraint(relevant_variables, possible_assignments, 0)
-                self.__add_constraint(self.__all_constraints, relevant_variables, new_constraint)
+                self.__add_constraint_to_all_constraints_dict(self.__all_constraints, relevant_variables,
+                                                              new_constraint)
 
     def __generate_non_workable_days(self):
         """
@@ -140,8 +142,9 @@ class Constraints:
         for name in self.__non_workable_shifts:
             var_name = (name,)
             new_constraint = Constraint(var_name, [['False']], 0)  # hard const that cant be assigned.
-            self.__add_constraint(self.__all_constraints, var_name, new_constraint)
-#
+            self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
+
+    #
     def __generate_hard_const(self):
         """
         Generates the hard constraints and updates self.constraints.
@@ -159,26 +162,38 @@ class Constraints:
             var_name = (" ".join(preference),)
             # Adding constraint to all_constraints:
             new_constraint = Constraint(var_name, [[True]], 1)
-            if var_name in self.__all_constraints:
-                raise Exception("Same day cannot be preferred by same individual.")
             # TODO! this dictionary may contain the same day. for now it is an exception. i think i fixed but not sure.
+            self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
 
-            self.__all_constraints[var_name] = new_constraint
+    # def __set_constraint_by_var(self):  # TODO BUG This adds constraints that aren't related.
+    #     """
+    #     After the initialization of visible_constraints
+    #     creates a dictionary with variable names as keys
+    #     and a list of constraints the key is in as a value.
+    #     """
+    #     for key in self.__visible_constraints:
+    #         for variable in key:
+    #             if variable in self.__constraints_by_var:
+    #                 temp = [item for item in self.__visible_constraints[key]]
+    #                 self.__constraints_by_var[variable] += [item for item in self.__visible_constraints[key]]
+    #             else:
+    #                 self.__constraints_by_var[variable] = self.__visible_constraints[key]
 
-    def __set_constraint_by_var(self):
+    def __set_constraint_by_var(self):  # TODO BUG This adds constraints that aren't related.
         """
         After the initialization of visible_constraints
         creates a dictionary with variable names as keys
         and a list of constraints the key is in as a value.
-        :return:
         """
-        for key in self.__visible_constraints:
-            for variable in key:
-                if variable in self.__constraints_by_var:
-                    print(self.__visible_constraints[key])
-                    self.__constraints_by_var[variable] += [self.__visible_constraints[key]]
-                else:
-                    self.__constraints_by_var[variable] = self.__visible_constraints[key]
+        """ for every var we  go over all constraints, and check if the var is in this constraint. if it is: add it. else! fuck off. """
+        for var_name in self.__variable_names:
+            for constraint_list in self.__visible_constraints.values():
+                for constraint in constraint_list:
+                    if var_name in constraint.get_variables():
+                        if var_name not in self.__constraints_by_var:
+                            self.__constraints_by_var[var_name] = [constraint]
+                        else:
+                            self.__constraints_by_var[var_name].append(constraint)
 
     #####################
     # Getters & Setters #
@@ -190,7 +205,7 @@ class Constraints:
         return self.__all_constraints
 
     def set_constraints_visible(self):
-        self.__visible_constraints = self.__all_constraints
+        self.__visible_constraints = dict(self.__all_constraints)
 
     def add_constraint(self):
         variables, constraint = self.__constraint_heuristic(

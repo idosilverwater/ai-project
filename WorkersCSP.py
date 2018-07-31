@@ -3,7 +3,8 @@ from Constraints import *
 from Degree import *
 from MinimumRemainingValue import *
 
-
+DAYS = 3
+SHIFTS = 2
 def parser(lines):
     """
     parse the workers csp file lines into:
@@ -51,8 +52,8 @@ def create_workers_csp(filename):
 
     variables = list()
     for name in names:
-        for d in range(7):
-            for s in range(3):
+        for d in range(DAYS):
+            for s in range(SHIFTS):
                 variables.append(str(name) + " " + str(d) + " " + str(s))
 
     constraints = Constraints(preferences, non_work_shift, variables)
