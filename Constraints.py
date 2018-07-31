@@ -141,7 +141,7 @@ class Constraints:
             var_name = (name,)
             new_constraint = Constraint(var_name, [['False']], 0)  # hard const that cant be assigned.
             self.__add_constraint(self.__all_constraints, var_name, new_constraint)
-
+#
     def __generate_hard_const(self):
         """
         Generates the hard constraints and updates self.constraints.
