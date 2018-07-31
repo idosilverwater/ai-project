@@ -1,6 +1,5 @@
 from Constraints import *
 from Variable import *
-import Degree
 
 # import LeastConstrainingValue
 
@@ -23,7 +22,8 @@ class CSP:
     """
 
     # TODO determine what input the constructor should have.
-    def __init__(self, domain, variables, constraints, forward_checking_flag=False):
+    def __init__(self, domain, variables, constraints,
+                 variable_heuristic_creator, forward_checking_flag=False):
         """
         :param domain: a lists of lists such that list i corresponds with variable name i.
         :param variables: a list of variable names.
@@ -36,7 +36,8 @@ class CSP:
 
         self._generate_variables(variables, domain)
         # TODO need this to be generic!
-        self.variable_heuristic = Degree.Degree(self.variables)  # variable_heuristic_factory(self.variables)
+        self.variable_heuristic = variable_heuristic_creator(self.variables)
+        #  self.variable_heuristic = Degree.Degree(self.variables)  # variable_heuristic_factory(self.variables)
         self.domain_heuristic = None  # domain_heuristic_factory(self.variables, self.constraints)
 
         self._forward_checking_flag = forward_checking_flag
@@ -62,7 +63,8 @@ class CSP:
                         neighbours_names.add(neighbour)
                 if name in neighbours_names:  # I added this if because it isn't guaranteed (ido).
                     neighbours_names.remove(name)
-                self.variables[name].set_neighbours(neighbours_names)  # give a reference to the set.
+                self.variables[name].set_neighbours(
+                    neighbours_names)  # give a reference to the set.
             else:
                 raise Exception("Variable name repeats twice!")
 
@@ -79,7 +81,8 @@ class CSP:
         :param variable_name: the name of the variable to get it's domain value from.
         :return: a list of values to assign.
         """
-        return self.variables[variable_name].get_possible_domain()  # TODO should use the heuristics.
+        return self.variables[
+            variable_name].get_possible_domain()  # TODO should use the heuristics.
         # return self.domain_heuristic.get_order_domain()
 
     def select_unassigned_variable(self):
@@ -87,7 +90,8 @@ class CSP:
         uses heuristic to choose a variable.
         :return: full variable name.
         """
-        return self.variable_heuristic.select_unassigned_variable(self.variables)
+        return self.variable_heuristic.select_unassigned_variable(
+            self.variables)
 
     def assign_variable(self, var_name, value):
         """
@@ -135,8 +139,10 @@ class CSP:
         all_constraints = self.variables[variable_name].get_constraints()
 
         variable_set = variable.get_neighbors()
-        assignment = {variable_name: self.variables[variable_name].get_value() for variable_name in variable_set}
-        assignment[variable_name] = value  # Assignment should have the 'new' value.
+        assignment = {variable_name: self.variables[variable_name].get_value()
+                      for variable_name in variable_set}
+        assignment[
+            variable_name] = value  # Assignment should have the 'new' value.
 
         # TODO try and optimise this whole operation. Maybe with threads or something. (can thread this function)
         return self.__check_constraint_agreement(all_constraints, assignment)
