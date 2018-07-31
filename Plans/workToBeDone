@@ -17,7 +17,8 @@ CSP:
 DomainHeursictics: (includes minimumConflict, LeastConstrainingValue)
 1. Need to make them work. Currently not working.
 2. Wanted to be able to initialize outside of the CSP class. If it happen,
-    we want a factory class that initialize these heuristics - and have same function input so they can be general in the CSP.
+    we want a factory class that initialize these heuristics - and have same function input so they can be general in
+    the CSP.
 
 VariableHeurstic:
 1. same as number 2 in DomainHeuristic.

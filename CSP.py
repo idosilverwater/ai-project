@@ -27,7 +27,7 @@ class CSP:
         """
         :param domain: a lists of lists such that list i corresponds with variable name i.
         :param variables: a list of variable names.
-        :param constraints: a constraints function that coresponds with the names of the variables.
+        :param constraints: a constraints function that corresponds with the names of the variables.
         """
         self.constraints = constraints
         # builds a dictionary of variables.

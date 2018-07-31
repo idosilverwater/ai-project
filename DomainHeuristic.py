@@ -1,16 +1,12 @@
 class DomainHeuristic:
     """This class represents a domain heuristic"""
 
-    # def __init__(self, variables, constraints):
-    #     """Defines a new heuristic"""
-        # self.variables = variables
-        # self.constraints = constraints
+    def __init__(self, constraints, variables, variable):
+        self.constraints = constraints
+        self.variables = variables
+        self.variable = variable
 
-
-    def __init__(self):
-        pass
-
-    def select_value(self, variable):
+    def get_order_domain(self):
         """
         Selects a value for variable according to the heuristic.
         :param variable: The variable we want to assign a value to.
