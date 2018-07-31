@@ -42,7 +42,6 @@ class Backtrack(Solver):
                     return True
         return False
 
-
     def solve(self):
         """
         tries and solve for the csp problem while adding more and more constraints to the problem.

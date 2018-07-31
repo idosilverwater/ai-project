@@ -1,6 +1,9 @@
 from Constraint import *
 import WorkersCSP
 
+# magic Nums.
+DOMAIN_TRUE_VAL = 'True'
+DOMAIN_FALSE_VAL = 'False'
 # TODO notice statement below:
 """
 We have to make the hard constraints more complicated, at the moment we are looking at hard constraint that can be
@@ -87,9 +90,9 @@ class Constraints:
             result_lst.append(current_list)
         else:
             self.__one_worker_helper(number_of_workers, curr + 1, result_lst,
-                                     current_list + ['True'])
+                                     current_list + [DOMAIN_TRUE_VAL])
             self.__one_worker_helper(number_of_workers, curr + 1, result_lst,
-                                     current_list + ['False'])
+                                     current_list + [DOMAIN_FALSE_VAL])
 
     def __generate_assignments_for_at_least_one_worker(self,
                                                        number_of_workers):
@@ -141,7 +144,7 @@ class Constraints:
         """
         for name in self.__non_workable_shifts:
             var_name = (name,)
-            new_constraint = Constraint(var_name, [['False']], 0)  # hard const that cant be assigned.
+            new_constraint = Constraint(var_name, [[DOMAIN_FALSE_VAL]], 0)  # hard const that cant be assigned.
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
 
     #
@@ -161,7 +164,7 @@ class Constraints:
         for preference in self.__preferences:
             var_name = (" ".join(preference),)
             # Adding constraint to all_constraints:
-            new_constraint = Constraint(var_name, [[True]], 1)
+            new_constraint = Constraint(var_name, [[DOMAIN_TRUE_VAL]], 1)
             # TODO! this dictionary may contain the same day. for now it is an exception. i think i fixed but not sure.
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
 

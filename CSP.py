@@ -176,11 +176,10 @@ class CSP:
         :param variable_assignment:
         :return:
         """
-        # We reached this hence we failed.
-        all_constraints_dict = self.constraints.get_all_constraints()
+        all_constraints_dict = self.constraints.get_visible_constraints()
         all_consts_lst = []
-        for key in all_constraints_dict:
-            all_consts_lst += all_constraints_dict[key]
+        for list_of_consts in all_constraints_dict.values():
+            all_consts_lst += list_of_consts
         return self.__check_constraint_agreement(all_consts_lst,
                                                  variable_assignment)
 
