@@ -25,6 +25,10 @@ class Solver:
     # Protected functions Not to be used by other than derivative classes:
     #########################
     def remove_value(self, var):
+        """
+        unassign value in the assignment of this Solver. updates the CSP too.
+        :param var: variable name.
+        """
         self.assignment[var] = None
         self.csp.un_assign_variable(var)
         self.num_of_assigned -= 1
@@ -38,9 +42,19 @@ class Solver:
         return self.num_of_assigned == len(self.assignment)
 
     def assignment_legit(self):
+        """
+        Check after done assigning stuff if the assignment is even possible.s
+        :return:  True if this assignment is good. False o.w.
+        """
         return self.csp.check_assignment(self.assignment)
 
     def assign_value(self, var, value):
+        """
+        assign value in the assignment of this Solver. updates the CSP too.
+        :param var: variable name.
+        :param value:
+        :return:
+        """
         self.assignment[var] = value
         self.csp.assign_variable(var, value)
         self.num_of_assigned += 1

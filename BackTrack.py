@@ -17,16 +17,18 @@ class Backtrack(Solver):
         backtrack algorithm for the given csp problem.
         :return: True if assignment is possible. False otherwise
         """
+        # Base case:
         if self.is_assignment_complete():
             if self.assignment_legit():
                 return True
             return False
-
+        # Body of recursion:
         var_name = None
         for var in self.csp.select_unassigned_variable():  # choose the variable that isn't assigned.
             if self.assignment[var] is None:
                 var_name = var
                 break
+
         if var_name is None:  # TODO remove after tests. (sanity check)
             raise Exception("problem in base check of this function")
 
@@ -63,6 +65,7 @@ class Backtrack(Solver):
 
 
 # class for light check ups.
+# TODO delete.
 class DummyCsp:
     def __init__(self):
         self.variables = ["J1", "J2", "Lels", "LOls"]

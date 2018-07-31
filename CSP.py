@@ -17,7 +17,6 @@ but fuck it, we've got at least 4GB of mem...
 # TODO forward checking.
 
 
-# TODO bug - variables hold string values currently and the constraints hold non string values
 class CSP:
     """
     main CSP handler. should be main authority for handling variables, domains and constraints.
@@ -80,8 +79,8 @@ class CSP:
         :param variable_name: the name of the variable to get it's domain value from.
         :return: a list of values to assign.
         """
-        return self.variables[variable_name].get_possible_domain()
-        # return self.domain_heuristic.get_order_domain(variable_name, self.domains, self.constraints)
+        return self.variables[variable_name].get_possible_domain()  # TODO should use the heuristics.
+        # return self.domain_heuristic.get_order_domain()
 
     def select_unassigned_variable(self):
         """
@@ -102,17 +101,16 @@ class CSP:
         variable.set_value(value)
 
         # add forward checking:
-        pass  # TODO forward checking: should assign value, and update every friend of variable of it's new domain.
-        pass
+        pass  # TODO
 
-    def __forward_check_consistent(self, variable_name):
-        # TODO
-        variable = self.variables[variable_name]
-        # variable.set_affecting_value(value)
-        affected_variables = []
-        for neighbour in variable.get_neighbors():
-            if self.variables[neighbour].is_not_assigned:
-                affected_variables.append(neighbour)
+    # def __forward_check_consistent(self, variable_name):
+    #     # TODO  notice this is a Scetch with no basis..
+    #     variable = self.variables[variable_name]
+    #     # variable.set_affecting_value(value)
+    #     affected_variables = []
+    #     for neighbour in variable.get_neighbors():
+    #         if self.variables[neighbour].is_not_assigned:
+    #             affected_variables.append(neighbour)
 
     def is_consistent(self, variable_name, value):
         """
@@ -135,9 +133,6 @@ class CSP:
         #     self.__forward_check_consitent(variable_name)
 
         all_constraints = self.variables[variable_name].get_constraints()
-        # As suggested by Noy: I take insted the neighbours.
-        # for constraint in all_constraints:
-        #     variable_set.add(constraint.get_variables())
 
         variable_set = variable.get_neighbors()
         assignment = {variable_name: self.variables[variable_name].get_value() for variable_name in variable_set}
@@ -152,6 +147,7 @@ class CSP:
         :return: True if it added, False otherwise ( can return false if nothing to add).
         """
         self.add_constraint()
+        # TODO add True or False return if it is possible to add constraint.
 
     def un_assign_variable(self, variable_name):
         """

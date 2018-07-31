@@ -1,0 +1,26 @@
+Constraints:
+1. didn't check soft constraints to work with BackTrack. possible bug hidden there.
+2. check soft constraints and how to add them up (using heuristic or something), and update the class accordingly.
+    Which means - add  or edit function that adds a constraint to the visible in constraints and informs what constraint
+    was chosen.
+    def add_constraint()
+        // update Constraints instance.
+        // finally:
+        returns chosenConstraint // this is for CSP to update itself accordingly.
+
+CSP:
+1. needs forward checking. // needs to be disscused with every one this is a hard project.
+2. needs arc consistency. // needs to be disscused with every one this is a hard project.
+3. when updating constraints and adding constraints, should be added to the variables too.
+    (function add_constraint in CSP class should add said constraint into the relevant variables.)
+
+DomainHeursictics: (includes minimumConflict, LeastConstrainingValue)
+1. Need to make them work. Currently not working.
+2. Wanted to be able to initialize outside of the CSP class. If it happen,
+    we want a factory class that initialize these heuristics - and have same function input so they can be general in the CSP.
+
+VariableHeurstic:
+1. same as number 2 in DomainHeuristic.
+
+Main:
+1. Not yet.

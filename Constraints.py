@@ -150,7 +150,6 @@ class Constraints:
         """
         self.__at_least_one_worker_a_day()
         self.__generate_non_workable_days()
-        pass
 
     def __generate_soft_const(self):
         """
@@ -178,7 +177,6 @@ class Constraints:
                 if variable in self.__constraints_by_var:
                     self.__constraints_by_var[variable] += [item for item in self.__visible_constraints[key]]
                 else:
-                    # if type(self.__visible_constraints[key]) == type(list()):
                     self.__constraints_by_var[variable] = self.__visible_constraints[key]
 
     #####################
