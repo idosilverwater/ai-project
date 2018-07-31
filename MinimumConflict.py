@@ -6,7 +6,7 @@ import DomainHeuristic
 
 class MinimumConflict(DomainHeuristic):
 
-    def select_value(self, variable):
+    def select_value(self, variables, constraints, variable):
         """
         Selects a value out of variable's domain, that dissatisfies the least amount of constraints
         (that variable is a part of).

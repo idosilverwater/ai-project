@@ -29,14 +29,7 @@ class Constraint:
         if none_counter == len(self.variables):
             return True
         # Gather all possible assignments that have the same value as of the values in the assignment.
-        list_of_assignments = set()
-        for variable_name in assignment:
-            pos = self.get_variable_pos(variable_name)
-            var_value = assignment[variable_name]
-            if pos != -1 and var_value is not None:
-                for possible_assignment in self.possible_values:
-                    if possible_assignment[pos] == var_value:
-                        list_of_assignments.add(tuple(possible_assignment))
+        list_of_assignments = self.__collect_possible_assignments(assignment)
 
         for possible_assignment in list_of_assignments:
             counter = 0
@@ -50,6 +43,17 @@ class Constraint:
             if counter == len(assignment):
                 return True
         return False
+
+    def __collect_possible_assignments(self, assignment):
+        list_of_assignments = set()
+        for variable_name in assignment:
+            pos = self.get_variable_pos(variable_name)
+            var_value = assignment[variable_name]
+            if pos != -1 and var_value is not None:
+                for possible_assignment in self.possible_values:
+                    if possible_assignment[pos] == var_value:
+                        list_of_assignments.add(tuple(possible_assignment))
+        return list_of_assignments
 
     # TODO i think this is totally non relevant, and maybe should be removed.
     # def is_value_legit(self, variable_name, value):
@@ -74,3 +78,11 @@ class Constraint:
 
     def get_possible_values(self):
         return self.possible_values
+
+    def get_number_of_constraints(self, assignment):
+        """
+        returns the number of possible assignments that are still present, given this assignmnet. (inclusive)
+        :param assignment: a dictionary {var_name1: value,......}
+        :return: an integer.
+        """
+        return len(self.__collect_possible_assignments(assignment))
