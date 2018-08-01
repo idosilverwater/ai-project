@@ -1,28 +1,30 @@
 import DomainHeuristic
 
 
-# please notice that this doesn't need an init. the init is in it's parent class DomainHeuristic (ido)
-
-
 class MinimumConflict(DomainHeuristic):
 
-    def select_value(self, variables, constraints, variable):
+    def neighbor_conflict(self, value, variable, current_assignment, constraint):
+        """
+        This returns the amount of domain values that have been blocked off for the neighboring variables.
+        :return:
+        """
+
+        variable_name = variable.get_name()
+        variable_pos = variable.constraint.get_variable_pos(variable_name)
+        current_assignment[variable_pos] = value
+
+        return self.constraint.get_number_of_constraints(current_assignment)
+
+    def get_order_domain(self, variable, current_assignment, constraint):
         """
         Selects a value out of variable's domain, that dissatisfies the least amount of constraints
         (that variable is a part of).
         :param variable: The variable we want to assign a value to.
         :return: A value for variable according to the heuristic
         """
-
-        min_conflicted_value = variable.domain[0]
-        min_conflicts = float('inf')
-        for d in variable.domain:
-            cur = len(variable.conflicted_constraints(d))
-            if min_conflicts > cur:
-                min_conflicted_value = d
-                min_conflicts = cur
-
-        return min_conflicted_value
+        order = self.variable.get_domain()
+        return order.sort(key=partial(self.neighbor_conflict, variable=variable, current_assignment=current_assignment,
+                                      constraint=constraint)) # TODO does this sort needs to be reversed?
 
 
 def minimum_conflict_heuristic_factory(variables, constraints):

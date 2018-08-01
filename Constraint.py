@@ -81,8 +81,16 @@ class Constraint:
 
     def get_number_of_constraints(self, assignment):
         """
-        returns the number of possible assignments that are still present, given this assignmnet. (inclusive)
+        returns the number of possible assignments that are still present, given this assignment. (inclusive)
         :param assignment: a dictionary {var_name1: value,......}
         :return: an integer.
         """
         return len(self.__collect_possible_assignments(assignment))
+
+    def get_remaining_constraints(self, assignment): #This function like the get_number_of_constraints, is used by the domain heuristics
+        """
+        return the possible assignments that are still present this assignment. (inclusive)
+        :param assignment: a dictionary {var_name1: value,......}
+        :return: A list of assignments
+        """
+        return self.__collect_possible_assignments(assignment)
