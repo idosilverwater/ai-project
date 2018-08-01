@@ -38,7 +38,7 @@ def parser(lines):
     return domain, names, new_preferences, non_work_shift
 
 
-def create_workers_csp(filename):
+def create_workers_csp(filename, preferences_include=True):
     """
     gets filename of a workers csp kind and returns a an initialized CSP object
 
@@ -58,6 +58,9 @@ def create_workers_csp(filename):
         for d in range(DAYS):
             for s in range(SHIFTS):
                 variables.append(str(name) + " " + str(d) + " " + str(s))
+
+    if not preferences_include:
+        preferences = list()
 
     constraints = Constraints(preferences, non_work_shift, variables)
     return CSP(domain, variables, constraints, minimum_remaining_value_heuristic_factory)

@@ -3,10 +3,39 @@ from Degree import *  # TODO(Noy): To remove.
 from BackTrack import *
 from LeastConstrainingValue import *
 import sys
+import argparse
 
-algorithms = {'b': Backtrack()}
+parser = argparse.ArgumentParser(description="CSP solver.")
+
+parser.add_argument('filename', type=str, help='Problem filename')
+parser.add_argument('-prob-type', type=str, default='w', nargs=1, help='Problem type')
+parser.add_argument('--no-soft', help='With/out soft constraints', action='store_true')
+parser.add_argument('--algo', default='b', type=str, nargs=1, help='Algorithm to be used by the solver')
+
+
+algorithms = {'b': Backtrack}
+
+def welcome():
+    print("Welcome to the CSP solver problem.")
+    print("Let's see if we can solve your problem")
+
+def worker_solve(filename, problem_type, algo, preferences):
+    filename = sys.argv[1]
+    csp = create_workers_csp(filename, preferences)
+    algorithm = algorithms[algo](csp)
+    if algorithm.backtrack(): # TODO need the calling for the function to be generic (instead of "backtrack" "run")
+        print("Satisfiable")
+        print(algorithm.get_assignment())
+    else:
+        print("Unsatisfiable")
+    print("Done")
+
 
 if __name__ == "__main__":
+    args = parser.parse_args()
+    print(args)
+
+    welcome()
 
     if len(sys.argv) == 1: # If no arguments are given we are in test mode
         # csp = create_workers_csp("examples/example1.csp")
@@ -24,14 +53,8 @@ if __name__ == "__main__":
         ##############
         import time
 
-        csp = create_workers_csp("examples/example2.csp")
-        b = Backtrack(csp)
-        if b.backtrack():
-            print("True")
-            print(b.get_assignment())
-        else:
-            print("False")
-        print("Done")
+        worker_solve("examples/example2.csp")
+
         # print(csp.is_consistent('Sarah 6 1', 'True'))
         # assignment = {name: None for name in csp.variables.keys()}
         # for k in assignment:
@@ -42,17 +65,5 @@ if __name__ == "__main__":
         # csp.check_assignment(assignment)
         # print(time.time() - a)
         # print(c)
-    elif len(sys.argv) == 4 and (sys.argv[2] == "-w"):
-        filename = sys.argv[1]
-        csp = create_workers_csp(filename)
-        algorithm = algorithms[sys.argv[3][1]]
-        if algorithm.backtrack(): # TODO need the calling for the function to be generic (instead of "backtrack" "run")
-            print("Satisfiable")
-            print(algorithm.get_assignment())
-        else:
-            print("Unsatisfiable")
-        print("Done")
-    elif len(sys.argv) == 2 and (sys.argv[1] == "--help" or sys.argv[1] == '-h'):
-        print("help message, need to make it print man page")
     else:
-        print("For goodness' sake, enter the right amount of arguments...")
+        worker_solve(args.filename, args.prob_type[0], args.algo[0], args.no_soft)
