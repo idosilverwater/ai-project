@@ -1,15 +1,18 @@
 <html>
     <head>
         <title>CSP Solver</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
-        <center>
-            <h1>CSP Solver</h1>
-            <h2>Final project by</h2>
-            <h2>Noy Stern-Licht    Jonathan Weiss    Ido-Moshe Silverwater</h2>
-        </center>
+        <div id="title">
+            <center>
+                <h1>CSP Solver</h1>
+                <h2>Final project by</h2>
+                <h2>Noy Stern-Licht  &emsp;  Jonathan Weiss  &emsp;  Ido-Moshe Silverwater</h2>
+            </center>
+        </div>
 
-        <div>
+        <div id="content">
             <h3>Introduction</h3>
             <p>In workplaces some people might want to work at certain times and not in
                 others, many times their wishes cannot be fullfilled but we are determined
@@ -40,8 +43,8 @@
                         dispose of them. Although we do this greedily we do use a heuristic, that might try to add them
                         in an order that will insure maximum fullfillment.</p>
                 <h4> WalkSAT </h4>
-                    <p> </p>
-
+                    <p> All constraints are present from the very begining (not adding one by one like the backtrack).
+                        The WalkSAT will attempt to satisfy as many worker preferences as it can.</p>
             <h3>Results</h3>
             <p></p>
             <h3>Conclusions</h3>

@@ -1,0 +1,18 @@
+body {
+    background-color: #a9cce3;
+}
+
+
+#content, #title {
+    background-color: #D6EAF8;
+
+    margin-top: 5%;
+    margin-bottom: 5%;
+    margin-left: 5%;
+    margin-right: 5%;
+
+    padding-top: 5%;
+    padding-bottom: 5%;
+    padding-left: 5%;
+    padding-right: 5%;
+}
