@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>CSP Solver</title>
+    </head>
+    <body>
+        <center>
+            <h1>CSP Solver</h1>
+            <h2>Final project by</h2>
+            <h2>Noy Stern-Licht    Jonathan Weiss    Ido-Moshe Silverwater</h2>
+        </center>
+
+        <div>
+            <h3>Introduction</h3>
+            <p>In workplaces some people might want to work at certain times and not in
+                others, many times their wishes cannot be fullfilled but we are determined
+                to fullfill as many worker preferences as we can.</p>
+
+            <p>We are (naturally) going to solve this problem using CSP techniques we have
+                learned in class.</p>
+
+            <h3>Approach and Method</h3>
+                <p> First build a general case CSP solver, and then feed it with specific
+                    problems (Specific problems would also entail implementing the supplied
+                    interface).
+                <h4>Worker shift satisfaction</h4>
+                <p> There are a couple of different constraint types.
+                    The first are hard constraints, these are constraints that must be satisfied,
+                    In our case these are one to two people at each shift. The second is also a hard
+                    constraint, That represents the workers rest days. Third is a soft constraints,
+                    a constraint that we strive to satisfy but are not obligated to.</p>
+
+                <p>We are going to try and solve this problem using a few algorithms:</p>
+                <ul>
+                    <li> Backtracking </li>
+                    <li> WalkSAT (adjusted to our problem) </li>
+                </ul>
+                <h4> Backtracking </h4>
+                    <p> The algorithm is greedy, in the sense that after it satisfies the hard constraints, it will
+                        add one by one the soft constraints, if they are satisfied then we keep them otherwise we
+                        dispose of them. Although we do this greedily we do use a heuristic, that might try to add them
+                        in an order that will insure maximum fullfillment.</p>
+                <h4> WalkSAT </h4>
+                    <p> </p>
+
+            <h3>Results</h3>
+            <p></p>
+            <h3>Conclusions</h3>
+            <p></p>
+            <h3>Additional Information</h3>
+            <p></p>
+            <h3>References</h3>
+            <p></p>
+        </div>
+
+    </body>
+</html>
