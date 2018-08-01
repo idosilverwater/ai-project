@@ -2,9 +2,12 @@ from CSP import CSP
 from Constraints import *
 from Degree import *
 from MinimumRemainingValue import *
+import magicNums
 
-DAYS = 3
-SHIFTS = 2
+DAYS = magicNums.DAYS_IN_WEEK
+SHIFTS = magicNums.SHIFTS_IN_DAY
+
+
 def parser(lines):
     """
     parse the workers csp file lines into:
