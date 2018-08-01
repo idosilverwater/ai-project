@@ -1,6 +1,33 @@
 from Solver import Solver
 import random
 
+"""
+Literal inner class. // contains: assignment_value, var_name that it is tied too, isNot - is this literal has a 
+                not over it, formula_val - determined by assignment with isNot.
+                function: flip_self()
+TreeNode: left, right, value, is_leaf. //  value = literal object or AND_VAL = 'And' or OR_VAL = 'or'.  means leaf, 
+                                            or type of operation.
+                                             
+TreeBuilder -> Contains TreeNodes, and constraints.  using constraints will build a tree of clauses.
+            __build_sub_tree_of_clause - build one tree for a single clause given. (returns a tree node of clauses)
+            __build_constraint_sub_claus()
+            build_tree() -> concat every clause by an and node. return tree.
+
+CnfConverter(Tree) returns list of lists. [(This is and between the lists)[(this is or between the lists)l1,l2,l3],...
+                                                        [l4,l2,1]and[not()]...[...]] = Formula
+evaluator(Formula) // given formula we know every litteral and we should check the fricken values of it.
+WalkSat:
+    attributes: 
+        TreeBuilder
+        dict_of_var_name -> [literals list]
+    funcs:
+        flip_literal(literal) // should know how to flip all related literals. (using  dict_of_var_name)
+        choose_clause_randomly(list_of_clauses)
+        cnfConverter() -> converts the result of build_tree(), using formula to cnf algorithm.
+        walksat() -> runs walkSat over the formula given by cnfConverter.
+        choose_which_literal_to_flip() // done greedily.
+"""
+
 
 class WalkSat(Solver):
     """

@@ -168,27 +168,15 @@ class Constraints:
             # TODO! this dictionary may contain the same day. for now it is an exception. i think i fixed but not sure.
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
 
-    # def __set_constraint_by_var(self):  # TODO BUG This adds constraints that aren't related.
-    #     """
-    #     After the initialization of visible_constraints
-    #     creates a dictionary with variable names as keys
-    #     and a list of constraints the key is in as a value.
-    #     """
-    #     for key in self.__visible_constraints:
-    #         for variable in key:
-    #             if variable in self.__constraints_by_var:
-    #                 temp = [item for item in self.__visible_constraints[key]]
-    #                 self.__constraints_by_var[variable] += [item for item in self.__visible_constraints[key]]
-    #             else:
-    #                 self.__constraints_by_var[variable] = self.__visible_constraints[key]
-
     def __set_constraint_by_var(self):  # TODO BUG This adds constraints that aren't related.
         """
         After the initialization of visible_constraints
         creates a dictionary with variable names as keys
         and a list of constraints the key is in as a value.
         """
-        """ for every var we  go over all constraints, and check if the var is in this constraint. if it is: add it. else! fuck off. """
+        """ 
+        for every var we  go over all constraints, and check if the var is in this constraint. if it is: add it. else! fuck off. 
+        """
         for var_name in self.__variable_names:
             for constraint_list in self.__visible_constraints.values():
                 for constraint in constraint_list:
