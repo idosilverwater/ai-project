@@ -1,5 +1,6 @@
 from Solver import Solver
 import random
+from FormulaTree import *
 import magicNums
 
 """
@@ -30,51 +31,6 @@ WalkSat:
 """
 
 
-class Literal:
-    """
-    Literal class, represents a literal in a CNF clause.
-    """
-
-    def __init__(self, variable_name_associated_with, is_negated):
-        self.assignment_value = None  # the value we will assign to the variable.
-        self.literal_value = None  # the value we check when we want to see if a formula is satisfied.
-        self.var_name = variable_name_associated_with  # the var name this literal is tied to.
-        self.is_negated = is_negated  # is this literal negated.
-
-    def assign_value(self, assignment_value):
-        """
-        USED BY WALK-SAT ONLY.
-        assigns a value, should be used only when we wish to start using the literal.
-        :param assignment_value: one of the domain False or domain true values.
-        """
-        # TODO delete assertion when we are done testing.
-        assert (assignment_value == magicNums.DOMAIN_TRUE_VAL or assignment_value == magicNums.DOMAIN_FALSE_VAL)
-        self.assignment_value = assignment_value
-        if self.is_negated:
-            if self.assignment_value == magicNums.DOMAIN_TRUE_VAL:
-                self.literal_value = magicNums.DOMAIN_FALSE_VAL
-            else:
-                self.literal_value = magicNums.DOMAIN_TRUE_VAL
-        else:
-            self.literal_value = assignment_value
-
-    def value(self):
-        """
-        checks whether this literal is True or False after negation too.
-        """
-        return self.literal_value == magicNums.DOMAIN_TRUE_VAL
-
-    def flip_self(self):
-        """
-        Flips the value of this literal.
-        :return:
-        """
-        if self.assignment_value == magicNums.DOMAIN_TRUE_VAL:
-            self.assignment_value(magicNums.DOMAIN_FALSE_VAL)
-        else:
-            self.assignment_value(magicNums.DOMAIN_FALSE_VAL)
-
-
 class WalkSat(Solver):
     """
     a Walksat based solver for csp problems.
@@ -89,6 +45,7 @@ class WalkSat(Solver):
         self.__p = random_value
         self.__variable_names = list(self.csp.variables)  # a list of all names.
         self.__max_flips = max_flips
+        self.__formula_tree = FormulaTree(csp.constraints.get_all_constraints())
 
     def __flip_coin(self):
         r = random.random()
