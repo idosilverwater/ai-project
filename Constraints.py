@@ -1,9 +1,10 @@
 from Constraint import *
 import WorkersCSP
+import magicNums
 
 # magic Nums.
-DOMAIN_TRUE_VAL = 'True'
-DOMAIN_FALSE_VAL = 'False'
+DOMAIN_TRUE_VAL = magicNums.DOMAIN_TRUE_VAL
+DOMAIN_FALSE_VAL = magicNums.DOMAIN_FALSE_VAL
 # TODO notice statement below:
 """
 We have to make the hard constraints more complicated, at the moment we are looking at hard constraint that can be
@@ -130,8 +131,8 @@ class Constraints:
         :return:
         """
         # Creates a variable list that is relevant to a certain shift:
-        for i in range(WorkersCSP.DAYS):  # For each day
-            for j in range(WorkersCSP.SHIFTS):  # For each shift.
+        for i in range(magicNums.DAYS_IN_WEEK):  # For each day
+            for j in range(magicNums.SHIFTS_IN_DAY):  # For each shift.
                 relevant_variables = self.__variable_names_by_shift(i, j)
                 possible_assignments = self.__generate_assignments_for_at_least_one_worker(len(relevant_variables))
                 new_constraint = Constraint(relevant_variables, possible_assignments, 0)
