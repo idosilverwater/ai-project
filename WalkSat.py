@@ -219,17 +219,10 @@ class WalkSat(Solver):
         if self.is_satisfied():
             return self.assignment #TODO change to the expected form of assignment (currently dictionary {varName: val})
         else:
-            while not self.is_satisfied():
+            while not self.is_satisfied(): # TODO not always satisfiable. how do we know when to stop
                 clause = self.random_clause()
                 if self.__flip_coin():
                     self.__flip_random_variable(clause)
                 else:
                     self.__flip_most_satisfying()
-
-
-
-
-
-
-
 
