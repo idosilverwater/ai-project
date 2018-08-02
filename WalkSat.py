@@ -39,7 +39,7 @@ class WalkSat(Solver):
 
     def __init__(self, csp, random_value=0.5, max_flips=1000):
         """
-        excepts a csp problem initialized.
+        accepts a csp problem initialized.
         """
         super(WalkSat, self).__init__(csp)
         self.csp.make_visible()
@@ -53,13 +53,22 @@ class WalkSat(Solver):
 
 
     def __flip_coin(self):
+        """
+        Return True with probability __p otherwise False.
+        :return:
+        """
         r = random.random()
         return r < self.__p
 
-    def set_max_flips(self, max_flips):
+    def set_max_flips(self, max_flips): # TODO is this necissary?
         self.__max_flips = max_flips
 
     def __choose_random_variable(self, clause):
+        """
+        Choose random variable from clause.
+        :param clause:
+        :return:
+        """
         literal = random.choice(clause)
         return literal.var_name
 
@@ -91,7 +100,11 @@ class WalkSat(Solver):
         return True
 
     def __flip_value(self, variable_name):
-        """ assign the opposite value."""
+        """
+        Flip the value (True to False and False to True) of the variable named variable_name
+        :param variable_name:
+        :return:
+        """
         new_val = not self.assignment[variable_name]
         self.remove_value(variable_name) #TODO ask if this has to be thrown out...
         self.assign_value(variable_name, new_val)
@@ -99,21 +112,36 @@ class WalkSat(Solver):
 
     def random_assignment(self):
         """
-        Tries to put random assignment, if there is no possible assignment returns false.
+        Randomly assign each variable a value (either True or False).
         :return:
         """
         for name in self.__variable_names:
             self.assign_value(name, self.__flip_coin())
 
     def assign_value(self, variable_name, value):
+        """
+        Assign the value (value) to all literals of the variable named variable_name.
+        :param variable_name:
+        :param value:
+        :return:
+        """
         self.assignment[variable_name] = value
         for literal in self.__formula_tree.get_literals_related_to_var(variable_name):
             literal.assign_value(value)
 
     def cnfConverter(self):
+        """
+        :return: Convert the Formula tree (which represents a CSP problem) to CNF form.
+        """
         return self.recursiveCNFConverter(self.__formula_tree.get_root())
 
     def recursiveCNFConverter(self, node):
+        """
+        Given tree that represents a csp problem. (a csp with literals and *only* AND and OR operators)
+        convert to cnf form. according to the algorithm presented at: http://cs.jhu.edu/~jason/tutorials/convert-to-CNF
+        :param node:
+        :return:
+        """
         if node.is_leaf:
             return [[node.value]]
 
@@ -129,30 +157,23 @@ class WalkSat(Solver):
                     new.append(p + q)
             return new
 
-    def solve(self):
-        """
-        tries and solve for the csp problem while adding more and more constraints to the problem.
-        :return: False if there isn't a solution, True otherwise.
-        """
-        self.random_assignment()
-        for i in range(self.__max_flips):
-            if self.is_satisfied():
-                return True
-            if self.__flip_coin():
-                variable_name = self.__choose_random_variable()
-                self.__flip_value(variable_name)
-            else:
-                self.__greedy_walksat()
-        return False
-
     def random_clause(self):
+        """
+        :return: return uniformly picked clause
+        """
         return random.choice(self.clauses)
 
     def __flip_most_satisfying(self):
+        """
+        Flip the variable who's flipping will satisfy the most clauses
+        """
         variable_name = self.__most_satisfying()
         self.__flip_value(variable_name)
 
     def __most_satisfying(self):
+        """
+        :return: the variable who's flipping will satisfy the most clauses.
+        """
 
         max_var = self.__variable_names[0]
         max_num = self.__num_satisfied(max_var)
@@ -166,6 +187,11 @@ class WalkSat(Solver):
         return max_var
 
     def __num_satisfied(self, variable_name):
+        """
+        Checks how much clauses are satisfied after flipping this variables value.
+        :param variable_name: the variable to flip.
+        :return: the amount of satisfied clauses after flipping.
+        """
         self.__flip_value(variable_name)
 
         count = 0
@@ -184,6 +210,11 @@ class WalkSat(Solver):
         return count
 
     def solve(self):
+        """
+        The WalkSAT algorithm
+        :return:
+        """
+
         self.random_assignment()
         if self.is_satisfied():
             return self.assignment #TODO change to the expected form of assignment (currently dictionary {varName: val})
