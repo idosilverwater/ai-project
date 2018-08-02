@@ -1,6 +1,7 @@
 from Solver import Solver
 import random
 from FormulaTree import *
+import numpy as np
 import magicNums
 
 """
@@ -47,6 +48,10 @@ class WalkSat(Solver):
         self.__max_flips = max_flips
         self.__formula_tree = FormulaTree(csp.constraints.get_all_constraints())
 
+        self.assignment = dict()
+        self.clauses = self.cnfConverter()
+
+
     def __flip_coin(self):
         r = random.random()
         return r < self.__p
@@ -54,32 +59,43 @@ class WalkSat(Solver):
     def set_max_flips(self, max_flips):
         self.__max_flips = max_flips
 
-    def __choose_random_variable(self):
-        position = random.randint(self.__variable_names)
-        return self.__variable_names[position]
+    def __choose_random_variable(self, clause):
+        literal = random.choice(clause)
+        return literal.var_name
+
+    def __flip_random_variable(self, clause):
+        """
+        Flip random variable from clause
+        :param clause:
+        :return:
+        """
+
+        variable = self.__choose_random_variable(clause)
+        self.__flip_value(variable)
 
     def is_satisfied(self):
         """
         checks if model is satisfied, which means it checks the assignment over the csp result.
         :return: True or False
         """
-        for name in self.__variable_names:
-            if not self.csp.variables[name].is_satisfied():
+
+        for clause in self.clauses:
+            flag = False
+            for literal in clause:
+                if literal.value:
+                    flag = True
+                    break
+            if not flag:
                 return False
+
         return True
 
     def __flip_value(self, variable_name):
         """ assign the opposite value."""
         new_val = not self.assignment[variable_name]
-        self.remove_value(variable_name)
+        self.remove_value(variable_name) #TODO ask if this has to be thrown out...
         self.assign_value(variable_name, new_val)
 
-    def __greedy_walksat(self):
-        """
-        Should choose a variable and a value to assign to it. such that it minimises the amount of
-        :return:
-        """
-        pass  # TODO
 
     def random_assignment(self):
         """
@@ -88,6 +104,11 @@ class WalkSat(Solver):
         """
         for name in self.__variable_names:
             self.assign_value(name, self.__flip_coin())
+
+    def assign_value(self, variable_name, value):
+        self.assignment[variable_name] = value
+        for literal in self.__formula_tree.get_literals_related_to_var(variable_name):
+            literal.assign_value(value)
 
     def cnfConverter(self):
         return self.recursiveCNFConverter(self.__formula_tree.get_root())
@@ -108,9 +129,6 @@ class WalkSat(Solver):
                     new.append(p + q)
             return new
 
-    def walk_sat(self):
-        clauses = self.cnfConverter()
-
     def solve(self):
         """
         tries and solve for the csp problem while adding more and more constraints to the problem.
@@ -126,3 +144,61 @@ class WalkSat(Solver):
             else:
                 self.__greedy_walksat()
         return False
+
+    def random_clause(self):
+        return random.choice(self.clauses)
+
+    def __flip_most_satisfying(self):
+        variable_name = self.__most_satisfying()
+        self.__flip_value(variable_name)
+
+    def __most_satisfying(self):
+
+        max_var = self.__variable_names[0]
+        max_num = self.__num_satisfied(max_var)
+
+        for variable_name in self.__variable_names:
+            cur = self.__num_satisfied(variable_name)
+            if  cur > max_num:
+                max_num = cur
+                max_var = variable_name
+
+        return max_var
+
+    def __num_satisfied(self, variable_name):
+        self.__flip_value(variable_name)
+
+        count = 0
+
+        for clause in self.clauses:
+            flag = False
+            for literal in clause:
+                if literal.value:
+                    flag = True
+                    break
+            if flag:
+                count += 1
+
+        self.__flip_value(variable_name) # flip back
+
+        return count
+
+    def solve(self):
+        self.random_assignment()
+        if self.is_satisfied():
+            return self.assignment #TODO change to the expected form of assignment (currently dictionary {varName: val})
+        else:
+            while not self.is_satisfied():
+                clause = self.random_clause()
+                if self.__flip_coin():
+                    self.__flip_random_variable(clause)
+                else:
+                    self.__flip_most_satisfying()
+
+
+
+
+
+
+
+
