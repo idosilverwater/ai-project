@@ -1,4 +1,13 @@
+###########
+# Imports #
+###########
 import magicNums
+
+#############
+# Constants #
+#############
+AND = "&"
+OR = "|"
 
 
 class FormulaTree:
@@ -32,10 +41,30 @@ class FormulaTree:
         """
         Generates a list of literal objects for a possible assignment.
         :param variable_names: The names of the variables related to the literals
-        :param assignment: ?
+        :param assignment: A tuple containing "magicNums.DOMAIN_FALSE_VAL" or "magicNums.DOMAIN_TRUE_VAL"
         :return: a list of literal objects: [literal1, literal2,.....,literal300]
         """
-        pass
+        literals = []
+        is_negated = False
+
+        for i, variable in enumerate(variable_names):
+            if assignment[i] == magicNums.DOMAIN_FALSE_VAL:
+                is_negated = True
+            literals.append(self.Literal(variable, is_negated))
+            is_negated = False
+        return literals
+
+    def __concatenate(self, nodes, operation):
+        """
+        This method builds a  binary tree such that "nodes" are the leafs, and the ancestors are nodes that have the
+        value "operation".
+        :param nodes: A list of nodes to bi concatenated.
+        :param operation: Either "And" or "Or"
+        :return: a pointer to the tree.
+        """
+        # curr_root = None
+        # for node in nodes:
+
 
     def __build_sub_tree_of_possible_assignment(self, assignment, variable_names):
         """
@@ -51,8 +80,10 @@ class FormulaTree:
         :return: A pointer to the root of the tree.
         """
         clauses = []
-        for constraint in self.__constraints:
-            clauses.append(self.__build_sub_tree_of_constraint(constraint))
+        for key in self.__constraints:
+            for constraint in self.__constraints[key]:
+                clauses.append(self.__build_sub_tree_of_constraint(constraint))
+        return 0  # For now
 
     ##################
     # Public Methods #
@@ -127,3 +158,13 @@ class FormulaTree:
                 self.assignment_value(magicNums.DOMAIN_FALSE_VAL)
             else:
                 self.assignment_value(magicNums.DOMAIN_FALSE_VAL)
+
+
+#########
+# Tests #
+#########
+from Constraint import *
+
+constraints = []
+c1 = Constraint(["(vividish 1 0)", "(vividisha 0, 0)"], (magicNums.DOMAIN_FALSE_VAL, magicNums.DOMAIN_TRUE_VAL), 1)
+Tree = FormulaTree(constraints)
