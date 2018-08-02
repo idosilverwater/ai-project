@@ -6,8 +6,8 @@ import magicNums
 #############
 # Constants #
 #############
-AND = "&"
-OR = "|"
+AND = magicNums.AND
+OR = magicNums.OR
 
 
 class FormulaTree:
@@ -28,14 +28,34 @@ class FormulaTree:
     # Private Methods #
     ###################
 
-    def __build_sub_tree_of_constraint(self, constraint):
+    def __concatenate(self, nodes, operation):
         """
-        This method builds a sub tree representing a single constraint. A constraint is of the form:
-        "possible_assignment 1 | possible_assignment 2| .....| possible_assignment n
-        :return: A pointer to this tree.
+        This method builds a  binary tree such that "nodes" are the leafs, and the ancestors are nodes that have the
+        value "operation".
+        :param nodes: A list of nodes to bi concatenated.
+        :param operation: Either "And" or "Or"
+        :return: a pointer to the tree.
         """
-        possible_assinment = constraint.get_possible_values()
-        variable_names = constraint.get_variables()
+        if len(nodes) < 1:
+            raise ValueError("nodes is empty")
+
+        curr_root = nodes[0]
+        for i in range(len(nodes) - 1):
+            curr_root = self.Node(curr_root, nodes[i + 1], operation, False)
+
+        return curr_root
+
+    def __create_nodes_from_literals(self, literals):
+        """
+        This method generates a list of nodes out of a list of literals.
+        :param literals: A list of literal objects.
+        :return: A list of nodes corresponding to the list of literals.
+        """
+        nodes = []
+        for literal in literals:
+            new_node = self.Node(None, None, literal, True)
+            nodes.append(new_node)
+        return nodes
 
     def __generate_literals_for_assignment(self, variable_names, assignment):
         """
@@ -54,18 +74,6 @@ class FormulaTree:
             is_negated = False
         return literals
 
-    def __concatenate(self, nodes, operation):
-        """
-        This method builds a  binary tree such that "nodes" are the leafs, and the ancestors are nodes that have the
-        value "operation".
-        :param nodes: A list of nodes to bi concatenated.
-        :param operation: Either "And" or "Or"
-        :return: a pointer to the tree.
-        """
-        # curr_root = None
-        # for node in nodes:
-
-
     def __build_sub_tree_of_possible_assignment(self, assignment, variable_names):
         """
         This method builds a sub tree represents a possible assignment. A possible assignment is of the form:
@@ -73,17 +81,47 @@ class FormulaTree:
         :return: A pointer to this tree.
         """
         literals = self.__generate_literals_for_assignment(variable_names, assignment)
+        literal_nodes = self.__create_nodes_from_literals(literals)
+
+        curr_root = self.__concatenate(literal_nodes, AND)
+
+        return curr_root
+
+    def __build_sub_tree_of_constraint(self, constraint):
+        """
+        This method builds a sub tree representing a single constraint. A constraint is of the form:
+        "possible_assignment 1 | possible_assignment 2| .....| possible_assignment n
+        :return: A pointer to this tree.
+        """
+        possible_assignments = constraint.get_possible_values()
+        variable_names = constraint.get_variables()
+        roots_of_assignment_trees = []
+
+        for assignment in possible_assignments:
+            root_of_assignment = self.__build_sub_tree_of_possible_assignment(assignment, variable_names)
+            roots_of_assignment_trees.append(root_of_assignment)
+
+        curr_root = self.__concatenate(roots_of_assignment_trees, OR)
+        return curr_root
 
     def __build_tree(self):
         """
-        Builds a tree representing a formula
-        :return: A pointer to the root of the tree.
+        Builds a tree representing a formula. Formula is of the form: clause1 & clause2 & .... & clause m.
         """
         clauses = []
         for key in self.__constraints:
             for constraint in self.__constraints[key]:
                 clauses.append(self.__build_sub_tree_of_constraint(constraint))
-        return 0  # For now
+
+        return self.__concatenate(clauses, AND)
+
+    @staticmethod
+    def __print_tree(tree_node, lst):
+        if tree_node is None:
+            return
+        FormulaTree.__print_tree(tree_node.left, lst)
+        lst.append(tree_node.value)
+        FormulaTree.__print_tree(tree_node.right, lst)
 
     ##################
     # Public Methods #
@@ -99,6 +137,12 @@ class FormulaTree:
         :return: A list of literal objects
         """
         return self.__literals_by_variable_name[variable_name]
+
+    def print_self(self):
+        lst = []
+        self.__print_tree(self.__root, lst)
+        print(self.__root.value)
+        print(lst)
 
     ###############
     # Sub Classes #
@@ -159,12 +203,19 @@ class FormulaTree:
             else:
                 self.assignment_value(magicNums.DOMAIN_FALSE_VAL)
 
-
+        def __repr__(self):
+            if self.is_negated:
+                return "not(" + str(self.var_name) + ")"
+            return self.var_name
 #########
 # Tests #
 #########
-from Constraint import *
-
-constraints = []
-c1 = Constraint(["(vividish 1 0)", "(vividisha 0, 0)"], (magicNums.DOMAIN_FALSE_VAL, magicNums.DOMAIN_TRUE_VAL), 1)
-Tree = FormulaTree(constraints)
+# from Constraint import *
+#
+# constraints = {}
+# c2 = Constraint(["(vividish 1 0)", "(vividisha 0, 0)"], [(magicNums.DOMAIN_FALSE_VAL, magicNums.DOMAIN_TRUE_VAL), (magicNums.DOMAIN_FALSE_VAL, magicNums.DOMAIN_FALSE_VAL)], 1)
+# c1 = Constraint(["(vividish 1 1)"], [(magicNums.DOMAIN_FALSE_VAL,), (magicNums.DOMAIN_TRUE_VAL,)], 1)
+# constraints[("(vividish 1 0)", "(vividisha 0, 0)")] = [c2]
+# constraints[("(vividish 1 1)")] = [c1]
+# tree = FormulaTree(constraints)
+# tree.print_self()
