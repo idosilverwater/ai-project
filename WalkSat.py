@@ -90,11 +90,26 @@ class WalkSat(Solver):
             self.assign_value(name, self.__flip_coin())
 
     def cnfConverter(self):
-        pass  # TODO
+        return self.recursiveCNFConverter(self.__formula_tree.get_root())
+
+    def recursiveCNFConverter(self, node):
+        if node.is_leaf:
+            return [[node.value]]
+
+        right = self.recursiveCNFConverter(self, node.right)
+        left = self.recursiveCNFConverter(self, node.left)
+
+        if node.value == AND:
+            return left + right
+        if node.value == OR:
+            new = list()
+            for p in left:
+                for q in right:
+                    new.append(p + q)
+            return new
 
     def walk_sat(self):
         clauses = self.cnfConverter()
-
 
     def solve(self):
         """
