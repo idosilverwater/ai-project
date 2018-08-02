@@ -15,16 +15,29 @@ body {
     margin-bottom: 5px;
 }
 
-#content, #title {
+div {
     background-color: #D6EAF8;
+}
 
-    margin-top: 5%;
-    margin-bottom: 5%;
+#title, #content{
+    margin-top: 2%;
+    margin-bottom: 2%;
     margin-left: 5%;
     margin-right: 5%;
 
-    padding-top: 5%;
-    padding-bottom: 5%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+#header {
+    margin-top: 5%;
+    margin-bottom: 2%;
+    margin-left: 5%;
+    margin-right: 5%;
+
+    padding-bottom: 55px;
     padding-left: 5%;
     padding-right: 5%;
 }
