@@ -60,7 +60,7 @@ class WalkSat(Solver):
         r = random.random()
         return r < self.__p
 
-    def set_max_flips(self, max_flips): # TODO is this necessary?
+    def set_max_flips(self, max_flips):
         self.__max_flips = max_flips
 
     def __choose_random_variable(self, clause):
@@ -106,7 +106,7 @@ class WalkSat(Solver):
         :return:
         """
         new_val = not self.assignment[variable_name]
-        self.remove_value(variable_name) #TODO ask if this has to be thrown out...
+        # self.remove_value(variable_name) #TODO ask if this has to be thrown out...
         self.assign_value(variable_name, new_val)
 
 
@@ -212,12 +212,13 @@ class WalkSat(Solver):
     def solve(self):
         """
         The WalkSAT algorithm
-        :return:
+
+        :return: dictionary of assignments (of the form {varName: val})
         """
 
         self.random_assignment()
         if self.is_satisfied():
-            return self.assignment #TODO change to the expected form of assignment (currently dictionary {varName: val})
+            return self.assignment
         else:
             for i in range(self.__max_flips):
                 clause = self.random_clause()
