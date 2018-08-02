@@ -15,7 +15,7 @@ body {
     margin-bottom: 5px;
 }
 
-div {
+div.container {
     background-color: #D6EAF8;
 }
 
@@ -40,4 +40,15 @@ div {
     padding-bottom: 55px;
     padding-left: 5%;
     padding-right: 5%;
+}
+
+#end {
+    font-size: 9pt;
+    text-align: center;
+    color: gray;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
