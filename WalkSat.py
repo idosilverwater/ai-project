@@ -60,7 +60,7 @@ class WalkSat(Solver):
         r = random.random()
         return r < self.__p
 
-    def set_max_flips(self, max_flips): # TODO is this necissary?
+    def set_max_flips(self, max_flips): # TODO is this necessary?
         self.__max_flips = max_flips
 
     def __choose_random_variable(self, clause):
@@ -219,7 +219,7 @@ class WalkSat(Solver):
         if self.is_satisfied():
             return self.assignment #TODO change to the expected form of assignment (currently dictionary {varName: val})
         else:
-            while not self.is_satisfied(): # TODO not always satisfiable. how do we know when to stop
+            for i in range(self.__max_flips):
                 clause = self.random_clause()
                 if self.__flip_coin():
                     self.__flip_random_variable(clause)
