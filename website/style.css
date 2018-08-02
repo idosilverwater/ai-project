@@ -46,4 +46,9 @@ div.container {
     font-size: 9pt;
     text-align: center;
     color: gray;
+
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
