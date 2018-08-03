@@ -57,6 +57,17 @@ class FormulaTree:
             nodes.append(new_node)
         return nodes
 
+    def __add_to_dictionary(self, literal, variable_name):
+        """
+        Adds literal to self.__literals_by_variable_name
+        :param literal: a literal object
+        :param variable_name: A variable name
+        """
+        if variable_name not in self.__literals_by_variable_name:
+            self.__literals_by_variable_name[variable_name] = [literal]
+        else:
+            self.__literals_by_variable_name[variable_name] += [literal]
+
     def __generate_literals_for_assignment(self, variable_names, assignment):
         """
         Generates a list of literal objects for a possible assignment.
@@ -70,7 +81,9 @@ class FormulaTree:
         for i, variable in enumerate(variable_names):
             if assignment[i] == magicNums.DOMAIN_FALSE_VAL:
                 is_negated = True
-            literals.append(self.Literal(variable, is_negated))
+            literal = self.Literal(variable, is_negated)
+            literals.append(literal)
+            self.__add_to_dictionary(literal, variable)
             is_negated = False
         return literals
 

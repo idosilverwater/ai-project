@@ -41,6 +41,7 @@ class CSP:
         self.domain_heuristic = None  # domain_heuristic_factory(self.variables, self.constraints)
 
         self._forward_checking_flag = forward_checking_flag
+        self.__for_check_helper = []
 
     def _generate_variables(self, names, domain):
         """
@@ -193,3 +194,44 @@ class CSP:
             if not constraint.check_assignment(assignment):
                 return False
         return True
+
+    ####################
+    # FORWARD CHECKING #
+    ####################
+
+    def find_affected_variables(self, variable_name):
+        """
+        Finds the variables affected from changes applied to the given variable.
+        :param variable_name: A name of a variable
+        :return: A list of variable names.
+        """
+        pass
+
+    def initialise_helper(self, variable_name):
+        """
+        Initialises self.__for_check_helper
+        :param variable_name: the name of the variable tested with forward checking.
+        :return: an empty list, such that length(list) = number of affected variables.
+        """
+        pass
+
+    def forward_checking(self, variable_name):
+        """
+        This is the method that runs the forward checking algorithm.
+        :param variable_name: The name of the variable we would like to find assignment too.
+        :return True if an assignment was found, False otherwise
+        """
+        pass
+
+    def restore(self, variable_name):
+        """
+        Restores "domain" to previous state.
+        """
+        pass
+
+    def check_forward(self, variable_name):
+        """
+        Checks if the value assigned to the variable is consistent with the rest of the variables.
+        :param variable_name: The name of the variable we would like to test.
+        :return: True is consistent, else, False.
+        """
