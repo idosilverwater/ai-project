@@ -104,6 +104,7 @@ class CSP(object):
         """
         # add assignment of one value
         variable = self.variables[var_name]
+        # print( 333, type(variable.get_value())) # todo delete
         variable.set_value(value)
         self.assignment[var_name] = value
 

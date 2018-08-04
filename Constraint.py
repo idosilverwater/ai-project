@@ -33,8 +33,6 @@ class Constraint:
         # Gather all possible assignments that have the same value as of the values in the assignment.
         list_of_assignments = self.__collect_possible_assignments(assignment)
 
-        # print('possible assignments', list_of_assignments) # todo: delete
-        # print("============")
         for possible_assignment in list_of_assignments:
             counter = 0
             for variable_name in assignment:
