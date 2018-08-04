@@ -1,5 +1,7 @@
-from Constraints import *
+
 from Variable import *
+import queue
+from copy import *
 
 # import LeastConstrainingValue
 
@@ -30,18 +32,13 @@ class CSP:
         :param constraints: a constraints function that corresponds with the names of the variables.
         """
         self.constraints = constraints
-        # builds a dictionary of variables.
         self.domains = {}  # a domain for each variable to be used somehow later on. # TODO consider to delete.
         self.variables = {}
-
-        self._generate_variables(variables, domain)
-        # TODO need this to be generic!
+        self._generate_variables(variables, domain)  # builds a dictionary of variables.
         self.variable_heuristic = variable_heuristic_creator(self.variables)
-        #  self.variable_heuristic = Degree.Degree(self.variables)  # variable_heuristic_factory(self.variables)
         self.domain_heuristic = None  # domain_heuristic_factory(self.variables, self.constraints)
-
+        self.__fc_variables_backup = [self.variables]  # a stack contains the previous versions of variables.
         self._forward_checking_flag = forward_checking_flag
-        self.__for_check_helper = []
 
     def _generate_variables(self, names, domain):
         """
@@ -139,11 +136,10 @@ class CSP:
 
         all_constraints = self.variables[variable_name].get_constraints()
 
-        variable_set = variable.get_neighbors()
+        variable_set = variable.get_neighbors()  # TODO(Noy): copy code for assignment from hear
         assignment = {variable_name: self.variables[variable_name].get_value()
                       for variable_name in variable_set}
-        assignment[
-            variable_name] = value  # Assignment should have the 'new' value.
+        assignment[variable_name] = value  # Assignment should have the 'new' value.
 
         # TODO try and optimise this whole operation. Maybe with threads or something. (can thread this function)
         return self.__check_constraint_agreement(all_constraints, assignment)
@@ -198,40 +194,129 @@ class CSP:
     ####################
     # FORWARD CHECKING #
     ####################
+    """
+    What We Need:
+    1) A way to check if a variable was changed.
+    2) A way to deep copy variables.
+            should copy every element with no common mutables between thte lists except the constraints which will
+            not be affected by a copy.
+            To do so - please make a copy function for Variable class in according to copy() protocol of python.
 
-    def find_affected_variables(self, variable_name):
+    3) Generate current assignment
+    4)use FC, when in need to check an assignment: Find all common constraints and give them to __check_constraints_agreement
+                with the current assignment of FC.
+
+    5) Restore - returns the variables to what they ware one version before fc.
+                should use a stack that each item in stack contains a whole variable dictionary. of the vars before FC was
+                initiated.
+    """
+
+    def __copy_variables(self):
         """
-        Finds the variables affected from changes applied to the given variable.
-        :param variable_name: A name of a variable
-        :return: A list of variable names.
+        Deep copy self.variables. Pushes the original variables dictionary to self.__fc_variables_backup.
+        :returns: A dictionary, which is a copy of self.variables
+        """
+        variables_copy = {}
+        for var_name in self.variables:
+            variables_copy[var_name] = deepcopy(self.variables[var_name])
+        return variables_copy
+
+    def __is_relevant(self, variable, visited, variables_copy):
+        """
+        Tests if a certain variable relevant for the rest of the FC tests. A variable is not relevant if it is either
+        unchanged by the assignment  of the tested variable, or never visited by the algorithm.
+        :param variable: A variable name to check.
+        :param visited: A list of visited variable objects.
+        :return: True if relevant, otherwise False.
+        """
+        if variable not in visited:
+            visited[variable] = [False, variable.get_possible_domain()]
+            return True
+        elif visited[variable][0]:
+            # meaning we checked the neighbour and don't need to do it again for same reason.
+            visited[variable][0] = False
+            return True
+        else:
+            var_obj = variables_copy[variable]
+            if len(var_obj.get_possible_domain()) != len(visited[variable][1]):
+                for neighbour in var_obj.get_neighbors():
+                    if self.variables[neighbour] in visited:
+                        # meaning we wish to revisit this neighbour.
+                        visited[variable][0] = True
+                return True
+            return False
+
+    def __generate_current_assignment(self):
+        """
+        Generates the current assignment out of the current state of the variables.
+        :param value: the current tested value.
+        :return: An assignment (A dictionary of the form: {var_name: value})
+        """
+        # TODO check:
+        return {self.variables[variable_name]: self.variables[variable_name].get_value() for variable_name in
+                self.variables.keys()}
+
+    def __enter_neighbors_to_queue(self, variable, queue):
+        """
+        This method enters the variable's neighbors to queue.
+        :param variable: A variable name
         """
         pass
 
-    def initialise_helper(self, variable_name):
+    def __is_curr_assignment_consistent(self, curr_assignment, curr_constraints):
         """
-        Initialises self.__for_check_helper
-        :param variable_name: the name of the variable tested with forward checking.
-        :return: an empty list, such that length(list) = number of affected variables.
+        Tests if the current assignment is consistent.
+        :param curr_assignment: The current assignment
+        :param curr_constraints: The constraints on the curr variable
+        :return: True if consistent, False otherwise.
         """
         pass
 
-    def forward_checking(self, variable_name):
+    def __check_possible_domain(self, curr_variable, assignment):
+        """
+        Tests if the current variable's domain is whipped out. In addition updated the current variable's domain.
+        :param curr_variable: A variable name
+        :param assignment: The current assignment
+        :return: True if the domain of the current variable is wiped out, False otherwise.
+        """
+        for d in curr_variable.get_domain():
+            assignment[curr_variable] = d
+            # TODO continue.
+            pass
+
+    def __update_visited(self, variable, domain):
+        """
+        :return:
+        """
+        pass
+
+    def __forward_checking(self, variable_name, value):
         """
         This is the method that runs the forward checking algorithm.
         :param variable_name: The name of the variable we would like to find assignment too.
         :return True if an assignment was found, False otherwise
         """
-        pass
+        assignment = self.__generate_current_assignment()
+        visited = {}  # A dictionary of the form: {variable name: (flag, domain)} the flag is used in __is_relevant.
+        copy = self.__copy_variables()
+        assignment[variable_name] = value
+        copy[variable_name].set_value(value)
+        q = queue.Queue()
+        q.put(variable_name)
 
-    def restore(self, variable_name):
-        """
-        Restores "domain" to previous state.
-        """
-        pass
+        while not q.empty():
+            curr = q.get()
+            if self.__is_relevant(curr, visited, copy):
+                self.__enter_neighbors_to_queue(curr, queue)
+                self.__update_visited(curr, curr.get_possible_domain())
+                is_wiped_out = self.__check_possible_domain(curr, variable_name)
+                if is_wiped_out:
+                    return False
+        self.variables = copy  # The fc succeeded so we keep the changes in the variables.
+        return True
 
-    def check_forward(self, variable_name):
+    def __restore(self):
         """
-        Checks if the value assigned to the variable is consistent with the rest of the variables.
-        :param variable_name: The name of the variable we would like to test.
-        :return: True is consistent, else, False.
+        returns the variables to what they ware one version before fc.
         """
+        self.variables = self.__fc_variables_backup.pop()
