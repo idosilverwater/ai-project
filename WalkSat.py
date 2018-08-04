@@ -1,6 +1,7 @@
 from Solver import Solver
 import random
 from FormulaTree import *
+from CSP import *
 import numpy as np
 import magicNums
 
@@ -46,12 +47,11 @@ class WalkSat(Solver):
         self.__p = random_value
         self.__variable_names = list(self.csp.variables)  # a list of all names.
         self.__max_flips = max_flips
-        self.__formula_tree = FormulaTree(csp.constraints.get_all_constraints())
+        # self.__formula_tree = FormulaTree(csp.constraints.get_all_constraints())
 
         self.assignment = dict()
-        print('what')
-        self.clauses = self.cnfConverter()
-        print('when')
+
+        # self.clauses = self.cnfConverter()
 
 
     def __flip_coin(self):
@@ -65,41 +65,48 @@ class WalkSat(Solver):
     def set_max_flips(self, max_flips):
         self.__max_flips = max_flips
 
-    def __choose_random_variable(self, clause):
+    def __choose_random_variable(self, constraint):
         """
-        Choose random variable from clause.
-        :param clause:
+        Choose random variable from constraint.
+        :param constraint:
         :return:
         """
-        literal = random.choice(clause)
-        return literal.var_name
+        return random.choice(constraint.get_variables())
 
-    def __flip_random_variable(self, clause):
+    def __flip_random_variable(self, constraint):
         """
         Flip random variable from clause
         :param clause:
         :return:
         """
 
-        variable = self.__choose_random_variable(clause)
+        variable = self.__choose_random_variable(constraint)
         self.__flip_value(variable)
+
+    # def is_satisfied(self):
+    #     """
+    #     checks if model is satisfied, which means it checks the assignment over the csp result.
+    #     :return: True or False
+    #     """
+    #
+    #     for clause in self.clauses:
+    #         flag = False
+    #         for literal in clause:
+    #             if literal.value:
+    #                 flag = True
+    #                 break
+    #         if not flag:
+    #             return False
+    #
+    #     return True
 
     def is_satisfied(self):
         """
         checks if model is satisfied, which means it checks the assignment over the csp result.
         :return: True or False
         """
+        return CSP.__check_constraint_agreement(self.csp.constraints, self.assignment)
 
-        for clause in self.clauses:
-            flag = False
-            for literal in clause:
-                if literal.value:
-                    flag = True
-                    break
-            if not flag:
-                return False
-
-        return True
 
     def __flip_value(self, variable_name):
         """
@@ -107,10 +114,8 @@ class WalkSat(Solver):
         :param variable_name:
         :return:
         """
-        new_val = not self.assignment[variable_name]
-        # self.remove_value(variable_name) #TODO ask if this has to be thrown out...
-        self.assign_value(variable_name, new_val)
-
+        old = self.csp.variables[variable_name].get_value()
+        self.csp.assign_variable(variable_name, not old)
 
     def random_assignment(self):
         """
@@ -118,56 +123,56 @@ class WalkSat(Solver):
         :return:
         """
         for name in self.__variable_names:
-            self.assign_value(name, self.__flip_coin())
+            self.csp.assign_variable(name, self.__flip_coin())
 
-    def assign_value(self, variable_name, value):
-        """
-        Assign the value (value) to all literals of the variable named variable_name.
-        :param variable_name:
-        :param value:
-        :return:
-        """
-        self.assignment[variable_name] = value
-        for literal in self.__formula_tree.get_literals_related_to_var(variable_name):
-            literal.assign_value(value)
+    # def assign_value(self, variable_name, value):
+    #     """
+    #     Assign the value (value) to all literals of the variable named variable_name.
+    #     :param variable_name:
+    #     :param value:
+    #     :return:
+    #     """
+    #     self.assignment[variable_name] = value
+    #     for literal in self.__formula_tree.get_literals_related_to_var(variable_name):
+    #         literal.assign_value(value)
 
-    def cnfConverter(self):
-        """
-        :return: Convert the Formula tree (which represents a CSP problem) to CNF form.
-        """
-        rec = self.recursiveCNFConverter(self.__formula_tree.get_root(), 0)
-        print("finished conversion")
-        return rec
+    # def cnfConverter(self):
+    #     """
+    #     :return: Convert the Formula tree (which represents a CSP problem) to CNF form.
+    #     """
+    #     rec = self.recursiveCNFConverter(self.__formula_tree.get_root(), 0)
+    #     print("finished conversion")
+    #     return rec
 
-    def recursiveCNFConverter(self, node, i):
-        """
-        Given tree that represents a csp problem. (a csp with literals and *only* AND and OR operators)
-        convert to cnf form. according to the algorithm presented at: http://cs.jhu.edu/~jason/tutorials/convert-to-CNF
-        :param node:
-        :return:
-        """
-        if node.is_leaf:
-            return {(node.value,)} # returning a set
+    # def recursiveCNFConverter(self, node, i):
+    #     """
+    #     Given tree that represents a csp problem. (a csp with literals and *only* AND and OR operators)
+    #     convert to cnf form. according to the algorithm presented at: http://cs.jhu.edu/~jason/tutorials/convert-to-CNF
+    #     :param node:
+    #     :return:
+    #     """
+    #     if node.is_leaf:
+    #         return {(node.value,)} # returning a set
+    #
+    #     right = self.recursiveCNFConverter(node.right, i + 1)
+    #     left = self.recursiveCNFConverter(node.left, i + 1)
+    #
+    #     print(i)
+    #
+    #     if node.value == AND:
+    #         return left.union(right)
+    #     if node.value == OR:
+    #         new = set()
+    #         for p in left:
+    #             for q in right:
+    #                 new.add(p + q)
+    #         return new
 
-        right = self.recursiveCNFConverter(node.right, i + 1)
-        left = self.recursiveCNFConverter(node.left, i + 1)
-
-        print(i)
-
-        if node.value == AND:
-            return left.union(right)
-        if node.value == OR:
-            new = set()
-            for p in left:
-                for q in right:
-                    new.add(p + q)
-            return new
-
-    def random_clause(self):
+    def random_constraint(self):
         """
         :return: return uniformly picked clause
         """
-        return random.choice(self.clauses)
+        return random.choice(self.csp.constraints.get_all_constraints()) # Are these "all_constraints" include also soft?
 
     def __flip_most_satisfying(self):
         """
@@ -180,6 +185,7 @@ class WalkSat(Solver):
         """
         :return: the variable who's flipping will satisfy the most clauses.
         """
+
 
         max_var = self.__variable_names[0]
         max_num = self.__num_satisfied(max_var)
@@ -202,13 +208,8 @@ class WalkSat(Solver):
 
         count = 0
 
-        for clause in self.clauses:
-            flag = False
-            for literal in clause:
-                if literal.value:
-                    flag = True
-                    break
-            if flag:
+        for constraint in self.csp.constraints.get_all_constraints():
+            if self.constraint.check_assignment(self.csp.assignment):
                 count += 1
 
         self.__flip_value(variable_name) # flip back
@@ -227,9 +228,9 @@ class WalkSat(Solver):
             return self.assignment
         else:
             for i in range(self.__max_flips):
-                clause = self.random_clause()
+                constraint = self.random_constraint()
                 if self.__flip_coin():
-                    self.__flip_random_variable(clause)
+                    self.__flip_random_variable(constraint)
                 else:
                     self.__flip_most_satisfying()
 

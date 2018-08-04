@@ -1,3 +1,4 @@
+
 from Variable import *
 import queue
 from copy import *
@@ -38,6 +39,8 @@ class CSP:
         self.domain_heuristic = None  # domain_heuristic_factory(self.variables, self.constraints)
         self.__fc_variables_backup = [self.variables]  # a stack contains the previous versions of variables.
         self._forward_checking_flag = forward_checking_flag
+
+        self.assignment = {}
 
     def _generate_variables(self, names, domain):
         """
@@ -90,6 +93,9 @@ class CSP:
         return self.variable_heuristic.select_unassigned_variable(
             self.variables)
 
+    def get_assignment(self):
+        return self.assignment
+
     def assign_variable(self, var_name, value):
         """
         function assumes that the value is consistent and can be added to the var name.
@@ -100,6 +106,7 @@ class CSP:
         # add assignment of one value
         variable = self.variables[var_name]
         variable.set_value(value)
+        self.assignment[var_name] = value
 
         # add forward checking:
         pass  # TODO
@@ -182,7 +189,7 @@ class CSP:
     @staticmethod
     def __check_constraint_agreement(constraints, assignment):
         """
-        gets a bunch of constraints and an assignment and checks wether all constraints are not violated or not.
+        gets a bunch of constraints and an assignment and checks whether all constraints are not violated or not.
         :return True if assignment agrees with all of the constraints, False otherwise.
         """
         # if we wish to parallel this function-we need to split the dictionary of constraints and give it to each thread
@@ -238,6 +245,7 @@ class CSP:
             visited[variable][0] = False
             return True
         else:
+            var_obj = variables_copy[variable]
             if len(var_obj.get_possible_domain()) != len(visited[variable][1]):
                 for neighbour in var_obj.get_neighbors():
                     if self.variables[neighbour] in visited:
@@ -249,6 +257,7 @@ class CSP:
     def generate_current_assignment(self):
         """
         Generates the current assignment out of the current state of the variables.
+        :param value: the current tested value.
         :return: An assignment (A dictionary of the form: {var_name: value})
         """
         return {variable_name: self.variables[variable_name].get_value() for variable_name in self.variables.keys()}
