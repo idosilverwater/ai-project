@@ -49,7 +49,9 @@ class WalkSat(Solver):
         self.__formula_tree = FormulaTree(csp.constraints.get_all_constraints())
 
         self.assignment = dict()
+        print('what')
         self.clauses = self.cnfConverter()
+        print('when')
 
 
     def __flip_coin(self):
@@ -133,9 +135,11 @@ class WalkSat(Solver):
         """
         :return: Convert the Formula tree (which represents a CSP problem) to CNF form.
         """
-        return self.recursiveCNFConverter(self.__formula_tree.get_root())
+        rec = self.recursiveCNFConverter(self.__formula_tree.get_root(), 0)
+        print("finished conversion")
+        return rec
 
-    def recursiveCNFConverter(self, node):
+    def recursiveCNFConverter(self, node, i):
         """
         Given tree that represents a csp problem. (a csp with literals and *only* AND and OR operators)
         convert to cnf form. according to the algorithm presented at: http://cs.jhu.edu/~jason/tutorials/convert-to-CNF
@@ -143,18 +147,20 @@ class WalkSat(Solver):
         :return:
         """
         if node.is_leaf:
-            return [[node.value]]
+            return {(node.value,)} # returning a set
 
-        right = self.recursiveCNFConverter(self, node.right)
-        left = self.recursiveCNFConverter(self, node.left)
+        right = self.recursiveCNFConverter(node.right, i + 1)
+        left = self.recursiveCNFConverter(node.left, i + 1)
+
+        print(i)
 
         if node.value == AND:
-            return left + right
+            return left.union(right)
         if node.value == OR:
-            new = list()
+            new = set()
             for p in left:
                 for q in right:
-                    new.append(p + q)
+                    new.add(p + q)
             return new
 
     def random_clause(self):
