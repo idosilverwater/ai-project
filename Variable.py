@@ -90,3 +90,9 @@ class Variable:
 
     def get_affecting_value(self):
         return self.affecting_value
+
+    def get_domain(self):
+        return self.domain
+
+
+

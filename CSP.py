@@ -290,7 +290,7 @@ class CSP:
         """
         pass
 
-    def __forward_checking(self, variable_name, value):
+    def forward_checking(self, variable_name, value):
         """
         This is the method that runs the forward checking algorithm.
         :param variable_name: The name of the variable we would like to find assignment too.
@@ -320,3 +320,9 @@ class CSP:
         returns the variables to what they ware one version before fc.
         """
         self.variables = self.__fc_variables_backup.pop()
+
+
+#########
+# Tests #
+#########
+
