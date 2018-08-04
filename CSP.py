@@ -305,9 +305,9 @@ class CSP:
         while not q.empty():
             curr = q.get()
             if self.__is_relevant(curr, visited, variables_copy):
-                self.__enter_neighbors_to_queue(curr, queue, variables_copy)
+                self.__enter_neighbors_to_queue(curr, q, variables_copy)
                 self.__update_visited(curr, curr.get_possible_domain())
-                is_wiped_out = self.__check_possible_domain(curr, variable_name)
+                is_wiped_out = self.__check_possible_domain(curr, variable_name, variables_copy)
                 if is_wiped_out:
                     return False
         self.__fc_variables_backup.append(self.variables)
