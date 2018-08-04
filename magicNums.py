@@ -10,6 +10,9 @@ DOMAIN_FALSE_VAL = 'False'
 DAYS_IN_WEEK = 3  # number of days in a week.
 SHIFTS_IN_DAY = 2  # number of shifts in a day.
 
+# NAME Shift SEPARATOR : david<SEPARATOR>number<SEPARATOR>number:
+SEPARATOR = " "
+
 # Boolean
 AND = "&"
 OR = "|"

@@ -5,15 +5,7 @@ import magicNums
 # magic Nums.
 DOMAIN_TRUE_VAL = magicNums.DOMAIN_TRUE_VAL
 DOMAIN_FALSE_VAL = magicNums.DOMAIN_FALSE_VAL
-# TODO notice statement below:
-"""
-We have to make the hard constraints more complicated, at the moment we are looking at hard constraint that can be
- satisfied with True to every one. This isn't a hard problem at all. I think we should add more HARD constraints, 
- for example: workers that cannot by any means work at certain shift \ day. 
-"""
 
-
-# TODO bug: variables can more than one constraint, need to fix it and insert a list of constraint in all constraints, instead of just one line
 
 class Constraints:
     """
@@ -44,10 +36,7 @@ class Constraints:
         self.__build_all_constraints()
         self.__dictionary_of_possible_assignments = {}  # restarting the dictionary.
 
-        # TODO: delete this later, this is for debugging purpose of csp:
-        # self.set_constraints_visible()
-        self.__set_constraint_by_var()  # todo NOY, should this be called here? (ido)
-        pass
+        self.__set_constraint_by_var()  # todo NOY, should this be called here? (ido) answer is: yes (Jonathan)
 
     ###################
     # Private Methods #
@@ -77,7 +66,7 @@ class Constraints:
         """
         relevant_vars = []
         for name in self.__variable_names:
-            if name.endswith(str(day) + " " + str(shift_number)):
+            if name.endswith(str(day) + magicNums.SEPARATOR + str(shift_number)):
                 relevant_vars.append(name)
         return tuple(relevant_vars)
 
@@ -125,16 +114,17 @@ class Constraints:
             dictionary[key] = [value]
         pass
 
-    def __at_least_one_worker_a_day(self):
+    def __create_constraints_for_worker_in_same_shift(self, assignment_generator):
         """
-        generate hard constraints of at least one worker a day.
-        :return:
+        Generates hard constraints for same shift and all workers, using an assignment_generator function.
+        This will  take all constraints with same day and same shift and generate a constraint with all of the relevant
+        variables.
         """
         # Creates a variable list that is relevant to a certain shift:
         for i in range(magicNums.DAYS_IN_WEEK):  # For each day
             for j in range(magicNums.SHIFTS_IN_DAY):  # For each shift.
                 relevant_variables = self.__variable_names_by_shift(i, j)
-                possible_assignments = self.__generate_assignments_for_at_least_one_worker(len(relevant_variables))
+                possible_assignments = assignment_generator(len(relevant_variables))
                 new_constraint = Constraint(relevant_variables, possible_assignments, 0)
                 self.__add_constraint_to_all_constraints_dict(self.__all_constraints, relevant_variables,
                                                               new_constraint)
@@ -148,28 +138,46 @@ class Constraints:
             new_constraint = Constraint(var_name, [[DOMAIN_FALSE_VAL]], 0)  # hard const that cant be assigned.
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
 
-    #
+    def __generate_assignments_for_at_most_x_workers(self, num_workers, x=2):
+        """
+        creates assignment list for constraint that wish to have at most x workers.
+        :param num_workers: the number of variables in a shift.
+        :param x: the maximum amount of workers we want to have in a shift.
+        :return: a list of possible assignments.
+        """
+        lst_of_assignments = []
+        for item in self.__generate_assignments_for_at_least_one_worker(num_workers):
+            if item.count(magicNums.DOMAIN_TRUE_VAL) <= x:
+                lst_of_assignments.append(item)
+        return lst_of_assignments
+
     def __generate_hard_const(self):
         """
         Generates the hard constraints and updates self.constraints.
         For now the only hard constraint is: "There should be a least one worker
         in each shift."
         """
-        self.__at_least_one_worker_a_day()
+
+        # generates at most two worker assignments, to work with the __create_constraints_for_worker_in_same_shift func.
+        def two_workers_at_most(num_workers):
+            return self.__generate_assignments_for_at_most_x_workers(num_workers, 2)
+
+        self.__create_constraints_for_worker_in_same_shift(self.__generate_assignments_for_at_least_one_worker)
         self.__generate_non_workable_days()
+
+        self.__create_constraints_for_worker_in_same_shift(two_workers_at_most)
 
     def __generate_soft_const(self):
         """
         Generates the soft constraints and updates self.constraints.
         """
         for preference in self.__preferences:
-            var_name = (" ".join(preference),)
+            var_name = ("".join(preference),)
             # Adding constraint to all_constraints:
             new_constraint = Constraint(var_name, [[DOMAIN_TRUE_VAL]], 1)
-            # TODO! this dictionary may contain the same day. for now it is an exception. i think i fixed but not sure.
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
 
-    def __set_constraint_by_var(self):  # TODO BUG This adds constraints that aren't related.
+    def __set_constraint_by_var(self):
         """
         After the initialization of visible_constraints
         creates a dictionary with variable names as keys
@@ -199,7 +207,7 @@ class Constraints:
     def set_constraints_visible(self):
         self.__visible_constraints = dict(self.__all_constraints)
 
-    def add_constraint(self):
+    def add_constraint(self):  # TODO fix it so that it can work with CSP.
         variables, constraint = self.__constraint_heuristic(
             self.__visible_constraints, self.__all_constraints)
         # TODO! NOTICE that these constraint should be added to constraints by var too.
