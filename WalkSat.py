@@ -105,7 +105,7 @@ class WalkSat(Solver):
         checks if model is satisfied, which means it checks the assignment over the csp result.
         :return: True or False
         """
-        return CSP.__check_constraint_agreement(self.csp.constraints, self.assignment)
+        return self.csp.check_constraint_agreement(self.csp.constraints, self.assignment)
 
 
     def __flip_value(self, variable_name):

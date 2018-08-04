@@ -18,7 +18,7 @@ but fuck it, we've got at least 4GB of mem...
 # TODO forward checking.
 
 
-class CSP:
+class CSP(object):
     """
     main CSP handler. should be main authority for handling variables, domains and constraints.
     """
@@ -148,7 +148,7 @@ class CSP:
         assignment[variable_name] = value  # Assignment should have the 'new' value.
 
         # TODO try and optimise this whole operation. Maybe with threads or something. (can thread this function)
-        return self.__check_constraint_agreement(all_constraints, assignment)
+        return self.check_constraint_agreement(all_constraints, assignment)
 
     def add_constraint(self):
         """
@@ -183,11 +183,11 @@ class CSP:
         all_consts_lst = []
         for list_of_consts in all_constraints_dict.values():
             all_consts_lst += list_of_consts
-        return self.__check_constraint_agreement(all_consts_lst,
-                                                 variable_assignment)
+        return self.check_constraint_agreement(all_consts_lst,
+                                               variable_assignment)
 
     @staticmethod
-    def __check_constraint_agreement(constraints, assignment):
+    def check_constraint_agreement(constraints, assignment):
         """
         gets a bunch of constraints and an assignment and checks whether all constraints are not violated or not.
         :return True if assignment agrees with all of the constraints, False otherwise.
@@ -285,7 +285,7 @@ class CSP:
         for d in var_obj.get_domain():
             assignment[curr_variable] = d
             constraints = var_obj.get_constraints()
-            if self.__check_constraint_agreement(constraints, assignment):
+            if self.check_constraint_agreement(constraints, assignment):
                 return False  # We have a legal value - everything is ok.
             var_obj.remove_from_possible_domain(d)
         return True  # curr_variable is wiped out.
