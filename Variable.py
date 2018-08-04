@@ -101,6 +101,6 @@ class Variable:
         """
         Removes value from self.possible_domain
         """
-        pass
+        self.possible_domain -= set(value)
 
 

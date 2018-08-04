@@ -1,4 +1,3 @@
-
 from Variable import *
 import queue
 from copy import *
@@ -230,15 +229,15 @@ class CSP:
         :param visited: A list of visited variable objects.
         :return: True if relevant, otherwise False.
         """
+        var_obj = variables_copy[variable]
         if variable not in visited:
-            visited[variable] = [False, variable.get_possible_domain()]
+            visited[variable] = [False, var_obj.get_possible_domain()]
             return True
         elif visited[variable][0]:
             # meaning we checked the neighbour and don't need to do it again for same reason.
             visited[variable][0] = False
             return True
         else:
-            var_obj = variables_copy[variable]
             if len(var_obj.get_possible_domain()) != len(visited[variable][1]):
                 for neighbour in var_obj.get_neighbors():
                     if self.variables[neighbour] in visited:
@@ -252,8 +251,7 @@ class CSP:
         Generates the current assignment out of the current state of the variables.
         :return: An assignment (A dictionary of the form: {var_name: value})
         """
-        return {variable_name: self.variables[variable_name].get_value() for variable_name in
-                self.variables.keys()}
+        return {variable_name: self.variables[variable_name].get_value() for variable_name in self.variables.keys()}
 
     def __enter_neighbors_to_queue(self, variable, fc_queue, variables_copy):
         """
@@ -266,7 +264,7 @@ class CSP:
         for neighbor in neighbors_names:
             fc_queue.put(neighbor)
 
-    def __check_possible_domain(self, curr_variable, assignment, variables_copy): #TODO: test
+    def __check_possible_domain(self, curr_variable, assignment, variables_copy):  # TODO: test
         """
         Tests if the current variable's domain is whipped out. In addition updated the current variable's domain.
         :param curr_variable: A variable name
@@ -274,24 +272,20 @@ class CSP:
         :param variables_copy: A deep copy of csp.variables.
         :return: True if the domain of the current variable is wiped out, False otherwise.
         """
-        for d in curr_variable.get_domain():
+        var_obj = variables_copy[curr_variable]
+        for d in var_obj.get_domain():
             assignment[curr_variable] = d
-            constraints = variables_copy[curr_variable].get_constraints()
+            constraints = var_obj.get_constraints()
             if self.__check_constraint_agreement(constraints, assignment):
                 return False  # We have a legal value - everything is ok.
-            variables_copy[curr_variable].remove_from_possible_domain(d)
+            var_obj.remove_from_possible_domain(d)
         return True  # curr_variable is wiped out.
-
-    def __update_visited(self, variable, domain):
-        """
-        :return:
-        """
-        pass
 
     def forward_checking(self, variable_name, value):
         """
         This is the method that runs the forward checking algorithm.
         :param variable_name: The name of the variable we would like to find assignment too.
+        :param value: The value we want to assign to the variable.
         :return True if an assignment was found, False otherwise
         """
         assignment = self.generate_current_assignment()
@@ -306,8 +300,8 @@ class CSP:
             curr = q.get()
             if self.__is_relevant(curr, visited, variables_copy):
                 self.__enter_neighbors_to_queue(curr, q, variables_copy)
-                self.__update_visited(curr, curr.get_possible_domain())
-                is_wiped_out = self.__check_possible_domain(curr, variable_name, variables_copy)
+                visited[curr] = (False, variables_copy[curr].get_domain())
+                is_wiped_out = self.__check_possible_domain(curr, assignment, variables_copy)
                 if is_wiped_out:
                     return False
         self.__fc_variables_backup.append(self.variables)
