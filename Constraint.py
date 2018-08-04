@@ -33,7 +33,8 @@ class Constraint:
         # Gather all possible assignments that have the same value as of the values in the assignment.
         list_of_assignments = self.__collect_possible_assignments(assignment)
 
-        print('kkk', list_of_assignments)
+        print('possible assignments', list_of_assignments)
+        print("============")
         for possible_assignment in list_of_assignments:
             counter = 0
             for variable_name in assignment:
@@ -43,10 +44,8 @@ class Constraint:
                         counter += 1
                 else:
                     counter += 1
-            print(888, counter)
             if counter == len(assignment):
                 return True
-        print('ggg')
         return False
 
     def __collect_possible_assignments(self, assignment):

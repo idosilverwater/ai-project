@@ -218,8 +218,9 @@ class WalkSat(Solver):
         count = 0
 
         for constraint in self.constraints:
-            print(45, constraint)
-            print(46, self.csp.assignment)
+            print("============")
+            print('constraint', constraint)
+            print('current assignment', self.csp.assignment)
             if constraint.check_assignment(self.csp.assignment):
                 print('zit')
                 count += 1
