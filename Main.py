@@ -23,9 +23,11 @@ def worker_solve(filename, problem_type, algo, preferences):
     filename = sys.argv[1]
     csp = create_workers_csp(filename, preferences)
     algorithm = algorithms[algo](csp)
-    if algorithm.backtrack(): # TODO need the calling for the function to be generic (instead of "backtrack" "run")
+    if algorithm.backtrack():  # TODO need the calling for the function to be generic (instead of "backtrack" "run")
         print("Satisfiable")
-        print(algorithm.get_assignment())
+        dic = algorithm.get_assignment()
+        for key in dic:
+            print(key + " : " + dic[key])
     else:
         print("Unsatisfiable")
     print("Done")

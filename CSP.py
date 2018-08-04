@@ -1,4 +1,3 @@
-
 from Variable import *
 import queue
 from copy import *
@@ -25,7 +24,7 @@ class CSP(object):
 
     # TODO determine what input the constructor should have.
     def __init__(self, domain, variables, constraints,
-                 variable_heuristic_creator, forward_checking_flag=False):
+                 variable_heuristic_creator, forward_checking_flag=True):
         """
         :param domain: a lists of lists such that list i corresponds with variable name i.
         :param variables: a list of variable names.
@@ -148,7 +147,13 @@ class CSP(object):
         assignment[variable_name] = value  # Assignment should have the 'new' value.
 
         # TODO try and optimise this whole operation. Maybe with threads or something. (can thread this function)
-        return self.check_constraint_agreement(all_constraints, assignment)
+        res = self.check_constraint_agreement(all_constraints, assignment)
+        if not res:
+            return res
+
+        if self._forward_checking_flag:
+            res = self.forward_checking(variable_name, value)
+        return res
 
     def add_constraint(self):
         """
@@ -166,11 +171,10 @@ class CSP(object):
         variable = self.variables[variable_name]
         current_Value = variable.get_value()  # should be relevant in forward checking.
         variable.set_value(None)
-
+        # TODO : MAJOR checks.
         # forward checking:
         if self._forward_checking_flag:
-            pass  # TODO...
-        pass
+            self.__restore()
 
     # TODO check if assignment is a legit one. means that for every constrain, check if all values are possible together
     def check_assignment(self, variable_assignment):
@@ -324,4 +328,5 @@ class CSP(object):
         """
         returns the variables to what they ware one version before fc.
         """
-        self.variables = self.__fc_variables_backup.pop()
+        if len(self.__fc_variables_backup) > -1:
+            self.variables = self.__fc_variables_backup.pop()
