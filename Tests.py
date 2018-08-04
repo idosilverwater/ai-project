@@ -17,6 +17,9 @@ def worker_solve(filename, algo, preferences):
 
         dic = algorithm.get_assignment()
 
+        print(1, algorithm.get_num_satisfied())
+        print(2, len(algorithm.constraints))
+
         for v in dic:
             print(v, ":", dic[v])
 
@@ -25,5 +28,5 @@ def worker_solve(filename, algo, preferences):
     print("Done")
 
 if __name__ == "__main__":
-    worker_solve("examples/example4.csp", WALKSAT, True)
+    worker_solve("examples/example2.csp", WALKSAT, True)
 

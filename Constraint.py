@@ -9,6 +9,8 @@ class Constraint:
         assignment to the variables.
         :param softness: 1 if soft constraint, o.w. 0.
         """
+
+
         self.variables = variables
         self.possible_values = possible_values
         self.is_soft = softness
@@ -31,6 +33,7 @@ class Constraint:
         # Gather all possible assignments that have the same value as of the values in the assignment.
         list_of_assignments = self.__collect_possible_assignments(assignment)
 
+        print('kkk', list_of_assignments)
         for possible_assignment in list_of_assignments:
             counter = 0
             for variable_name in assignment:
@@ -40,8 +43,10 @@ class Constraint:
                         counter += 1
                 else:
                     counter += 1
+            print(888, counter)
             if counter == len(assignment):
                 return True
+        print('ggg')
         return False
 
     def __collect_possible_assignments(self, assignment):

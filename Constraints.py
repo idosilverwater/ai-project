@@ -172,7 +172,7 @@ class Constraints:
         Generates the soft constraints and updates self.constraints.
         """
         for preference in self.__preferences:
-            var_name = ("".join(preference),)
+            var_name = (" ".join(preference),)
             # Adding constraint to all_constraints:
             new_constraint = Constraint(var_name, [[DOMAIN_TRUE_VAL]], 1)
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)

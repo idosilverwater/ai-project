@@ -49,9 +49,20 @@ class WalkSat(Solver):
         self.__max_flips = max_flips
         # self.__formula_tree = FormulaTree(csp.constraints.get_all_constraints())
 
-        self.assignment = dict()
+        self.constraints = list()
+        self.list_of_constraints()
 
         # self.clauses = self.cnfConverter()
+
+    def list_of_constraints(self): # TODO check this?
+        constraints = set()
+        for vars in self.csp.constraints.get_all_constraints():
+            constraints = constraints.union(self.csp.constraints.get_all_constraints()[vars])
+        self.constraints = list(constraints)
+
+    def get_assignment(self):
+        return self.csp.get_assignment()
+
 
 
     def __flip_coin(self):
@@ -105,7 +116,7 @@ class WalkSat(Solver):
         checks if model is satisfied, which means it checks the assignment over the csp result.
         :return: True or False
         """
-        return self.csp.check_constraint_agreement(self.csp.constraints, self.assignment)
+        return self.csp.check_constraint_agreement(self.constraints, self.csp.assignment)
 
 
     def __flip_value(self, variable_name):
@@ -172,7 +183,7 @@ class WalkSat(Solver):
         """
         :return: return uniformly picked clause
         """
-        return random.choice(self.csp.constraints.get_all_constraints()) # Are these "all_constraints" include also soft?
+        return random.choice(self.constraints)
 
     def __flip_most_satisfying(self):
         """
@@ -198,6 +209,26 @@ class WalkSat(Solver):
 
         return max_var
 
+    def get_num_satisfied(self):
+        """
+        Get amount of satisfied constraints
+        :return:
+        """
+
+        count = 0
+
+        for constraint in self.constraints:
+            print(45, constraint)
+            print(46, self.csp.assignment)
+            if constraint.check_assignment(self.csp.assignment):
+                print('zit')
+                count += 1
+
+        return count
+
+
+
+
     def __num_satisfied(self, variable_name):
         """
         Checks how much clauses are satisfied after flipping this variables value.
@@ -208,8 +239,8 @@ class WalkSat(Solver):
 
         count = 0
 
-        for constraint in self.csp.constraints.get_all_constraints():
-            if self.constraint.check_assignment(self.csp.assignment):
+        for constraint in self.constraints:
+            if constraint.check_assignment(self.csp.assignment):
                 count += 1
 
         self.__flip_value(variable_name) # flip back
@@ -223,14 +254,22 @@ class WalkSat(Solver):
         :return: dictionary of assignments (of the form {varName: val})
         """
 
-        self.random_assignment()
+        for i in range(10000):
+            self.random_assignment()
+            print(12, self.get_num_satisfied())
+
+
         if self.is_satisfied():
-            return self.assignment
+            return True
         else:
             for i in range(self.__max_flips):
+                print(i, self.get_num_satisfied())
                 constraint = self.random_constraint()
                 if self.__flip_coin():
                     self.__flip_random_variable(constraint)
                 else:
                     self.__flip_most_satisfying()
+
+        return True
+
 
