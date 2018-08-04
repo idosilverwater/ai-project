@@ -63,6 +63,9 @@ class Variable:
     def is_not_assigned(self):
         return self.value is None
 
+    # def __repr__(self):
+    #     return "#name: " + self.name + ",dom: " + str(self.domain) + ", pos domain: " + str(self.possible_domain) + ", value: " + str(self.value)
+
     #####################
     # Getters & Setters #
     #####################
@@ -94,5 +97,10 @@ class Variable:
     def get_domain(self):
         return self.domain
 
+    def remove_from_possible_domain(self, value):
+        """
+        Removes value from self.possible_domain
+        """
+        pass
 
 

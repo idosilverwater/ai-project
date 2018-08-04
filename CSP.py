@@ -184,6 +184,7 @@ class CSP:
     def __check_constraint_agreement(constraints, assignment):
         """
         gets a bunch of constraints and an assignment and checks wether all constraints are not violated or not.
+        :return True if assignment agrees with all of the constraints, False otherwise.
         """
         # if we wish to parallel this function-we need to split the dictionary of constraints and give it to each thread
         for constraint in constraints:
@@ -213,7 +214,7 @@ class CSP:
 
     def __copy_variables(self):
         """
-        Deep copy self.variables. Pushes the original variables dictionary to self.__fc_variables_backup.
+        Deep copy self.variables.
         :returns: A dictionary, which is a copy of self.variables
         """
         variables_copy = {}
@@ -221,7 +222,7 @@ class CSP:
             variables_copy[var_name] = deepcopy(self.variables[var_name])
         return variables_copy
 
-    def __is_relevant(self, variable, visited, variables_copy):
+    def __is_relevant(self, variable, visited, variables_copy):  # todo: test
         """
         Tests if a certain variable relevant for the rest of the FC tests. A variable is not relevant if it is either
         unchanged by the assignment  of the tested variable, or never visited by the algorithm.
@@ -246,43 +247,40 @@ class CSP:
                 return True
             return False
 
-    def __generate_current_assignment(self):
+    def generate_current_assignment(self):
         """
         Generates the current assignment out of the current state of the variables.
-        :param value: the current tested value.
         :return: An assignment (A dictionary of the form: {var_name: value})
         """
-        # TODO check:
-        return {self.variables[variable_name]: self.variables[variable_name].get_value() for variable_name in
+        return {variable_name: self.variables[variable_name].get_value() for variable_name in
                 self.variables.keys()}
 
-    def __enter_neighbors_to_queue(self, variable, queue):
+    def __enter_neighbors_to_queue(self, variable, fc_queue, variables_copy):
         """
         This method enters the variable's neighbors to queue.
         :param variable: A variable name
+        :param fc_queue: A queue object.
+        :param variables_copy: A deep copy of csp.variables.
         """
-        pass
+        neighbors_names = variables_copy[variable].get_neighbors()
+        for neighbor in neighbors_names:
+            fc_queue.put(neighbor)
 
-    def __is_curr_assignment_consistent(self, curr_assignment, curr_constraints):
-        """
-        Tests if the current assignment is consistent.
-        :param curr_assignment: The current assignment
-        :param curr_constraints: The constraints on the curr variable
-        :return: True if consistent, False otherwise.
-        """
-        pass
-
-    def __check_possible_domain(self, curr_variable, assignment):
+    def __check_possible_domain(self, curr_variable, assignment, variables_copy): #TODO: test
         """
         Tests if the current variable's domain is whipped out. In addition updated the current variable's domain.
         :param curr_variable: A variable name
         :param assignment: The current assignment
+        :param variables_copy: A deep copy of csp.variables.
         :return: True if the domain of the current variable is wiped out, False otherwise.
         """
         for d in curr_variable.get_domain():
             assignment[curr_variable] = d
-            # TODO continue.
-            pass
+            constraints = variables_copy[curr_variable].get_constraints()
+            if self.__check_constraint_agreement(constraints, assignment):
+                return False  # We have a legal value - everything is ok.
+            variables_copy[curr_variable].remove_from_possible_domain(d)
+        return True  # curr_variable is wiped out.
 
     def __update_visited(self, variable, domain):
         """
@@ -296,23 +294,24 @@ class CSP:
         :param variable_name: The name of the variable we would like to find assignment too.
         :return True if an assignment was found, False otherwise
         """
-        assignment = self.__generate_current_assignment()
+        assignment = self.generate_current_assignment()
         visited = {}  # A dictionary of the form: {variable name: (flag, domain)} the flag is used in __is_relevant.
-        copy = self.__copy_variables()
+        variables_copy = self.__copy_variables()
         assignment[variable_name] = value
-        copy[variable_name].set_value(value)
+        variables_copy[variable_name].set_value(value)
         q = queue.Queue()
         q.put(variable_name)
 
         while not q.empty():
             curr = q.get()
-            if self.__is_relevant(curr, visited, copy):
-                self.__enter_neighbors_to_queue(curr, queue)
+            if self.__is_relevant(curr, visited, variables_copy):
+                self.__enter_neighbors_to_queue(curr, queue, variables_copy)
                 self.__update_visited(curr, curr.get_possible_domain())
                 is_wiped_out = self.__check_possible_domain(curr, variable_name)
                 if is_wiped_out:
                     return False
-        self.variables = copy  # The fc succeeded so we keep the changes in the variables.
+        self.__fc_variables_backup.append(self.variables)
+        self.variables = variables_copy  # The fc succeeded so we keep the changes in the variables.
         return True
 
     def __restore(self):
@@ -320,9 +319,3 @@ class CSP:
         returns the variables to what they ware one version before fc.
         """
         self.variables = self.__fc_variables_backup.pop()
-
-
-#########
-# Tests #
-#########
-
