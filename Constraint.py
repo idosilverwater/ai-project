@@ -94,3 +94,6 @@ class Constraint:
         :return: A list of assignments
         """
         return self.__collect_possible_assignments(assignment)
+
+    def __repr__(self):
+        return str(self.variables) + str(self.possible_values)

@@ -273,7 +273,8 @@ class CSP:
         :return: True if the domain of the current variable is wiped out, False otherwise.
         """
         var_obj = variables_copy[curr_variable]
-        for d in var_obj.get_domain():
+        copy_of_possible_domain = deepcopy(var_obj.get_possible_domain())
+        for d in copy_of_possible_domain:
             assignment[curr_variable] = d
             constraints = var_obj.get_constraints()
             if self.__check_constraint_agreement(constraints, assignment):
@@ -292,7 +293,9 @@ class CSP:
         visited = {}  # A dictionary of the form: {variable name: (flag, domain)} the flag is used in __is_relevant.
         variables_copy = self.__copy_variables()
         assignment[variable_name] = value
-        variables_copy[variable_name].set_value(value)
+        var_obj = variables_copy[variable_name]
+        var_obj.set_value(value)
+        var_obj.set_possible_domain([value])
         q = queue.Queue()
         q.put(variable_name)
 
@@ -300,7 +303,7 @@ class CSP:
             curr = q.get()
             if self.__is_relevant(curr, visited, variables_copy):
                 self.__enter_neighbors_to_queue(curr, q, variables_copy)
-                visited[curr] = (False, variables_copy[curr].get_domain())
+                visited[curr] = (False, variables_copy[curr].get_possible_domain())
                 is_wiped_out = self.__check_possible_domain(curr, assignment, variables_copy)
                 if is_wiped_out:
                     return False
