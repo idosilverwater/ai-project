@@ -37,7 +37,7 @@ def parser(lines):
     #     preference = []
     return domain, names, new_preferences, non_work_shift
 
-#
+
 def create_workers_csp(filename, preferences_include=True):
     """
     gets filename of a workers csp kind and returns a an initialized CSP object
