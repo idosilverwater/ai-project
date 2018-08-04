@@ -38,7 +38,7 @@ class WalkSat(Solver):
     a Walksat based solver for csp problems.
     """
 
-    def __init__(self, csp, random_value=0.5, max_flips=1000):
+    def __init__(self, csp, random_value=0.4, max_flips=1000):
         """
         accepts a csp problem initialized.
         """
@@ -56,14 +56,24 @@ class WalkSat(Solver):
 
     def list_of_constraints(self): # TODO check this?
         constraints = set()
+        l = list()
+        for k in self.csp.constraints.get_all_constraints():
+            for a in self.csp.constraints.get_all_constraints()[k]:
+                l.append(a.id)
+        print(l.sort(), l)
+        print(len(self.csp.constraints.get_all_constraints()))
+
         for vars in self.csp.constraints.get_all_constraints():
             constraints = constraints.union(self.csp.constraints.get_all_constraints()[vars])
+
         self.constraints = list(constraints)
+
+        print(len(self.constraints))
+        print(type(self.constraints[0]))
+        # exit()
 
     def get_assignment(self):
         return self.csp.get_assignment()
-
-
 
     def __flip_coin(self):
         """
@@ -71,7 +81,9 @@ class WalkSat(Solver):
         :return:
         """
         r = random.random()
-        return r < self.__p
+        if r < self.__p:
+            return magicNums.DOMAIN_TRUE_VAL
+        return magicNums.DOMAIN_FALSE_VAL
 
     def set_max_flips(self, max_flips):
         self.__max_flips = max_flips
@@ -118,6 +130,11 @@ class WalkSat(Solver):
         """
         return self.csp.check_constraint_agreement(self.constraints, self.csp.assignment)
 
+    def __flip(self, val):
+        if val == magicNums.DOMAIN_TRUE_VAL:
+            return magicNums.DOMAIN_FALSE_VAL
+        return magicNums.DOMAIN_TRUE_VAL
+
 
     def __flip_value(self, variable_name):
         """
@@ -126,7 +143,7 @@ class WalkSat(Solver):
         :return:
         """
         old = self.csp.variables[variable_name].get_value()
-        self.csp.assign_variable(variable_name, not old)
+        self.csp.assign_variable(variable_name, self.__flip(old))
 
     def random_assignment(self):
         """
@@ -218,11 +235,11 @@ class WalkSat(Solver):
         count = 0
 
         for constraint in self.constraints:
-            print("============")
-            print('constraint', constraint)
-            print('current assignment', self.csp.assignment)
+            # print("============")
+            # print('constraint', constraint)
+            # print('current assignment', self.csp.assignment)
             if constraint.check_assignment(self.csp.assignment):
-                print('zit')
+                # print('zit')
                 count += 1
 
         return count
@@ -255,10 +272,15 @@ class WalkSat(Solver):
         :return: dictionary of assignments (of the form {varName: val})
         """
 
-        for i in range(10000):
-            self.random_assignment()
-            print(12, self.get_num_satisfied())
+        # print('+++++++++=')
+        # print(self.get_assignment())
+        self.random_assignment()
+        # print(self.get_assignment())
+        # print('+++++++++=')
 
+
+        for const in self.constraints:
+            print(type(const))
 
         if self.is_satisfied():
             return True
@@ -267,6 +289,7 @@ class WalkSat(Solver):
                 print(i, self.get_num_satisfied())
                 constraint = self.random_constraint()
                 if self.__flip_coin():
+                    self.__flip_random_variable(constraint)
                     self.__flip_random_variable(constraint)
                 else:
                     self.__flip_most_satisfying()

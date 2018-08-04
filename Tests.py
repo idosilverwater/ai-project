@@ -28,5 +28,5 @@ def worker_solve(filename, algo, preferences):
     print("Done")
 
 if __name__ == "__main__":
-    worker_solve("examples/example2.csp", WALKSAT, True)
+    worker_solve("examples/example1.csp", WALKSAT, True)
 
