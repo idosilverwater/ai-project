@@ -1,5 +1,5 @@
 import DomainHeuristic
-
+from functools import  partial
 
 class MinimumConflict(DomainHeuristic):
 

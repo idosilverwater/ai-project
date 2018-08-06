@@ -238,6 +238,7 @@ class WalkSat(Solver):
             # print("============")
             # print('constraint', constraint)
             # print('current assignment', self.csp.assignment)
+            # TODO There shouldn't be csp.assignment. please change it so the solver alone maintains the dict assignment
             if constraint.check_assignment(self.csp.assignment):
                 # print('zit')
                 count += 1

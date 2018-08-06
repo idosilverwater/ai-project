@@ -2,19 +2,12 @@ from Variable import *
 import queue
 from copy import *
 
+
 # import LeastConstrainingValue
 
 
 # import DomainHeuristic, LeastConstrainingValue, MinimumConflict, MinimumRemainingValue
 # TODO arc consistency.
-"""
-HOW to do arc consistency- copy current CSP. than do ar consistency on the non copied.
-This way we can "rewrite" back to the old csp when the backtrack fails. problem is: costly on memory. 
-but fuck it, we've got at least 4GB of mem...
-"""
-
-
-# TODO forward checking.
 
 
 class CSP(object):
@@ -22,9 +15,8 @@ class CSP(object):
     main CSP handler. should be main authority for handling variables, domains and constraints.
     """
 
-    # TODO determine what input the constructor should have.
     def __init__(self, domain, variables, constraints,
-                 variable_heuristic_creator, forward_checking_flag=True):
+                 variable_heuristic_creator, domain_heuristic_creator, forward_checking_flag=True):
         """
         :param domain: a lists of lists such that list i corresponds with variable name i.
         :param variables: a list of variable names.
@@ -35,7 +27,7 @@ class CSP(object):
         self.variables = {}
         self._generate_variables(variables, domain)  # builds a dictionary of variables.
         self.variable_heuristic = variable_heuristic_creator(self.variables)
-        self.domain_heuristic = None  # domain_heuristic_factory(self.variables, self.constraints)
+        self.domain_heuristic = domain_heuristic_creator(self.variables, self.constraints)
         self.__fc_variables_backup = [self.variables]  # a stack contains the previous versions of variables.
         self._forward_checking_flag = forward_checking_flag
 
@@ -80,17 +72,14 @@ class CSP(object):
         :param variable_name: the name of the variable to get it's domain value from.
         :return: a list of values to assign.
         """
-        return self.variables[
-            variable_name].get_possible_domain()  # TODO should use the heuristics.
-        # return self.domain_heuristic.get_order_domain()
+        return self.domain_heuristic.get_order_domain()
 
     def select_unassigned_variable(self):
         """
         uses heuristic to choose a variable.
         :return: full variable name.
         """
-        return self.variable_heuristic.select_unassigned_variable(
-            self.variables)
+        return self.variable_heuristic.select_unassigned_variable()
 
     def get_assignment(self):
         return self.assignment
@@ -107,18 +96,6 @@ class CSP(object):
         # print( 333, type(variable.get_value())) # todo delete
         variable.set_value(value)
         self.assignment[var_name] = value
-
-        # add forward checking:
-        pass  # TODO
-
-    # def __forward_check_consistent(self, variable_name):
-    #     # TODO  notice this is a Scetch with no basis..
-    #     variable = self.variables[variable_name]
-    #     # variable.set_affecting_value(value)
-    #     affected_variables = []
-    #     for neighbour in variable.get_neighbors():
-    #         if self.variables[neighbour].is_not_assigned:
-    #             affected_variables.append(neighbour)
 
     def is_consistent(self, variable_name, value):
         """
@@ -137,17 +114,13 @@ class CSP(object):
         if not variable.is_value_legit(value):
             return False
 
-        # if self._forward_checking_flag: #TODO understand how to forward checking god dammnit.
-        #     self.__forward_check_consitent(variable_name)
-
         all_constraints = self.variables[variable_name].get_constraints()
 
-        variable_set = variable.get_neighbors()  # TODO(Noy): copy code for assignment from hear
+        variable_set = variable.get_neighbors()
         assignment = {variable_name: self.variables[variable_name].get_value()
                       for variable_name in variable_set}
         assignment[variable_name] = value  # Assignment should have the 'new' value.
 
-        # TODO try and optimise this whole operation. Maybe with threads or something. (can thread this function)
         res = self.check_constraint_agreement(all_constraints, assignment)
         if not res:
             return res
@@ -173,11 +146,11 @@ class CSP(object):
         current_Value = variable.get_value()  # should be relevant in forward checking.
         variable.set_value(None)
         # TODO : MAJOR checks.
+
         # forward checking:
         if self._forward_checking_flag:
             self.__restore()
 
-    # TODO check if assignment is a legit one. means that for every constrain, check if all values are possible together
     def check_assignment(self, variable_assignment):
         """
         # checks the full assignment over all constraints

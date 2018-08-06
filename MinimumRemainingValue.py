@@ -25,7 +25,7 @@ class MinimumRemainingValue(VariableHeuristic):
         variables_by_values.sort(key=lambda tup: tup[1])
         self.sorted_variables = [*map(lambda x: x[0], variables_by_values)]
 
-    def select_unassigned_variable(self, _):  # TODO find suitable way to do this function, and speak about it with me.
+    def select_unassigned_variable(self):
         return self.sorted_variables
 
 

@@ -16,7 +16,6 @@ class Constraint:
         self.is_soft = softness
         self.set_of_variables = set(variables)
 
-    # TODO not tested.
     def check_assignment(self, assignment):
         """
         goes through all possible tuples of assignment and find if there is at least one that is okay.
@@ -57,18 +56,6 @@ class Constraint:
                         list_of_assignments.add(tuple(possible_assignment))
         return list_of_assignments
 
-    # TODO i think this is totally non relevant, and maybe should be removed.
-    # def is_value_legit(self, variable_name, value):
-    #     """
-    #     checks if the value can be assigned to this variable.
-    #     """
-    #     pos = self.get_variable_pos(variable_name)
-    #     if pos != -1:
-    #         for possible_values in self.possible_values:
-    #             if possible_values[pos] == value:  # needs at least one possible value for this to be a legit one.
-    #                 return True
-    #         return False
-    #     return True  # this constraint doesn't care..
 
     def get_variable_pos(self, var_name):
         if var_name not in self.set_of_variables:

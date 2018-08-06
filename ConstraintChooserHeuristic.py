@@ -1,3 +1,6 @@
+from functools import partial
+
+
 class SoftConstraintsHeuristic:
 
     def __init__(self, constraints, constraint):
@@ -40,4 +43,4 @@ class SoftConstraintsHeuristic:
         """
 
         # It's ok that it is ordering in ascending order, since the less constraint_level the better
-        return self.constraints.sort(key=partial(self.constraint_level, assignments = remaining_constraints))
+        return self.constraints.sort(key=partial(self.constraint_level, assignments=remaining_constraints))

@@ -55,21 +55,3 @@ class Backtrack(Solver):
             self.reset_assignment()
             res = self.backtrack()
         return True
-
-
-# class for light check ups.
-# TODO delete.
-class DummyCsp:
-    def __init__(self):
-        self.variables = ["J1", "J2", "Lels", "LOls"]
-
-    def select_unassigned_variable(self):
-        return 'Lels'
-
-
-# TESTS:
-if __name__ == '__main__':
-    lels = DummyCsp()
-    b = Backtrack(lels)
-    b.solve()
-    pass

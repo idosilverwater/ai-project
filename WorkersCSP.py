@@ -63,5 +63,5 @@ def create_workers_csp(filename, preferences_include=True):
         preferences = list()
 
     constraints = Constraints(preferences, non_work_shift, variables)
-    # TODO create_workers_csp should recive which factory to give to the CSP class.
+    # TODO create_workers_csp should receive which factory to give to the CSP class.
     return CSP(domain, variables, constraints, minimum_remaining_value_heuristic_factory)

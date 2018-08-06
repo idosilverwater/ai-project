@@ -1,5 +1,5 @@
 from WorkersCSP import create_workers_csp
-from Degree import *  # TODO(Noy): To remove.
+from Degree import *
 from BackTrack import *
 from LeastConstrainingValue import *
 import sys
@@ -12,12 +12,13 @@ parser.add_argument('-prob-type', type=str, default='w', nargs=1, help='Problem 
 parser.add_argument('--no-soft', help='With/out soft constraints', action='store_true')
 parser.add_argument('--algo', default='b', type=str, nargs=1, help='Algorithm to be used by the solver')
 
-
 algorithms = {'b': Backtrack}
+
 
 def welcome():
     print("Welcome to the CSP solver problem.")
     print("Let's see if we can solve your problem")
+
 
 def worker_solve(filename, problem_type, algo, preferences):
     filename = sys.argv[1]
@@ -39,7 +40,7 @@ if __name__ == "__main__":
 
     welcome()
 
-    if len(sys.argv) == 1: # If no arguments are given we are in test mode
+    if len(sys.argv) == 1:  # If no arguments are given we are in test mode
         # csp = create_workers_csp("examples/example1.csp")
         # print(csp.constraints.get_all_constraints())
 

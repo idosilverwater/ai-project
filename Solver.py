@@ -45,7 +45,6 @@ class Solver:
         checks if there is an assignment to all variables.
         :return: True if there is.
         """
-        # TODO make it faster by putting a number of items that are assigned. this way no need for a loop
         return self.num_of_assigned == len(self.assignment)
 
     def assignment_legit(self):
