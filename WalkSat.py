@@ -33,6 +33,7 @@ WalkSat:
 """
 
 
+# TODO work with self assignment and not csp. assignment.
 class WalkSat(Solver):
     """
     a Walksat based solver for csp problems.
@@ -54,7 +55,7 @@ class WalkSat(Solver):
 
         # self.clauses = self.cnfConverter()
 
-    def list_of_constraints(self): # TODO check this?
+    def list_of_constraints(self):  # TODO check this?
         constraints = set()
         l = list()
         for k in self.csp.constraints.get_all_constraints():
@@ -135,7 +136,6 @@ class WalkSat(Solver):
             return magicNums.DOMAIN_FALSE_VAL
         return magicNums.DOMAIN_TRUE_VAL
 
-
     def __flip_value(self, variable_name):
         """
         Flip the value (True to False and False to True) of the variable named variable_name
@@ -151,7 +151,7 @@ class WalkSat(Solver):
         :return:
         """
         for name in self.__variable_names:
-            self.csp.assign_variable(name, self.__flip_coin())
+            self.csp.assign_variable(name, self.__flip_coin())  # TODO this is true or false! not magicNums.True!
 
     # def assign_value(self, variable_name, value):
     #     """
@@ -214,13 +214,12 @@ class WalkSat(Solver):
         :return: the variable who's flipping will satisfy the most clauses.
         """
 
-
         max_var = self.__variable_names[0]
         max_num = self.__num_satisfied(max_var)
 
         for variable_name in self.__variable_names:
             cur = self.__num_satisfied(variable_name)
-            if  cur > max_num:
+            if cur > max_num:
                 max_num = cur
                 max_var = variable_name
 
@@ -245,9 +244,6 @@ class WalkSat(Solver):
 
         return count
 
-
-
-
     def __num_satisfied(self, variable_name):
         """
         Checks how much clauses are satisfied after flipping this variables value.
@@ -262,7 +258,7 @@ class WalkSat(Solver):
             if constraint.check_assignment(self.csp.assignment):
                 count += 1
 
-        self.__flip_value(variable_name) # flip back
+        self.__flip_value(variable_name)  # flip back
 
         return count
 
@@ -278,7 +274,6 @@ class WalkSat(Solver):
         self.random_assignment()
         # print(self.get_assignment())
         # print('+++++++++=')
-
 
         for const in self.constraints:
             print(type(const))
@@ -296,5 +291,3 @@ class WalkSat(Solver):
                     self.__flip_most_satisfying()
 
         return True
-
-

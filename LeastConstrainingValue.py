@@ -2,6 +2,8 @@ from DomainHeuristic import DomainHeuristic
 from functools import partial
 
 
+# TODO THIS IS BUG RIDDEN> Please fix this classes.
+
 class LeastConstrainingValue(DomainHeuristic):
 
     def get_num_of_possible_domain_for_assignment(self, assignments, variable):
@@ -46,6 +48,8 @@ class LeastConstrainingValue(DomainHeuristic):
 
         return sum
 
+    # TODO THIS isn't documented good enough, i have no idea which constraint to give you, furthermore one var have
+    #                                                                                            many constraints.
     def get_order_domain(self, variable, current_assignment, constraint):
         """
         Selects the value for variable, that is least constricting to variables neighbors.

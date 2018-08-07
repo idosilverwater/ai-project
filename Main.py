@@ -21,10 +21,11 @@ def welcome():
 
 
 def worker_solve(filename, problem_type, algo, preferences):
-    filename = sys.argv[1]
+    # filename = sys.argv[1] # TODO why is this needed?
     csp = create_workers_csp(filename, preferences)
     algorithm = algorithms[algo](csp)
-    if algorithm.backtrack():  # TODO need the calling for the function to be generic (instead of "backtrack" "run")
+
+    if algorithm.backtrack():  # TODO need the calling for the function to be generic. (J): Call backtrack.solve(), this was just my own test.
         print("Satisfiable")
         dic = algorithm.get_assignment()
         for key in dic:
@@ -35,8 +36,6 @@ def worker_solve(filename, problem_type, algo, preferences):
 
 
 if __name__ == "__main__":
-    args = parser.parse_args()
-    print(args)
 
     welcome()
 
@@ -56,7 +55,7 @@ if __name__ == "__main__":
         ##############
         import time
 
-        worker_solve("examples/example2.csp")
+        worker_solve("examples/example2.csp", None, 'b', False)
 
         # print(csp.is_consistent('Sarah 6 1', 'True'))
         # assignment = {name: None for name in csp.variables.keys()}
@@ -69,4 +68,6 @@ if __name__ == "__main__":
         # print(time.time() - a)
         # print(c)
     else:
+        args = parser.parse_args()
+        print(args)
         worker_solve(args.filename, args.prob_type[0], args.algo[0], args.no_soft)

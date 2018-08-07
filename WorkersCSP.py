@@ -1,8 +1,11 @@
 from CSP import CSP
 from Constraints import *
+import magicNums
+
 from Degree import *
 from MinimumRemainingValue import *
-import magicNums
+
+import LeastConstrainingValue
 
 DAYS = magicNums.DAYS_IN_WEEK
 SHIFTS = magicNums.SHIFTS_IN_DAY
@@ -38,6 +41,7 @@ def parser(lines):
     return domain, names, new_preferences, non_work_shift
 
 
+# TODO preference is not needed, for that we have has add constraints, and make_visible.
 def create_workers_csp(filename, preferences_include=True):
     """
     gets filename of a workers csp kind and returns a an initialized CSP object
@@ -59,9 +63,10 @@ def create_workers_csp(filename, preferences_include=True):
             for s in range(SHIFTS):
                 variables.append(str(name) + magicNums.SEPARATOR + str(d) + magicNums.SEPARATOR + str(s))
 
-    if not preferences_include:
-        preferences = list()
+    # if not preferences_include:
+    #     preferences = list()
 
     constraints = Constraints(preferences, non_work_shift, variables)
     # TODO create_workers_csp should receive which factory to give to the CSP class.
-    return CSP(domain, variables, constraints, minimum_remaining_value_heuristic_factory)
+    return CSP(domain, variables, constraints, minimum_remaining_value_heuristic_factory,
+               LeastConstrainingValue.LeastConstrainingValue)

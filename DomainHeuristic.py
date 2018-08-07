@@ -1,7 +1,7 @@
 class DomainHeuristic:
     """This class represents a domain heuristic"""
 
-    def __init__(self, ):
+    def __init__(self):
         pass
 
     def get_order_domain(self, variable, current_assignment, constraint):

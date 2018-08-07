@@ -27,11 +27,11 @@ class CSP(object):
         self.variables = {}
         self._generate_variables(variables, domain)  # builds a dictionary of variables.
         self.variable_heuristic = variable_heuristic_creator(self.variables)
-        self.domain_heuristic = domain_heuristic_creator(self.variables, self.constraints)
+        self.domain_heuristic = domain_heuristic_creator()
         self.__fc_variables_backup = [self.variables]  # a stack contains the previous versions of variables.
         self._forward_checking_flag = forward_checking_flag
 
-        self.assignment = {}
+        self.assignment = {}  # TODO remove, this isn't relevant for csp and it should not manage it.
 
     def _generate_variables(self, names, domain):
         """
@@ -72,7 +72,8 @@ class CSP(object):
         :param variable_name: the name of the variable to get it's domain value from.
         :return: a list of values to assign.
         """
-        return self.domain_heuristic.get_order_domain()
+        # return self.domain_heuristic.get_order_domain()
+        return self.variables[variable_name].get_possible_domain()
 
     def select_unassigned_variable(self):
         """
