@@ -7,7 +7,7 @@ from magicNums import *
 
 class LeastConstrainingValue(DomainHeuristic):
 
-    def constraint_score(self, variable, value, remaining_assignments):
+    def __constraint_score(self, variable, value, remaining_assignments):
         """
         Return the constraint score this value gets.
         The constraint score is the amount of possig
@@ -74,10 +74,10 @@ class LeastConstrainingValue(DomainHeuristic):
             remaining_assignments[constraint] = constraint.get_remaining_constraints(current_assignment)
 
         least_constraining_value = variable.get_possible_domain()[0]
-        least_constraining_score = self.constraint_score(variable, remaining_assignments)
+        least_constraining_score = self.__constraint_score(variable, remaining_assignments)
 
         for value in variable.get_possible_domain():
-            cur = self.constraint_score(variable, value, remaining_assignments)
+            cur = self.__constraint_score(variable, value, remaining_assignments)
             if cur > least_constraining_score:  # supposed to be bigger then! higher constraint score is good.
                 least_constraining_score = cur
                 least_constraining_value = value

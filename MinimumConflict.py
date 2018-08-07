@@ -3,17 +3,24 @@ from functools import  partial
 
 class MinimumConflict(DomainHeuristic):
 
-    def neighbor_conflict(self, value, variable, current_assignment, constraint):
+    def __get_conflict_score(self, variable, value, current_assignment):
         """
-        This returns the amount of domain values that have been blocked off for the neighboring variables.
+        The conflict score of the value.
+        Returns the amount of constraints that are not satisfiable with the assignment of value to variable.
+        The lower the better
+        :param value:
         :return:
         """
 
-        variable_name = variable.get_name()
-        variable_pos = variable.constraint.get_variable_pos(variable_name)
-        current_assignment[variable_pos] = value
+        current_assignment[variable.get_name()] = value
+        constraints = variable.get_constraints()
 
-        return self.constraint.get_number_of_constraints(current_assignment)
+        score = 0
+        for constraint in constraints:
+            if constraint.get_number_of_constraints(current_assignment) == 0:
+                score += 1
+
+        return score
 
     def get_value(self, variable, current_assignment):
         """
@@ -24,12 +31,16 @@ class MinimumConflict(DomainHeuristic):
         :return: The value that creates minimum conflict with constraints.
         """
 
-        min_conflict_value =
+        min_conflict_value = variable.get_possible_domain()[0]
+        min_conflict_score = self.__get_conflict_score(min_conflict_value)
 
+        for value in variable.get_possible_domain():
+            cur = self.__get_conflict_score(value)
+            if cur < min_conflict_score:
+                min_conflict_score = cur
+                min_conflict_value = value
 
-        order = self.variable.get_domain()
-        return order.sort(key=partial(self.neighbor_conflict, variable=variable, current_assignment=current_assignment,
-                                      constraint=constraint)) # TODO does this sort needs to be reversed?
+        return min_conflict_value
 
 
 def minimum_conflict_heuristic_factory(variables, constraints):

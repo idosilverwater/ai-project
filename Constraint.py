@@ -74,7 +74,7 @@ class Constraint:
         :param assignment: a dictionary {var_name1: value,......}
         :return: an integer.
         """
-        return len(self.__collect_possible_assignments(assignment))
+        return len(self.collect_possible_assignments(assignment))
 
 
     def __repr__(self):
