@@ -74,7 +74,7 @@ class LeastConstrainingValue(DomainHeuristic):
             remaining_assignments[constraint] = constraint.get_remaining_constraints(current_assignment)
 
         least_constraining_value = variable.get_possible_domain()[0]
-        least_constraining_score = self.__constraint_score(variable, remaining_assignments)
+        least_constraining_score = self.__constraint_score(variable, least_constraining_value, remaining_assignments)
 
         for value in variable.get_possible_domain():
             cur = self.__constraint_score(variable, value, remaining_assignments)

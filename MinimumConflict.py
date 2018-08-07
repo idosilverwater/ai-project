@@ -1,6 +1,7 @@
 import DomainHeuristic
 from functools import  partial
 
+
 class MinimumConflict(DomainHeuristic):
 
     def __get_conflict_score(self, variable, value, current_assignment):
@@ -32,10 +33,10 @@ class MinimumConflict(DomainHeuristic):
         """
 
         min_conflict_value = variable.get_possible_domain()[0]
-        min_conflict_score = self.__get_conflict_score(min_conflict_value)
+        min_conflict_score = self.__get_conflict_score(variable, min_conflict_value, current_assignment)
 
         for value in variable.get_possible_domain():
-            cur = self.__get_conflict_score(value)
+            cur = self.__get_conflict_score(variable, value, current_assignment)
             if cur < min_conflict_score:
                 min_conflict_score = cur
                 min_conflict_value = value
