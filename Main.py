@@ -24,8 +24,7 @@ def worker_solve(filename, problem_type, algo, preferences):
     # filename = sys.argv[1] # TODO why is this needed?
     csp = create_workers_csp(filename, preferences)
     algorithm = algorithms[algo](csp)
-
-    if algorithm.backtrack():  # TODO need the calling for the function to be generic. (J): Call backtrack.solve(), this was just my own test.
+    if algorithm.solve():
         print("Satisfiable")
         dic = algorithm.get_assignment()
         for key in dic:

@@ -208,6 +208,8 @@ class Constraints:
         self.__visible_constraints = dict(self.__all_constraints)
 
     def add_constraint(self):  # TODO fix it so that it can work with CSP.
+        # constraint =  self.__constraint_heuristic.doSomehing()
+
         variables, constraint = self.__constraint_heuristic(
             self.__visible_constraints, self.__all_constraints)
         # TODO! NOTICE that these constraint should be added to constraints by var too.
