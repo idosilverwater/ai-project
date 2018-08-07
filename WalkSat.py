@@ -57,12 +57,12 @@ class WalkSat(Solver):
 
     def list_of_constraints(self):  # TODO check this?
         constraints = set()
-        l = list()
-        for k in self.csp.constraints.get_all_constraints():
-            for a in self.csp.constraints.get_all_constraints()[k]:
-                l.append(a.id)
-        print(l.sort(), l)
-        print(len(self.csp.constraints.get_all_constraints()))
+        # l = list()
+        # for k in self.csp.constraints.get_all_constraints():
+        #     for a in self.csp.constraints.get_all_constraints()[k]:
+        #         l.append(a.id)
+        # print(l.sort(), l)
+        # print(len(self.csp.constraints.get_all_constraints()))
 
         for vars in self.csp.constraints.get_all_constraints():
             constraints = constraints.union(self.csp.constraints.get_all_constraints()[vars])
