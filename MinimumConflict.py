@@ -15,13 +15,18 @@ class MinimumConflict(DomainHeuristic):
 
         return self.constraint.get_number_of_constraints(current_assignment)
 
-    def get_value(self, variable, current_assignment, constraint):
+    def get_value(self, variable, current_assignment):
         """
-        Selects a value out of variable's domain, that dissatisfies the least amount of constraints
-        (that variable is a part of).
-        :param variable: The variable we want to assign a value to.
-        :return: A value for variable according to the heuristic
+        Selects a value out of the variable's domain, that dissatisfies the least amount of constraints (that contain
+        the variable).
+        :param variable: The tested variable
+        :param current_assignment: Current assignment of the variables.
+        :return: The value that creates minimum conflict with constraints.
         """
+
+        min_conflict_value =
+
+
         order = self.variable.get_domain()
         return order.sort(key=partial(self.neighbor_conflict, variable=variable, current_assignment=current_assignment,
                                       constraint=constraint)) # TODO does this sort needs to be reversed?

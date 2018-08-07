@@ -73,7 +73,7 @@ class LeastConstrainingValue(DomainHeuristic):
             # get_remaining_constraints returns the remaining possible assignments that satisfy the constraint.
             remaining_assignments[constraint] = constraint.get_remaining_constraints(current_assignment)
 
-        least_constraining_value = variable.get_possible_domain()
+        least_constraining_value = variable.get_possible_domain()[0]
         least_constraining_score = self.constraint_score(variable, remaining_assignments)
 
         for value in variable.get_possible_domain():
