@@ -45,7 +45,7 @@ class Constraint:
                 return True
         return False
 
-    def __collect_possible_assignments(self, assignment):
+    def collect_possible_assignments(self, assignment):
         list_of_assignments = set()
         for variable_name in assignment:
             pos = self.get_variable_pos(variable_name)
@@ -76,13 +76,6 @@ class Constraint:
         """
         return len(self.__collect_possible_assignments(assignment))
 
-    def get_remaining_constraints(self, assignment): #This function like the get_number_of_constraints, is used by the domain heuristics
-        """
-        return the possible assignments that are still present this assignment. (inclusive)
-        :param assignment: a dictionary {var_name1: value,......}
-        :return: A list of assignments
-        """
-        return self.__collect_possible_assignments(assignment)
 
     def __repr__(self):
         return str(self.variables) + str(self.possible_values)

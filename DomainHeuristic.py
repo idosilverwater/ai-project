@@ -4,7 +4,7 @@ class DomainHeuristic:
     def __init__(self):
         pass
 
-    def get_order_domain(self, variable, current_assignment, constraint):
+    def get_value(self, variable, current_assignment):
         """
         Selects a value for variable according to the heuristic.
         :param variable: The variable we want to assign a value to.

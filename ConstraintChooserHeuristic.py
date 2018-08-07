@@ -12,7 +12,7 @@ class SoftConstraintsHeuristic:
         self.constraint = constraint
 
     def update_constraints(self, constraints):
-        self.constraints
+        self.constraints = constraints
 
     def constraint_level(self, constraint, assignments):
         """

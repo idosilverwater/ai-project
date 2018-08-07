@@ -15,7 +15,7 @@ class MinimumConflict(DomainHeuristic):
 
         return self.constraint.get_number_of_constraints(current_assignment)
 
-    def get_order_domain(self, variable, current_assignment, constraint):
+    def get_value(self, variable, current_assignment, constraint):
         """
         Selects a value out of variable's domain, that dissatisfies the least amount of constraints
         (that variable is a part of).
