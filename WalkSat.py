@@ -57,12 +57,6 @@ class WalkSat(Solver):
 
     def list_of_constraints(self):  # TODO check this?
         constraints = set()
-        # l = list()
-        # for k in self.csp.constraints.get_all_constraints():
-        #     for a in self.csp.constraints.get_all_constraints()[k]:
-        #         l.append(a.id)
-        # print(l.sort(), l)
-        # print(len(self.csp.constraints.get_all_constraints()))
 
         for vars in self.csp.constraints.get_all_constraints():
             constraints = constraints.union(self.csp.constraints.get_all_constraints()[vars])
@@ -74,7 +68,7 @@ class WalkSat(Solver):
         # exit()
 
     def get_assignment(self):
-        return self.csp.get_assignment()
+        return self.assignment
 
     def __flip_coin(self):
         """
@@ -129,7 +123,7 @@ class WalkSat(Solver):
         checks if model is satisfied, which means it checks the assignment over the csp result.
         :return: True or False
         """
-        return self.csp.check_constraint_agreement(self.constraints, self.csp.assignment)
+        return self.csp.check_constraint_agreement(self.constraints, self.assignment)
 
     def __flip(self, val):
         if val == magicNums.DOMAIN_TRUE_VAL:
@@ -151,7 +145,7 @@ class WalkSat(Solver):
         :return:
         """
         for name in self.__variable_names:
-            self.csp.assign_variable(name, self.__flip_coin())  # TODO this is true or false! not magicNums.True!
+            self.assign_value(name, self.__flip_coin())
 
     # def assign_value(self, variable_name, value):
     #     """
@@ -238,7 +232,7 @@ class WalkSat(Solver):
             # print('constraint', constraint)
             # print('current assignment', self.csp.assignment)
             # TODO There shouldn't be csp.assignment. please change it so the solver alone maintains the dict assignment
-            if constraint.check_assignment(self.csp.assignment):
+            if constraint.check_assignment(self.assignment):
                 # print('zit')
                 count += 1
 
@@ -255,7 +249,7 @@ class WalkSat(Solver):
         count = 0
 
         for constraint in self.constraints:
-            if constraint.check_assignment(self.csp.assignment):
+            if constraint.check_assignment(self.assignment):
                 count += 1
 
         self.__flip_value(variable_name)  # flip back
