@@ -3,16 +3,14 @@ from functools import partial
 
 class SoftConstraintsHeuristic:
 
-    def __init__(self, constraints, constraint):
+    def __init__(self, soft_constraints):
         """
-
-        :param constraints:
+        :param soft_constraints:
         """
-        self.constraints = constraints
-        self.constraint = constraint
+        self.soft_constraints = soft_constraints
 
-    def update_constraints(self, constraints):
-        self.constraints = constraints
+    def update_constraints(self, soft_constraints):
+        self.soft_constraints = soft_constraints
 
     def constraint_level(self, constraint, assignments):
         """
@@ -29,18 +27,15 @@ class SoftConstraintsHeuristic:
             if assignment[pos] == False:
                 count += 1
 
-        return count
+        return constraint.is_soft, count
 
-    def get_order_domain(self, remaining_constraints):
+    def get_adding_order(self, remaining_assignments):
         """
-        Selects a value out of variable's domain, that dissatisfies the least amount of constraints
-        (that variable is a part of).
-
-        remaining_constraints is the remaining possible assignments after the hard constraints.
-
-        :param variable: The variable we want to assign a value to.
-        :return: A value for variable according to the heuristic
+        Return order of constraint addition, first according to softness level (the lower the better)
+        Second, according to the least amount of least conflict.
+        :return:
         """
 
         # It's ok that it is ordering in ascending order, since the less constraint_level the better
-        return self.constraints.sort(key=partial(self.constraint_level, assignments=remaining_constraints))
+        return self.soft_constraints.sort(key=partial(self.constraint_level, assignments=remaining_assignments))
+
