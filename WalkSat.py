@@ -39,7 +39,7 @@ class WalkSat(Solver):
     a Walksat based solver for csp problems.
     """
 
-    def __init__(self, csp, random_value=0.4, max_flips=1000):
+    def __init__(self, csp, random_value=0.5, max_flips=35):
         """
         accepts a csp problem initialized.
         """
@@ -63,10 +63,6 @@ class WalkSat(Solver):
 
         self.constraints = list(constraints)
 
-        print(len(self.constraints))
-        print(type(self.constraints[0]))
-        # exit()
-
     def get_assignment(self):
         return self.assignment
 
@@ -77,8 +73,8 @@ class WalkSat(Solver):
         """
         r = random.random()
         if r < self.__p:
-            return magicNums.DOMAIN_TRUE_VAL
-        return magicNums.DOMAIN_FALSE_VAL
+            return True
+        return False
 
     def set_max_flips(self, max_flips):
         self.__max_flips = max_flips
@@ -137,7 +133,7 @@ class WalkSat(Solver):
         :return:
         """
         old = self.csp.variables[variable_name].get_value()
-        self.csp.assign_variable(variable_name, self.__flip(old))
+        self.assign_value(variable_name, self.__flip(old))
 
     def random_assignment(self):
         """
@@ -228,12 +224,7 @@ class WalkSat(Solver):
         count = 0
 
         for constraint in self.constraints:
-            # print("============")
-            # print('constraint', constraint)
-            # print('current assignment', self.csp.assignment)
-            # TODO There shouldn't be csp.assignment. please change it so the solver alone maintains the dict assignment
             if constraint.check_assignment(self.assignment):
-                # print('zit')
                 count += 1
 
         return count
@@ -263,25 +254,18 @@ class WalkSat(Solver):
         :return: dictionary of assignments (of the form {varName: val})
         """
 
-        # print('+++++++++=')
-        # print(self.get_assignment())
         self.random_assignment()
-        # print(self.get_assignment())
-        # print('+++++++++=')
-
-        for const in self.constraints:
-            print(type(const))
 
         if self.is_satisfied():
             return True
         else:
             for i in range(self.__max_flips):
-                print(i, self.get_num_satisfied())
                 constraint = self.random_constraint()
                 if self.__flip_coin():
-                    self.__flip_random_variable(constraint)
                     self.__flip_random_variable(constraint)
                 else:
                     self.__flip_most_satisfying()
 
+        print(len(self.constraints))
+        print(self.get_num_satisfied())
         return True

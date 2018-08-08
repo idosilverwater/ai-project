@@ -6,7 +6,27 @@ from magicNums import *
 # TODO THIS IS BUG RIDDEN> Please fix this classes.
 class LeastConstrainingValue(DomainHeuristic):
 
-    def __constraint_score(self, variable, value, remaining_assignments):
+
+    def __get_conflict_score(self, variable, value, current_assignment):
+        """
+        The conflict score of the value.
+        Returns the amount of constraints that are not satisfiable with the assignment of value to variable.
+        The lower the better
+        :param value:
+        :return:
+        """
+
+        current_assignment[variable.get_name()] = value
+        constraints = variable.get_constraints()
+
+        score = 0
+        for constraint in constraints:
+            if constraint.get_number_of_constraints(current_assignment) == 0:
+                score += 1
+
+        return score
+
+    def __constraint_score(self, variable, value, current_assignment):
         """
         Return the constraint score this value gets.
         The constraint score is the amount of possible remaining assignments.
@@ -15,47 +35,55 @@ class LeastConstrainingValue(DomainHeuristic):
         :return:
         """
 
-        variable_possibilities = dict()
+        # variable_possibilities = dict()
 
-        for constraint in remaining_assignments:
-            for var in constraint.get_variables():
-                if var not in variable_possibilities:  # at the beggining a var has all possibilies
-                    variable_possibilities[var] = variable.get_possible_domain()
-                elif len(variable_possibilities[var]) == 0:  # we already ruled true and false out then continue
-                    continue
-
-                # Flags to check if in the assignment for the current constraint, there is an assignment with true/false
-                # for this var
-                true_flag = False
-                false_flag = False
-
-                for assignment in remaining_assignments[constraint]:
-                    # if in this assignment variable isn't the value then it's not a possibility to start with.
-                    if constraint.get_variable_pos(variable.get_name()) != value:
-                        continue
-
-                    if assignment[constraint.get_variable_pos(var)] == DOMAIN_TRUE_VAL:  # Found True
-                        true_flag = True
-                    if assignment[constraint.get_variable_pos(var)] == DOMAIN_FALSE_VAL:  # Found False
-                        false_flag = True
-
-                # No assignment with True/False has been found thus this constraint can't be assigned by it
-                # therefore the current variable var, doesn't have this value in it's possibilities.
-                if not true_flag:
-                    variable_possibilities[var].remove(DOMAIN_TRUE_VAL)
-                if not false_flag:
-                    variable_possibilities[var].remove(DOMAIN_FALSE_VAL)
+        current_assignment[variable.get_name()] = value
+        constraints = variable.get_constraints()
 
         score = 0
-
-        for constraint in remaining_assignments:
-            for var in constraint.get_variables():
-                score += len(variable_possibilities[var])
+        for constraint in constraints:
+                score += constraint.get_number_of_constraints(current_assignment)
 
         return score
 
+
+
+        #         if var not in variable_possibilities:  # at the beggining a var has all possibilies
+        #             variable_possibilities[var] = variable.get_possible_domain()
+        #         elif len(variable_possibilities[var]) == 0:  # we already ruled true and false out then continue
+        #             continue
+        #
+        #         # Flags to check if in the assignment for the current constraint, there is an assignment with true/false
+        #         # for this var
+        #         true_flag = False
+        #         false_flag = False
+        #
+        #         for assignment in remaining_assignments[constraint]:
+        #             # if in this assignment variable isn't the value then it's not a possibility to start with.
+        #             if constraint.get_variable_pos(variable.get_name()) != value:
+        #                 continue
+        #
+        #             if assignment[constraint.get_variable_pos(var)] == DOMAIN_TRUE_VAL:  # Found True
+        #                 true_flag = True
+        #             if assignment[constraint.get_variable_pos(var)] == DOMAIN_FALSE_VAL:  # Found False
+        #                 false_flag = True
+        #
+        #         # No assignment with True/False has been found thus this constraint can't be assigned by it
+        #         # therefore the current variable var, doesn't have this value in it's possibilities.
+        #         if not true_flag:
+        #             variable_possibilities[var].remove(DOMAIN_TRUE_VAL)
+        #         if not false_flag:
+        #             variable_possibilities[var].remove(DOMAIN_FALSE_VAL)
+        #
+        #
+        # for constraint in remaining_assignments:
+        #     for var in constraint.get_variables():
+        #         score += len(variable_possibilities[var])
+        #
+        # return score
+
     def sort_by_second(self, t):
-        return - t[1]
+        return - t[1] # The minus is on purpuse. we want the largest first.
 
     # TODO THIS isn't documented good enough, i have no idea which constraint to give you, furthermore one var have
     #                                                                                            many constraints.

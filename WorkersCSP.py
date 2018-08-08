@@ -1,15 +1,10 @@
 from CSP import CSP
 from Constraints import *
-import magicNums
-
+from magicNums import *
 from Degree import *
 from MinimumRemainingValue import *
-
-import LeastConstrainingValue
-
-DAYS = magicNums.DAYS_IN_WEEK
-SHIFTS = magicNums.SHIFTS_IN_DAY
-
+from LeastConstrainingValue import *
+# from MinimumConflict import *
 
 def parser(lines):
     """
@@ -42,7 +37,7 @@ def parser(lines):
 
 
 # TODO preference is not needed, for that we have has add constraints, and make_visible.
-def create_workers_csp(filename, preferences_include=True):
+def create_workers_csp(filename, preferences_include, variable_heuristic, domain_heuristic):
     """
     gets filename of a workers csp kind and returns a an initialized CSP object
 
@@ -59,14 +54,30 @@ def create_workers_csp(filename, preferences_include=True):
 
     variables = list()
     for name in names:
-        for d in range(DAYS):
-            for s in range(SHIFTS):
+        for d in range(DAYS_IN_WEEK):
+            for s in range(SHIFTS_IN_DAY):
                 variables.append(str(name) + magicNums.SEPARATOR + str(d) + magicNums.SEPARATOR + str(s))
 
-    # if not preferences_include:
-    #     preferences = list()
+    if not preferences_include:
+        preferences = list()
+
+
+
+    if domain_heuristic == None: # For the case where WalkSAT is used. therefore we don't use heuristics.
+        domain_factory = None
+    elif domain_heuristic == LEAST_CONSTRAINING_VAL:
+        domain_factory = LeastConstrainingValue
+    elif domain_heuristic == MIN_CONFLICT:
+        domain_factory = MinimumConflict
+
+    if variable_heuristic == None: # For the case where WalkSAT is used. therefore we don't use heuristics.
+        variable_factory = None
+    elif variable_heuristic == MIN_REMAINING_VAL:
+        variable_factory = MinimumRemainingValue
+    elif variable_heuristic == DEGREE:
+        variable_factory = Degree
+
 
     constraints = Constraints(preferences, non_work_shift, variables)
     # TODO create_workers_csp should receive which factory to give to the CSP class.
-    return CSP(domain, variables, constraints, minimum_remaining_value_heuristic_factory,
-               LeastConstrainingValue.LeastConstrainingValue)
+    return CSP(domain, variables, constraints, variable_factory, domain_factory)

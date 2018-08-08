@@ -26,8 +26,12 @@ class CSP(object):
         self.domains = {}  # a domain for each variable to be used somehow later on. # TODO consider to delete.
         self.variables = {}
         self._generate_variables(variables, domain)  # builds a dictionary of variables.
-        self.variable_heuristic = variable_heuristic_creator(self.variables)
-        self.domain_heuristic = domain_heuristic_creator()
+
+        if variable_heuristic_creator != None: # For the case in which WalkSAT is used (No heuristic)
+            self.variable_heuristic = variable_heuristic_creator(self.variables)
+        if domain_heuristic_creator != None: # For the case in which WalkSAT is used (No heuristic)
+            self.domain_heuristic = domain_heuristic_creator()
+
         self.__fc_variables_backup = [self.variables]  # a stack contains the previous versions of variables.
         self._forward_checking_flag = forward_checking_flag
 

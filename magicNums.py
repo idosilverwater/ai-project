@@ -17,6 +17,17 @@ SEPARATOR = " "
 AND = "&"
 OR = "|"
 
+
+BACKTRACK = 'b'
+WALKSAT = 'w'
+
+MIN_REMAINING_VAL = "min_remaining_val"
+MIN_CONFLICT = "min_conflict"
+LEAST_CONSTRAINING_VAL = "least_constraining_val"
+DEGREE = "degree"
+
+WORKER_PROB = 'w'
+
 # Hard constraint Value
 HARD_CONSTRAINT_VALUE = 0
 BAKERY_SOFT_CONSTRAINT_VALUE = 1
