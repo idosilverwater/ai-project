@@ -34,26 +34,19 @@ def make_csv(filename, assignment):
     f.close()
 
 
-
-def worker_solve(filename, algo, preferences):
-    csp = create_workers_csp(filename, preferences)
+def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
+    csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic)
     algorithm = algorithms[algo](csp)
-    if algorithm.solve(): # TODO need the calling for the function to be generic (instead of "backtrack" "run")
+    if algorithm.solve():
         print("Satisfiable")
-
         dic = algorithm.get_assignment()
-
-        print(1, algorithm.get_num_satisfied())
-        print(2, len(algorithm.constraints))
-
-        for v in dic:
-            print(v, ":", dic[v])
+        for key in dic:
+            print(key + " : " + dic[key])
         make_csv(filename, dic)
-
     else:
         print("Unsatisfiable")
     print("Done")
 
 if __name__ == "__main__":
-    worker_solve("examples/example1.csp", WALKSAT, True)
+    worker_solve("examples/all_can't_work_in_the_same_shift", WALKSAT, False, None, None)
 

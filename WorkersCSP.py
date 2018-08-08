@@ -37,7 +37,7 @@ def parser(lines):
 
 
 # TODO preference is not needed, for that we have has add constraints, and make_visible.
-def create_workers_csp(filename, preferences_include, variable_heuristic, domain_heuristic):
+def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
     """
     gets filename of a workers csp kind and returns a an initialized CSP object
 
@@ -58,7 +58,7 @@ def create_workers_csp(filename, preferences_include, variable_heuristic, domain
             for s in range(SHIFTS_IN_DAY):
                 variables.append(str(name) + magicNums.SEPARATOR + str(d) + magicNums.SEPARATOR + str(s))
 
-    if not preferences_include:
+    if no_soft:
         preferences = list()
 
 

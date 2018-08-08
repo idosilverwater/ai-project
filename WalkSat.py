@@ -39,7 +39,7 @@ class WalkSat(Solver):
     a Walksat based solver for csp problems.
     """
 
-    def __init__(self, csp, random_value=0.5, max_flips=35):
+    def __init__(self, csp, random_value=0, max_flips=40):
         """
         accepts a csp problem initialized.
         """
@@ -260,6 +260,7 @@ class WalkSat(Solver):
             return True
         else:
             for i in range(self.__max_flips):
+                print(i, self.get_num_satisfied())
                 constraint = self.random_constraint()
                 if self.__flip_coin():
                     self.__flip_random_variable(constraint)

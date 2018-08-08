@@ -80,5 +80,6 @@ if __name__ == "__main__":
             if args.algo[0] == BACKTRACK:
                 worker_solve(args.filename, args.algo[0], args.no_soft, args.variable_heuristic[0], args.domain_heuristic[0])
             elif args.algo[0] == WALKSAT:
+                print('no soft', args.no_soft)
                 worker_solve(args.filename, args.algo[0], args.no_soft, None, None)
 
