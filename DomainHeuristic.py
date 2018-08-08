@@ -4,6 +4,7 @@ class DomainHeuristic:
     def __init__(self):
         pass
 
+
     def get_value(self, variable, current_assignment):
         """
         Selects a value for variable according to the heuristic.
