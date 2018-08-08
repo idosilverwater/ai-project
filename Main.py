@@ -27,13 +27,9 @@ def welcome():
 
 
 def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
-    print(1)
     csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic)
-    print(1)
     algorithm = algorithms[algo](csp)
-    print(1)
     if algorithm.solve():
-        print(1)
         print("Satisfiable")
         dic = algorithm.get_assignment()
         for key in dic:

@@ -266,6 +266,6 @@ class WalkSat(Solver):
                 else:
                     self.__flip_most_satisfying()
 
-        print(len(self.constraints))
-        print(self.get_num_satisfied())
+        print("Total Amount of Constraints:", len(self.constraints))
+        print("Total Satisfied Constraints:", self.get_num_satisfied())
         return True
