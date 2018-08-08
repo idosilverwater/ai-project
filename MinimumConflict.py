@@ -23,6 +23,9 @@ class MinimumConflict(DomainHeuristic):
 
         return score
 
+    def sort_by_second(self, t):
+        return t[1]
+
     def get_value(self, variable, current_assignment):
         """
         Selects a value out of the variable's domain, that dissatisfies the least amount of constraints (that contain
@@ -32,16 +35,25 @@ class MinimumConflict(DomainHeuristic):
         :return: The value that creates minimum conflict with constraints.
         """
 
-        min_conflict_value = variable.get_possible_domain()[0]
-        min_conflict_score = self.__get_conflict_score(variable, min_conflict_value, current_assignment)
+        # min_conflict_value = variable.get_possible_domain()[0]
+        # min_conflict_score = self.__get_conflict_score(variable, min_conflict_value, current_assignment)
+        #
+        # for value in variable.get_possible_domain():
+        #     cur = self.__get_conflict_score(variable, value, current_assignment)
+        #     if cur < min_conflict_score:
+        #         min_conflict_score = cur
+        #         min_conflict_value = value
+        #
+        # return min_conflict_value
+
+        l = list()
 
         for value in variable.get_possible_domain():
             cur = self.__get_conflict_score(variable, value, current_assignment)
-            if cur < min_conflict_score:
-                min_conflict_score = cur
-                min_conflict_value = value
+            l.append((value, cur))
 
-        return min_conflict_value
+
+        return l.sort(key=self.sort_by_second)
 
 
 def minimum_conflict_heuristic_factory(variables, constraints):

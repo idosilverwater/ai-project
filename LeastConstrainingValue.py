@@ -55,6 +55,9 @@ class LeastConstrainingValue(DomainHeuristic):
 
         return score
 
+    def sort_by_second(self, t):
+        return - t[1]
+
     # TODO THIS isn't documented good enough, i have no idea which constraint to give you, furthermore one var have
     #                                                                                            many constraints.
     def get_value(self, variable, current_assignment):
@@ -73,13 +76,11 @@ class LeastConstrainingValue(DomainHeuristic):
             # get_remaining_constraints returns the remaining possible assignments that satisfy the constraint.
             remaining_assignments[constraint] = constraint.collect_possible_assignments(current_assignment)
 
-        least_constraining_value = variable.get_possible_domain()[0]
-        least_constraining_score = self.__constraint_score(variable, least_constraining_value, remaining_assignments)
+        l = list()
 
         for value in variable.get_possible_domain():
             cur = self.__constraint_score(variable, value, remaining_assignments)
-            if cur > least_constraining_score:  # supposed to be bigger then! higher constraint score is good.
-                least_constraining_score = cur
-                least_constraining_value = value
+            l.append((value, cur))
 
-        return least_constraining_value
+
+        return l.sort(key=self.sort_by_second)
