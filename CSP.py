@@ -127,7 +127,6 @@ class CSP(object):
 
         all_constraints = self.variables[variable_name].get_constraints()
 
-        variable_set = variable.get_neighbors()
         assignment = self.__get_assignment_of_neighbours(variable)
         assignment[variable_name] = value  # Assignment should have the 'new' value.
 

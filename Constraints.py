@@ -1,6 +1,7 @@
 from Constraint import *
 import WorkersCSP
 import magicNums
+import ConstraintChooserHeuristic
 
 # magic Nums.
 DOMAIN_TRUE_VAL = magicNums.DOMAIN_TRUE_VAL
@@ -13,7 +14,8 @@ class Constraints:
     parser's output.
     """
 
-    def __init__(self, preferences, non_workable_shifts, variable_names, constraint_heuristic=None):
+    def __init__(self, preferences, non_workable_shifts, variable_names, constraint_heuristic_factory=None,
+                 maximum_workers_per_shift=2):
         """
         Creates several dictionaries of constraints.
         :param preferences: A list of the workers preferences. For example:
@@ -22,10 +24,11 @@ class Constraints:
         :param variable_names: A list of variables names. A variable name for
         example would be "(1,2,3)"
         """
+        self.__maximum_workers_per_shift = maximum_workers_per_shift
+
         self.__preferences = preferences
         self.__non_workable_shifts = non_workable_shifts
         self.__variable_names = variable_names
-        self.__constraint_heuristic = constraint_heuristic
 
         self.__all_constraints = {}  # (Variable names): [constraints on variables]
         self.__visible_constraints = {}  # (Variable names): [constraints on variables]
@@ -36,11 +39,39 @@ class Constraints:
         self.__build_all_constraints()
         self.__dictionary_of_possible_assignments = {}  # restarting the dictionary.
 
-        self.__set_constraint_by_var()  # todo NOY, should this be called here? (ido) answer is: yes (Jonathan)
+        self.__set_constraint_by_var()
+
+        # perpetration for add constraints:
+
+        # self.__constraint_heuristic = constraint_heuristic
+        self.__soft_constraint_pos_index = 0
+        # TODO change it so it works with the factory!
+        self.__ordered_soft_constraints = None
+        # self.__ordered_soft_constraints = self.__generate_add_constraints_list(
+        #     ConstraintChooserHeuristic.SoftConstraintsHeuristic)
+        # self.__ordered_soft_constraints = self.__generate_add_constraints_list(constraint_heuristic_factory)
 
     ###################
     # Private Methods #
     ###################
+    def __generate_add_constraints_list(self, constraint_heuristic_factory):
+        """
+        generates a list of ordered soft constraints.
+        :param constraint_heuristic_factory: a function that returns a heuristic for constraints given a list of hard
+                constraints and a list of soft constraints.
+        :return: an ordered list of soft constraints.
+        """
+        soft_const = []
+        hard_consts = []
+        for key in self.__all_constraints:
+            for constraint in self.__all_constraints[key]:
+                if constraint.is_soft != magicNums.HARD_CONSTRAINT_VALUE:
+                    soft_const.append(constraint)
+                else:
+                    hard_consts.append(constraint)
+
+        self.__constraint_heuristic = constraint_heuristic_factory(hard_consts, soft_const)
+        return self.__constraint_heuristic.get_adding_order()
 
     def __build_all_constraints(self):
         """
@@ -125,7 +156,7 @@ class Constraints:
             for j in range(magicNums.SHIFTS_IN_DAY):  # For each shift.
                 relevant_variables = self.__variable_names_by_shift(i, j)
                 possible_assignments = assignment_generator(len(relevant_variables))
-                new_constraint = Constraint(relevant_variables, possible_assignments, 0)
+                new_constraint = Constraint(relevant_variables, possible_assignments, magicNums.HARD_CONSTRAINT_VALUE)
                 self.__add_constraint_to_all_constraints_dict(self.__all_constraints, relevant_variables,
                                                               new_constraint)
 
@@ -135,7 +166,8 @@ class Constraints:
         """
         for name in self.__non_workable_shifts:
             var_name = (name,)
-            new_constraint = Constraint(var_name, [[DOMAIN_FALSE_VAL]], 0)  # hard const that cant be assigned.
+            # hard const that cant be assigned.
+            new_constraint = Constraint(var_name, [[DOMAIN_FALSE_VAL]], magicNums.HARD_CONSTRAINT_VALUE)
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
 
     def __generate_assignments_for_at_most_x_workers(self, num_workers, x=2):
@@ -159,13 +191,13 @@ class Constraints:
         """
 
         # generates at most two worker assignments, to work with the __create_constraints_for_worker_in_same_shift func.
-        def two_workers_at_most(num_workers):
-            return self.__generate_assignments_for_at_most_x_workers(num_workers, 2)
+        def x_workers_at_most(num_workers):
+            return self.__generate_assignments_for_at_most_x_workers(num_workers, self.__maximum_workers_per_shift)
 
         self.__create_constraints_for_worker_in_same_shift(self.__generate_assignments_for_at_least_one_worker)
         self.__generate_non_workable_days()
 
-        self.__create_constraints_for_worker_in_same_shift(two_workers_at_most)
+        self.__create_constraints_for_worker_in_same_shift(x_workers_at_most)
 
     def __generate_soft_const(self):
         """
@@ -174,7 +206,7 @@ class Constraints:
         for preference in self.__preferences:
             var_name = (" ".join(preference),)
             # Adding constraint to all_constraints:
-            new_constraint = Constraint(var_name, [[DOMAIN_TRUE_VAL]], 1)
+            new_constraint = Constraint(var_name, [[DOMAIN_TRUE_VAL]], magicNums.BAKERY_SOFT_CONSTRAINT_VALUE)
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
 
     def __set_constraint_by_var(self):
@@ -195,25 +227,91 @@ class Constraints:
                         else:
                             self.__constraints_by_var[var_name].append(constraint)
 
+    @staticmethod
+    def __get_all_keys_containing_vars(dictionary_of_constraints, iterable_of_variables):
+        """
+        because the variables may be ordered differently than the keys: we wish to find all the keys that are
+            corresponding to the varibles we've got currently.
+        :param dictionary_of_constraints:
+        :param iterable_of_variables:
+        :return: a list of keys in the dictionary given.
+        """
+        lst_of_keys = []
+        # key is a tuple of variables!
+        for key in dictionary_of_constraints:
+            if len(key) == len(iterable_of_variables):
+                counter = 0
+                for variable in iterable_of_variables:
+                    if variable in key:
+                        counter += 1
+                # check if the counter
+                if counter == len(key) and counter == len(iterable_of_variables):
+                    lst_of_keys.append(key)
+        return lst_of_keys
+
     #####################
     # Getters & Setters #
     #####################
     def get_visible_constraints(self):
+        """
+        gets a dictionary of all visible constraints.
+        """
         return self.__visible_constraints
 
     def get_all_constraints(self):
+        """
+        gets a dictionary of visible constraints.
+        """
         return self.__all_constraints
 
     def set_constraints_visible(self):
+        """
+        makes all constraints visible.
+        """
         self.__visible_constraints = dict(self.__all_constraints)
 
-    def add_constraint(self):  # TODO fix it so that it can work with CSP.
-        # constraint =  self.__constraint_heuristic.doSomehing()
+    def add_constraint(self):
+        """
+        adds one constraint to the visible constraints and returns said constraint. if it fails returns None.
+        :return: Constraint object or None.
+        """
+        if self.__soft_constraint_pos_index > len(self.__ordered_soft_constraints):
+            return None
 
-        variables, constraint = self.__constraint_heuristic(
-            self.__visible_constraints, self.__all_constraints)
-        # TODO! NOTICE that these constraint should be added to constraints by var too.
-        self.__visible_constraints[variables] = constraint
+        constraint_to_add = self.__ordered_soft_constraints[self.__soft_constraint_pos_index]
+        variables = constraint_to_add.get_variables()
+        keys = self.__get_all_keys_containing_vars(self.__all_constraints, variables)
+        for key in keys:
+            if key in self.__visible_constraints:
+                if constraint_to_add in self.__visible_constraints:
+                    raise Exception("There shouldn't be the same soft constraint in the visible!")
+                self.__visible_constraints[key].append(constraint_to_add)
+            else:
+                self.__visible_constraints[key] = [constraint_to_add]
+        return constraint_to_add
 
     def get_constraints_by_variable(self, variable_name):
         return self.__constraints_by_var[variable_name]
+
+#
+##
+#
+#
+#
+#
+#
+##
+##
+#
+#
+#
+#
+#
+#
+
+
+# # TODO
+# variables, constraint = self.__constraint_heuristic(
+#     self.__visible_constraints, self.__all_constraints)
+# # TODO! NOTICE that these constraint should be added to constraints by var too.
+# self.__visible_constraints[variables] = constraint

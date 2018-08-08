@@ -5,7 +5,8 @@ class SoftConstraintsHeuristic:
 
     def __init__(self, hard_constraints, soft_constraints):
         """
-        :param soft_constraints:
+        :param hard_constraints: a list of hard constraints
+        :param soft_constraints: a list of soft constraints
         """
         self.hard_constraints = hard_constraints
         self.soft_constraints = soft_constraints
@@ -23,8 +24,8 @@ class SoftConstraintsHeuristic:
         count = 1
 
         for hard in self.hard_constraints:
-            pos = hard.get_variable_pos(soft_constraint.get_variables[
-                                            0].get_name())  # in the soft constraint case, the constraint is a variable
+            # in the soft constraint case, the constraint is a variable
+            pos = hard.get_variable_pos(soft_constraint.get_variables()[0])
             for assignment in hard.collect_possible_assignments():
                 if assignment[pos] == False:
                     count += 1

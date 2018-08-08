@@ -16,3 +16,7 @@ SEPARATOR = " "
 # Boolean
 AND = "&"
 OR = "|"
+
+# Hard constraint Value
+HARD_CONSTRAINT_VALUE = 0
+BAKERY_SOFT_CONSTRAINT_VALUE = 1

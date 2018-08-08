@@ -4,13 +4,12 @@ from magicNums import *
 
 
 # TODO THIS IS BUG RIDDEN> Please fix this classes.
-
 class LeastConstrainingValue(DomainHeuristic):
 
     def __constraint_score(self, variable, value, remaining_assignments):
         """
         Return the constraint score this value gets.
-        The constraint score is the amount of possig
+        The constraint score is the amount of possible remaining assignments.
         :param value: The tested value
         :param remaining_assignments: dictionary of constraints as keys and the possible remaining assignments
         :return:
@@ -20,9 +19,9 @@ class LeastConstrainingValue(DomainHeuristic):
 
         for constraint in remaining_assignments:
             for var in constraint.get_variables():
-                if var not in variable_possibilities: # at the beggining a var has all possibilies
-                    variable_possibilities[var] = {DOMAIN_TRUE_VAL, DOMAIN_FALSE_VAL}
-                elif len(variable_possibilities[var]) == 0: # we already ruled true and false out then continue
+                if var not in variable_possibilities:  # at the beggining a var has all possibilies
+                    variable_possibilities[var] = variable.get_possible_domain()
+                elif len(variable_possibilities[var]) == 0:  # we already ruled true and false out then continue
                     continue
 
                 # Flags to check if in the assignment for the current constraint, there is an assignment with true/false
@@ -35,9 +34,9 @@ class LeastConstrainingValue(DomainHeuristic):
                     if constraint.get_variable_pos(variable.get_name()) != value:
                         continue
 
-                    if assignment[constraint.get_variable_pos(var)] == DOMAIN_TRUE_VAL: # Found True
+                    if assignment[constraint.get_variable_pos(var)] == DOMAIN_TRUE_VAL:  # Found True
                         true_flag = True
-                    if assignment[constraint.get_variable_pos(var)] == DOMAIN_FALSE_VAL: # Found False
+                    if assignment[constraint.get_variable_pos(var)] == DOMAIN_FALSE_VAL:  # Found False
                         false_flag = True
 
                 # No assignment with True/False has been found thus this constraint can't be assigned by it
@@ -82,5 +81,5 @@ class LeastConstrainingValue(DomainHeuristic):
             cur = self.__constraint_score(variable, value, remaining_assignments)
             l.append((value, cur))
 
-
-        return l.sort(key=self.sort_by_second)
+        l.sort(key=self.sort_by_second)
+        return [*map(lambda x: x[0], l)]
