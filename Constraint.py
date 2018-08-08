@@ -10,7 +10,6 @@ class Constraint:
         :param softness: 1 if soft constraint, o.w. 0.
         """
 
-
         self.variables = variables
         self.possible_values = possible_values
         self.is_soft = softness
@@ -56,7 +55,6 @@ class Constraint:
                         list_of_assignments.add(tuple(possible_assignment))
         return list_of_assignments
 
-
     def get_variable_pos(self, var_name):
         if var_name not in self.set_of_variables:
             return -1
@@ -75,7 +73,6 @@ class Constraint:
         :return: an integer.
         """
         return len(self.collect_possible_assignments(assignment))
-
 
     def __repr__(self):
         return str(self.variables) + str(self.possible_values)

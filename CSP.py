@@ -72,8 +72,10 @@ class CSP(object):
         :param variable_name: the name of the variable to get it's domain value from.
         :return: a list of values to assign.
         """
-        # return self.domain_heuristic.get_order_domain()
-        return self.variables[variable_name].get_possible_domain()
+        variable = self.variables[variable_name]
+        assignment = self.__get_assignment_of_neighbours(variable)
+        assignment[variable.name] = variable.value
+        return self.domain_heuristic.get_value(variable, assignment)
 
     def select_unassigned_variable(self):
         """
@@ -94,9 +96,17 @@ class CSP(object):
         """
         # add assignment of one value
         variable = self.variables[var_name]
-        # print( 333, type(variable.get_value())) # todo delete
         variable.set_value(value)
-        self.assignment[var_name] = value
+        self.assignment[var_name] = value  # TODO - move out of CSP.
+
+    def __get_assignment_of_neighbours(self, variable):
+        """
+        :param variable: actual variable and not var_name
+        :return: the assignment of the neighbours.
+        """
+        variable_set = variable.get_neighbors()
+        return {variable_name: self.variables[variable_name].get_value()
+                for variable_name in variable_set}
 
     def is_consistent(self, variable_name, value):
         """
@@ -118,8 +128,7 @@ class CSP(object):
         all_constraints = self.variables[variable_name].get_constraints()
 
         variable_set = variable.get_neighbors()
-        assignment = {variable_name: self.variables[variable_name].get_value()
-                      for variable_name in variable_set}
+        assignment = self.__get_assignment_of_neighbours(variable)
         assignment[variable_name] = value  # Assignment should have the 'new' value.
 
         res = self.check_constraint_agreement(all_constraints, assignment)

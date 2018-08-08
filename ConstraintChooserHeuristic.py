@@ -7,7 +7,7 @@ class SoftConstraintsHeuristic:
         """
         :param soft_constraints:
         """
-        self.hard_constraints = self.constaints
+        self.hard_constraints = hard_constraints
         self.soft_constraints = soft_constraints
 
     def update_constraints(self, soft_constraints):
@@ -23,7 +23,8 @@ class SoftConstraintsHeuristic:
         count = 1
 
         for hard in self.hard_constraints:
-            pos = hard.get_variable_pos(soft_constraint.get_variables[0].get_name()) # in the soft constraint case, the constraint is a variable
+            pos = hard.get_variable_pos(soft_constraint.get_variables[
+                                            0].get_name())  # in the soft constraint case, the constraint is a variable
             for assignment in hard.collect_possible_assignments():
                 if assignment[pos] == False:
                     count += 1
@@ -39,6 +40,3 @@ class SoftConstraintsHeuristic:
 
         # It's ok that it is ordering in ascending order, since the less constraint_level the better
         return self.soft_constraints.sort(key=self.constraint_level)
-
-
-
