@@ -31,7 +31,6 @@ class CSP(object):
         self.__fc_variables_backup = [self.variables]  # a stack contains the previous versions of variables.
         self._forward_checking_flag = forward_checking_flag
 
-        self.assignment = {}  # TODO remove, this isn't relevant for csp and it should not manage it.
 
     def _generate_variables(self, names, domain):
         """
@@ -97,7 +96,6 @@ class CSP(object):
         # add assignment of one value
         variable = self.variables[var_name]
         variable.set_value(value)
-        self.assignment[var_name] = value  # TODO - move out of CSP.
 
     def __get_assignment_of_neighbours(self, variable):
         """
