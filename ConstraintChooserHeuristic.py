@@ -26,8 +26,8 @@ class SoftConstraintsHeuristic:
         for hard in self.hard_constraints:
             # in the soft constraint case, the constraint is a variable
             pos = hard.get_variable_pos(soft_constraint.get_variables()[0])
-            for assignment in hard.collect_possible_assignments():
-                if assignment[pos] == False:
+            for assignment in hard.collect_possible_assignments({"name": None}):
+                if assignment[pos] == False:  # THIS IS NOT GENERIC AT ALL.
                     count += 1
 
         return soft_constraint.is_soft, count

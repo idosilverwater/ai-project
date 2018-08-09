@@ -41,24 +41,15 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 
 
 if __name__ == "__main__":
-
     welcome()
+    args = parser.parse_args()
+    if (args.domain_heuristic[0] or args.variable_heuristic[0]) and args.algo[0] != BACKTRACK:
+        parser.error('Heurisitics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
 
-    if len(sys.argv) == 1:  # If no arguments are given we are in test mode
-        ##############
-        # J check ups:
-        ##############
-
-        worker_solve("examples/example2.csp", 'b', False, None, None)
-    else:
-        args = parser.parse_args()
-        if (args.domain_heuristic or args.variable_heuristic) and args.algo != BACKTRACK:
-            parser.error('Heurisitics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
-
-        if args.prob_type[0] == WORKER_PROB:
-            if args.algo[0] == BACKTRACK:
-                worker_solve(args.filename, args.algo[0], args.no_soft, args.variable_heuristic[0],
-                             args.domain_heuristic[0])
-            elif args.algo[0] == WALKSAT:
-                print('no soft', args.no_soft)
-                worker_solve(args.filename, args.algo[0], args.no_soft, None, None)
+    if args.prob_type[0] == WORKER_PROB:
+        if args.algo[0] == BACKTRACK:
+            worker_solve(args.filename, args.algo[0], args.no_soft, args.variable_heuristic[0],
+                         args.domain_heuristic[0])
+        elif args.algo[0] == WALKSAT:
+            print('no soft', args.no_soft)
+            worker_solve(args.filename, args.algo[0], args.no_soft, None, None)

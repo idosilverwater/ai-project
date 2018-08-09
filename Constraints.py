@@ -276,20 +276,22 @@ class Constraints:
         adds one constraint to the visible constraints and returns said constraint. if it fails returns None.
         :return: Constraint object or None.
         """
-        if self.__soft_constraint_pos_index > len(self.__ordered_soft_constraints):
-            return None
+        return None  # TODO make this work.
 
-        constraint_to_add = self.__ordered_soft_constraints[self.__soft_constraint_pos_index]
-        variables = constraint_to_add.get_variables()
-        keys = self.__get_all_keys_containing_vars(self.__all_constraints, variables)
-        for key in keys:
-            if key in self.__visible_constraints:
-                if constraint_to_add in self.__visible_constraints:
-                    raise Exception("There shouldn't be the same soft constraint in the visible!")
-                self.__visible_constraints[key].append(constraint_to_add)
-            else:
-                self.__visible_constraints[key] = [constraint_to_add]
-        return constraint_to_add
+        # if self.__soft_constraint_pos_index > len(self.__ordered_soft_constraints):
+        #     return None
+        #
+        # constraint_to_add = self.__ordered_soft_constraints[self.__soft_constraint_pos_index]
+        # variables = constraint_to_add.get_variables()
+        # keys = self.__get_all_keys_containing_vars(self.__all_constraints, variables)
+        # for key in keys:
+        #     if key in self.__visible_constraints:
+        #         if constraint_to_add in self.__visible_constraints:
+        #             raise Exception("There shouldn't be the same soft constraint in the visible!")
+        #         self.__visible_constraints[key].append(constraint_to_add)
+        #     else:
+        #         self.__visible_constraints[key] = [constraint_to_add]
+        # return constraint_to_add
 
     def get_constraints_by_variable(self, variable_name):
         return self.__constraints_by_var[variable_name]

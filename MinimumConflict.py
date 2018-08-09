@@ -54,4 +54,4 @@ class MinimumConflict(DomainHeuristic):
 
         domain_and_score_list.sort(key=lambda t: t[1])
 
-        return [*map(lambda x: x[0], domain_and_score_list)]  # TODO Ask ido if this is what is wanted to be returned.
+        return [*map(lambda x: x[0], domain_and_score_list)]
