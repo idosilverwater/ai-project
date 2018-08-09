@@ -4,19 +4,19 @@ from Solver.WalkSat import *
 import argparse
 from magicNums import *
 
-domain_heuristics = [MIN_CONFLICT, LEAST_CONSTRAINING_VAL]
-variable_heuristics = [MIN_REMAINING_VAL, DEGREE]
+# domain_heuristics = [MIN_CONFLICT, LEAST_CONSTRAINING_VAL]
+# variable_heuristics = [MIN_REMAINING_VAL, DEGREE]
 algorithms = {BACKTRACK: Backtrack, WALKSAT: WalkSat}
 parser = argparse.ArgumentParser(description="CSP solver.")
 
 parser.add_argument('filename', type=str, help='Problem filename')
 
-problem_type = parser.add_mutually_exclusive_group(required=True)
+problem_type = parser.add_mutually_exclusive_group()
 problem_type.add_argument('-w', help="Worker Satisfication Problem", action='store_true')
 
 parser.add_argument('--no-soft', help='With/out soft constraints', action='store_true')
 
-algorithm = parser.add_mutually_exclusive_group(required=True)
+algorithm = parser.add_mutually_exclusive_group()
 algorithm.add_argument('--bt', help='Solve using BackTrack algorithm', action='store_true')
 algorithm.add_argument('--ws', help='Solve using WalkSAT algorithm', action='store_true')
 algorithm.add_argument('--lws', help='Solve using LogicalWalkSAT WalkSAT varient algorithm', action='store_true')
@@ -51,12 +51,12 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 
 if __name__ == "__main__":
     welcome()
-    print(12123123)
     args = parser.parse_args()
 
+    print(12123123)
     print(args)
 
-    if (args.lc or args.mc or args.lws or args.mr) and not args.bt:
+    if not (args.lc or args.mc or args.lws or args.mr) and args.bt:
         parser.error('Heurisitics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
 
     if args.w:
