@@ -1,5 +1,5 @@
 from CSP import CSP
-from Constraints import *
+from WorkerCSP.Constraints import *
 from BackTrackHeuristics.Degree import *
 from BackTrackHeuristics.MinimumRemainingValue import *
 from BackTrackHeuristics.LeastConstrainingValue import *

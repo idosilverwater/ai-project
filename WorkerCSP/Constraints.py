@@ -1,4 +1,4 @@
-from Constraint import *
+from CSP.Constraint import *
 import magicNums
 
 # magic Nums.

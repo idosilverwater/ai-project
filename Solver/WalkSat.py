@@ -1,8 +1,5 @@
 from Solver import Solver
 import random
-from FormulaTree import *
-from CSP import *
-import numpy as np
 import magicNums
 
 """

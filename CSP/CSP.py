@@ -1,4 +1,4 @@
-from Variable import *
+from CSP.Variable import *
 import queue
 from copy import *
 

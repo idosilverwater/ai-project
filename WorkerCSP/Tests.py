@@ -1,6 +1,6 @@
-from WorkersCSP import create_workers_csp, parser
-from BackTrack import *
-from WalkSat import *
+from WorkerCSP.WorkersCSP import create_workers_csp, parser
+from Solver.BackTrack import *
+from Solver.WalkSat import *
 
 BACKTRACK = 'b'
 WALKSAT = 'w'

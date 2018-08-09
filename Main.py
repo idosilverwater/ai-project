@@ -1,7 +1,6 @@
-from WorkersCSP import create_workers_csp
-from BackTrack import *
-from WalkSat import *
-from BackTrackHeuristics.LeastConstrainingValue import *
+from WorkerCSP.WorkersCSP import create_workers_csp
+from Solver.BackTrack import *
+from Solver.WalkSat import *
 import argparse
 from magicNums import *
 
