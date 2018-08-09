@@ -1,10 +1,9 @@
 from WorkersCSP import create_workers_csp
-from Degree import *
 from BackTrack import *
 from WalkSat import *
-from LeastConstrainingValue import *
-import sys
+from BackTrackHeuristics.LeastConstrainingValue import *
 import argparse
+from magicNums import *
 
 domain_heuristics = [MIN_CONFLICT, LEAST_CONSTRAINING_VAL]
 variable_heuristics = [MIN_REMAINING_VAL, DEGREE]
@@ -20,7 +19,6 @@ parser.add_argument('--domain-heuristic', choices=domain_heuristics, default='',
                     help='Domain heuristic to be used by the solver')
 parser.add_argument('--variable-heuristic', choices=variable_heuristics, default='', type=str, nargs=1,
                     help='Variable heuristic to be used by the solver')
-parser.add_argument()
 
 
 def welcome():

@@ -1,7 +1,5 @@
 from Constraint import *
-import WorkersCSP
 import magicNums
-import BaseSoftConstraintHeuristic
 
 # magic Nums.
 DOMAIN_TRUE_VAL = magicNums.DOMAIN_TRUE_VAL

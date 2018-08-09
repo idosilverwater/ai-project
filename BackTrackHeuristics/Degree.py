@@ -1,4 +1,4 @@
-from VariableHeuristic import *
+from BackTrackHeuristics.VariableHeuristic import *
 
 
 # TODO need to update everything once  we add a constraint!!

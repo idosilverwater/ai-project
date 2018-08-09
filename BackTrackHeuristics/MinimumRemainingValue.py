@@ -1,4 +1,4 @@
-from VariableHeuristic import *
+from BackTrackHeuristics.VariableHeuristic import *
 
 
 class MinimumRemainingValue(VariableHeuristic):

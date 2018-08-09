@@ -1,6 +1,4 @@
-from DomainHeuristic import DomainHeuristic
-from functools import partial
-from magicNums import *
+from BackTrackHeuristics.DomainHeuristic import DomainHeuristic
 
 
 class LeastConstrainingValue(DomainHeuristic):

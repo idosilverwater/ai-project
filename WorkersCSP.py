@@ -1,10 +1,10 @@
 from CSP import CSP
 from Constraints import *
+from BackTrackHeuristics.Degree import *
+from BackTrackHeuristics.MinimumRemainingValue import *
+from BackTrackHeuristics.LeastConstrainingValue import *
+from BackTrackHeuristics.MinimumConflict import *
 from magicNums import *
-from Degree import *
-from MinimumRemainingValue import *
-from LeastConstrainingValue import *
-from MinimumConflict import *
 
 
 # from MinimumConflict import *

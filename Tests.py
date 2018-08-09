@@ -1,7 +1,6 @@
 from WorkersCSP import create_workers_csp, parser
 from BackTrack import *
 from WalkSat import *
-from LeastConstrainingValue import *
 
 BACKTRACK = 'b'
 WALKSAT = 'w'

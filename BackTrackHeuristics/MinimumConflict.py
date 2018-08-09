@@ -1,5 +1,4 @@
-from DomainHeuristic import *
-from functools import partial
+from BackTrackHeuristics.DomainHeuristic import *
 
 
 class MinimumConflict(DomainHeuristic):
