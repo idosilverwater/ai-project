@@ -20,14 +20,11 @@ class SoftConstraintsHeuristic:
         :param cosntraint: constraint
         :return:
         """
-
         count = 1
 
         for hard in self.hard_constraints:
-            # in the soft constraint case, the constraint is a variable
-            pos = hard.get_variable_pos(soft_constraint.get_variables()[0])
-            for assignment in hard.collect_possible_assignments({"name": None}):
-                if assignment[pos] == False:  # THIS IS NOT GENERIC AT ALL.
+            for variable in soft_constraint.get_variables():
+                if variable in hard.get_variables():
                     count += 1
 
         return soft_constraint.is_soft, count
@@ -40,4 +37,5 @@ class SoftConstraintsHeuristic:
         """
 
         # It's ok that it is ordering in ascending order, since the less constraint_level the better
-        return self.soft_constraints.sort(key=self.constraint_level)
+        self.soft_constraints.sort(key=self.constraint_level)
+        return self.soft_constraints

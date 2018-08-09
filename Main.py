@@ -20,6 +20,7 @@ parser.add_argument('--domain-heuristic', choices=domain_heuristics, default='',
                     help='Domain heuristic to be used by the solver')
 parser.add_argument('--variable-heuristic', choices=variable_heuristics, default='', type=str, nargs=1,
                     help='Variable heuristic to be used by the solver')
+parser.add_argument()
 
 
 def welcome():
