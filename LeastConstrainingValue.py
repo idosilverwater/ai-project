@@ -3,9 +3,7 @@ from functools import partial
 from magicNums import *
 
 
-# TODO THIS IS BUG RIDDEN> Please fix this classes.
 class LeastConstrainingValue(DomainHeuristic):
-
 
     def __get_conflict_score(self, variable, value, current_assignment):
         """
@@ -42,11 +40,9 @@ class LeastConstrainingValue(DomainHeuristic):
 
         score = 0
         for constraint in constraints:
-                score += constraint.get_number_of_constraints(current_assignment)
+            score += constraint.get_number_of_constraints(current_assignment)
 
         return score
-
-
 
         #         if var not in variable_possibilities:  # at the beggining a var has all possibilies
         #             variable_possibilities[var] = variable.get_possible_domain()
@@ -82,11 +78,9 @@ class LeastConstrainingValue(DomainHeuristic):
         #
         # return score
 
-    def sort_by_second(self, t):
-        return - t[1] # The minus is on purpuse. we want the largest first.
+    # def sort_by_second(self, t):
+    #     return - t[1] # The minus is on purpose. we want the largest first.
 
-    # TODO THIS isn't documented good enough, i have no idea which constraint to give you, furthermore one var have
-    #                                                                                            many constraints.
     def get_value(self, variable, current_assignment):
         """
         Selects the value for the variable that is least constricting to neighboring variables.
@@ -103,11 +97,11 @@ class LeastConstrainingValue(DomainHeuristic):
             # get_remaining_constraints returns the remaining possible assignments that satisfy the constraint.
             remaining_assignments[constraint] = constraint.collect_possible_assignments(current_assignment)
 
-        l = list()
+        domain_and_score_list = list()
 
         for value in variable.get_possible_domain():
             cur = self.__constraint_score(variable, value, remaining_assignments)
-            l.append((value, cur))
+            domain_and_score_list.append((value, cur))
 
-        l.sort(key=self.sort_by_second)
-        return [*map(lambda x: x[0], l)]
+        domain_and_score_list.sort(key=lambda t: -t[1])  # The minus is on purpose. we want the largest first.
+        return [*map(lambda x: x[0], domain_and_score_list)]

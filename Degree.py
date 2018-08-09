@@ -1,4 +1,3 @@
-from WorkersCSP import *  # TODO(Noy): Remove later
 from VariableHeuristic import *
 
 

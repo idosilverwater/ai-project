@@ -29,8 +29,7 @@ class Backtrack(Solver):
                 var_name = var
                 break
 
-        if var_name is None:  # TODO remove after tests. (sanity check)
-            raise Exception("problem in base check of this function")
+        assert (var_name is not None)  # TODO remove after tests. (sanity check)
 
         for value in self.csp.order_domain_values(var_name):
             if self.csp.is_consistent(var_name, value):
@@ -47,7 +46,7 @@ class Backtrack(Solver):
         tries and solve for the csp problem while adding more and more constraints to the problem.
         :return: False if there isn't a solution, True otherwise.
         """
-        res = self.backtrack()  # TODO check if it does backtrack only on hard constraints here.
+        res = self.backtrack()  # try to satisfy hard constraints.
         if not res:
             return False
 

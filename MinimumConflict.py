@@ -1,5 +1,5 @@
-import DomainHeuristic
-from functools import  partial
+from DomainHeuristic import *
+from functools import partial
 
 
 class MinimumConflict(DomainHeuristic):
@@ -23,8 +23,8 @@ class MinimumConflict(DomainHeuristic):
 
         return score
 
-    def sort_by_second(self, t):
-        return t[1]
+    # def sort_by_second(self, t):
+    #     return t[1]
 
     def get_value(self, variable, current_assignment):
         """
@@ -46,15 +46,12 @@ class MinimumConflict(DomainHeuristic):
         #
         # return min_conflict_value
 
-        l = list()
+        domain_and_score_list = list()
 
         for value in variable.get_possible_domain():
             cur = self.__get_conflict_score(variable, value, current_assignment)
-            l.append((value, cur))
+            domain_and_score_list.append((value, cur))
 
+        domain_and_score_list.sort(key=lambda t: t[1])
 
-        return l.sort(key=self.sort_by_second)
-
-
-def minimum_conflict_heuristic_factory(variables, constraints):
-    return MinimumConflict(variables, constraints)
+        return [*map(lambda x: x[0], domain_and_score_list)]  # TODO Ask ido if this is what is wanted to be returned.

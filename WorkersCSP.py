@@ -4,6 +4,9 @@ from magicNums import *
 from Degree import *
 from MinimumRemainingValue import *
 from LeastConstrainingValue import *
+from MinimumConflict import *
+
+
 # from MinimumConflict import *
 
 def parser(lines):
@@ -36,13 +39,15 @@ def parser(lines):
     return domain, names, new_preferences, non_work_shift
 
 
-# TODO preference is not needed, for that we have has add constraints, and make_visible.
 def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
     """
-    gets filename of a workers csp kind and returns a an initialized CSP object
+    gets filename of a workers csp kind and returns a an initialized CSP object ready for the employee worker problem.
 
     :param filename: file that contains the problem
-    :return:
+    :param no_soft: if True -> there will be no soft constraints.
+    :param variable_heuristic: an init function of a variable heuristic class.
+    :param domain_heuristic: an init function of a domain heuristic class.
+    :return: a CSP to work with the employee worker problem constraints.
     """
 
     with open(filename, 'r') as csp_file:
@@ -61,23 +66,19 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
     if no_soft:
         preferences = list()
 
-
-
-    if domain_heuristic == None: # For the case where WalkSAT is used. therefore we don't use heuristics.
-        domain_factory = None
-    elif domain_heuristic == LEAST_CONSTRAINING_VAL:
+    # domain_heuristic is None: # For the case where WalkSAT is used. therefore we don't use heuristics.
+    domain_factory = None
+    if domain_heuristic == LEAST_CONSTRAINING_VAL:
         domain_factory = LeastConstrainingValue
     elif domain_heuristic == MIN_CONFLICT:
         domain_factory = MinimumConflict
 
-    if variable_heuristic == None: # For the case where WalkSAT is used. therefore we don't use heuristics.
-        variable_factory = None
-    elif variable_heuristic == MIN_REMAINING_VAL:
+    # if variable_heuristic is None: # For the case where WalkSAT is used. therefore we don't use heuristics.
+    variable_factory = None
+    if variable_heuristic == MIN_REMAINING_VAL:
         variable_factory = MinimumRemainingValue
     elif variable_heuristic == DEGREE:
         variable_factory = Degree
 
-
     constraints = Constraints(preferences, non_work_shift, variables)
-    # TODO create_workers_csp should receive which factory to give to the CSP class.
     return CSP(domain, variables, constraints, variable_factory, domain_factory)

@@ -8,6 +8,7 @@ DOMAIN_TRUE_VAL = magicNums.DOMAIN_TRUE_VAL
 DOMAIN_FALSE_VAL = magicNums.DOMAIN_FALSE_VAL
 
 
+# TODO ADD complicated constraints still.
 class Constraints:
     """
     This class is generating the soft and hard constrains according to the
@@ -292,26 +293,3 @@ class Constraints:
 
     def get_constraints_by_variable(self, variable_name):
         return self.__constraints_by_var[variable_name]
-
-#
-##
-#
-#
-#
-#
-#
-##
-##
-#
-#
-#
-#
-#
-#
-
-
-# # TODO
-# variables, constraint = self.__constraint_heuristic(
-#     self.__visible_constraints, self.__all_constraints)
-# # TODO! NOTICE that these constraint should be added to constraints by var too.
-# self.__visible_constraints[variables] = constraint

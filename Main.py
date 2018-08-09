@@ -6,7 +6,6 @@ from LeastConstrainingValue import *
 import sys
 import argparse
 
-
 domain_heuristics = [MIN_CONFLICT, LEAST_CONSTRAINING_VAL]
 variable_heuristics = [MIN_REMAINING_VAL, DEGREE]
 algorithms = {BACKTRACK: Backtrack, WALKSAT: WalkSat}
@@ -15,10 +14,12 @@ parser = argparse.ArgumentParser(description="CSP solver.")
 parser.add_argument('filename', type=str, help='Problem filename')
 parser.add_argument('--prob-type', choices=[WORKER_PROB], type=str, default='w', nargs=1, help='Problem type')
 parser.add_argument('--no-soft', help='With/out soft constraints', action='store_true')
-parser.add_argument('--algo', choices=[BACKTRACK, WALKSAT], default='b', type=str, nargs=1, help='Algorithm to be used by the solver')
-parser.add_argument('--domain-heuristic', choices=domain_heuristics, default='', type=str, nargs=1, help='Domain heuristic to be used by the solver')
-parser.add_argument('--variable-heuristic', choices=variable_heuristics, default='', type=str, nargs=1, help='Variable heuristic to be used by the solver')
-
+parser.add_argument('--algo', choices=[BACKTRACK, WALKSAT], default='b', type=str, nargs=1,
+                    help='Algorithm to be used by the solver')
+parser.add_argument('--domain-heuristic', choices=domain_heuristics, default='', type=str, nargs=1,
+                    help='Domain heuristic to be used by the solver')
+parser.add_argument('--variable-heuristic', choices=variable_heuristics, default='', type=str, nargs=1,
+                    help='Variable heuristic to be used by the solver')
 
 
 def welcome():
@@ -44,33 +45,11 @@ if __name__ == "__main__":
     welcome()
 
     if len(sys.argv) == 1:  # If no arguments are given we are in test mode
-        # csp = create_workers_csp("examples/example1.csp")
-        # print(csp.constraints.get_all_constraints())
-
-        #########
-        # TESTS #
-        #########
-        # csp = create_workers_csp("examples\example1.csp")
-        # h = Degree(list(csp.variables.values()))
-        # print(h.get_sorted_variables())
-
         ##############
         # J check ups:
         ##############
-        import time
 
-        worker_solve("examples/example2.csp", None, 'b', False)
-
-        # print(csp.is_consistent('Sarah 6 1', 'True'))
-        # assignment = {name: None for name in csp.variables.keys()}
-        # for k in assignment:
-        #     assignment[k] = 'False'
-        # break
-        # a = time.time()
-
-        # csp.check_assignment(assignment)
-        # print(time.time() - a)
-        # print(c)
+        worker_solve("examples/example2.csp", 'b', False, None, None)
     else:
         args = parser.parse_args()
         if (args.domain_heuristic or args.variable_heuristic) and args.algo != BACKTRACK:
@@ -78,8 +57,8 @@ if __name__ == "__main__":
 
         if args.prob_type[0] == WORKER_PROB:
             if args.algo[0] == BACKTRACK:
-                worker_solve(args.filename, args.algo[0], args.no_soft, args.variable_heuristic[0], args.domain_heuristic[0])
+                worker_solve(args.filename, args.algo[0], args.no_soft, args.variable_heuristic[0],
+                             args.domain_heuristic[0])
             elif args.algo[0] == WALKSAT:
                 print('no soft', args.no_soft)
                 worker_solve(args.filename, args.algo[0], args.no_soft, None, None)
-

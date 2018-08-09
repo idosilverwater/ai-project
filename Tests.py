@@ -1,5 +1,4 @@
 from WorkersCSP import create_workers_csp, parser
-from Degree import *  # TODO(Noy): To remove.
 from BackTrack import *
 from WalkSat import *
 from LeastConstrainingValue import *
@@ -9,6 +8,7 @@ WALKSAT = 'w'
 
 algorithms = {'b': Backtrack, 'w': WalkSat}
 
+
 def make_csv(filename, assignment):
     with open(filename, 'r') as csp_file:
         lines = csp_file.readlines()
@@ -16,7 +16,6 @@ def make_csv(filename, assignment):
     domain, names, preferences, non_work_shift = parser(lines)
 
     f = open('test.csv', 'w')
-
 
     for i in range(magicNums.SHIFTS_IN_DAY):
         line = ""
@@ -47,6 +46,6 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
         print("Unsatisfiable")
     print("Done")
 
+
 if __name__ == "__main__":
     worker_solve("examples/all_can't_work_in_the_same_shift", WALKSAT, False, None, None)
-

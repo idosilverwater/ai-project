@@ -140,8 +140,14 @@ class WalkSat(Solver):
         Randomly assign each variable a value (either True or False).
         :return:
         """
+
+        def put_flip_coin_val():
+            if self.__flip():
+                return magicNums.DOMAIN_TRUE_VAL
+            return magicNums.DOMAIN_FALSE_VAL
+
         for name in self.__variable_names:
-            self.assign_value(name, self.__flip_coin())
+            self.assign_value(name, put_flip_coin_val())  # TODO Notice i changed it to work with actual domain values.
 
     # def assign_value(self, variable_name, value):
     #     """

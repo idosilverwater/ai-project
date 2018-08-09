@@ -3,10 +3,6 @@ import queue
 from copy import *
 
 
-# import LeastConstrainingValue
-
-
-# import DomainHeuristic, LeastConstrainingValue, MinimumConflict, MinimumRemainingValue
 # TODO arc consistency.
 
 
@@ -21,20 +17,23 @@ class CSP(object):
         :param domain: a lists of lists such that list i corresponds with variable name i.
         :param variables: a list of variable names.
         :param constraints: a constraints function that corresponds with the names of the variables.
+        :param variable_heuristic_creator: a variable heuristic creator function. returns an object that derives from
+                VariableHeuristic.
+        :param domain_heuristic_creator: a domain heuristic creator function. returns an object that derives from
+                DomainHeuristic.
+        :param forward_checking_flag: determines if we use forward checking in this CSP object.
         """
         self.constraints = constraints
-        self.domains = {}  # a domain for each variable to be used somehow later on. # TODO consider to delete.
         self.variables = {}
         self._generate_variables(variables, domain)  # builds a dictionary of variables.
 
-        if variable_heuristic_creator != None: # For the case in which WalkSAT is used (No heuristic)
+        if variable_heuristic_creator is not None:  # For the case in which WalkSAT is used (No heuristic)
             self.variable_heuristic = variable_heuristic_creator(self.variables)
-        if domain_heuristic_creator != None: # For the case in which WalkSAT is used (No heuristic)
+        if domain_heuristic_creator is not None:  # For the case in which WalkSAT is used (No heuristic)
             self.domain_heuristic = domain_heuristic_creator()
 
         self.__fc_variables_backup = [self.variables]  # a stack contains the previous versions of variables.
         self._forward_checking_flag = forward_checking_flag
-
 
     def _generate_variables(self, names, domain):
         """
@@ -49,7 +48,6 @@ class CSP(object):
             var = Variable(name, domain[i], constraints)
             if var not in self.variables:
                 self.variables[name] = var
-                self.domains[name] = domain[i]
                 # adding neighbours to a variable:
                 neighbours_names = set()
                 for constraint in constraints:
@@ -75,6 +73,8 @@ class CSP(object):
         :param variable_name: the name of the variable to get it's domain value from.
         :return: a list of values to assign.
         """
+        if self.domain_heuristic is None:
+            return self.variables[variable_name].get_possible_domain()
         variable = self.variables[variable_name]
         assignment = self.__get_assignment_of_neighbours(variable)
         assignment[variable.name] = variable.value
@@ -85,10 +85,9 @@ class CSP(object):
         uses heuristic to choose a variable.
         :return: full variable name.
         """
+        if self.variable_heuristic is None:
+            return list(self.variables.keys())
         return self.variable_heuristic.select_unassigned_variable()
-
-    def get_assignment(self):
-        return self.assignment
 
     def assign_variable(self, var_name, value):
         """
@@ -145,8 +144,16 @@ class CSP(object):
         add constraint to the visible constraint list.
         :return: True if it added, False otherwise ( can return false if nothing to add).
         """
-        self.add_constraint()
-        # TODO add True or False return if it is possible to add constraint.
+        constraint = self.constraints.add_constraint()
+        if constraint is None:
+            return False
+
+        all_var_names = constraint.get_variables()
+        for var_name in all_var_names:
+            # adding every ones as my new neighbours.
+            self.variables[var_name].add_neighbours(all_var_names)
+            self.variables[var_name].add_constraint(constraint)
+        return True
 
     def un_assign_variable(self, variable_name):
         """
@@ -156,8 +163,6 @@ class CSP(object):
         variable = self.variables[variable_name]
         current_Value = variable.get_value()  # should be relevant in forward checking.
         variable.set_value(None)
-        # TODO : MAJOR checks.
-
         # forward checking:
         if self._forward_checking_flag:
             self.__restore()
@@ -166,7 +171,7 @@ class CSP(object):
         """
         # checks the full assignment over all constraints
         :param variable_assignment:
-        :return:
+        :return:g
         """
         all_constraints_dict = self.constraints.get_visible_constraints()
         all_consts_lst = []
@@ -217,7 +222,7 @@ class CSP(object):
             variables_copy[var_name] = deepcopy(self.variables[var_name])
         return variables_copy
 
-    def __is_relevant(self, variable, visited, variables_copy):  # todo: test
+    def __is_relevant(self, variable, visited, variables_copy):
         """
         Tests if a certain variable relevant for the rest of the FC tests. A variable is not relevant if it is either
         unchanged by the assignment  of the tested variable, or never visited by the algorithm.
@@ -262,7 +267,7 @@ class CSP(object):
         for neighbor in neighbors_names:
             fc_queue.put(neighbor)
 
-    def __check_possible_domain(self, curr_variable, assignment, variables_copy):  # TODO: test
+    def __check_possible_domain(self, curr_variable, assignment, variables_copy):
         """
         Tests if the current variable's domain is whipped out. In addition updated the current variable's domain.
         :param curr_variable: A variable name
@@ -272,12 +277,15 @@ class CSP(object):
         """
         var_obj = variables_copy[curr_variable]
         copy_of_possible_domain = deepcopy(var_obj.get_possible_domain())
-        for d in copy_of_possible_domain:
-            assignment[curr_variable] = d
+        for domain_value in copy_of_possible_domain:
+            assignment[curr_variable] = domain_value
             constraints = var_obj.get_constraints()
-            if self.check_constraint_agreement(constraints, assignment):
-                return False  # We have a legal value - everything is ok.
-            var_obj.remove_from_possible_domain(d)
+            if not self.check_constraint_agreement(constraints, assignment):
+                var_obj.remove_from_possible_domain(domain_value)
+                # we should remove this value because there is at least one constraint who isn't happy about it.
+
+        if len(var_obj.get_possible_domain()) > -1:
+            return False  # variable has at least one value in it's possible domain meaning still isn't empty.
         return True  # curr_variable is wiped out.
 
     def forward_checking(self, variable_name, value):
@@ -301,7 +309,10 @@ class CSP(object):
             curr = q.get()
             if self.__is_relevant(curr, visited, variables_copy):
                 self.__enter_neighbors_to_queue(curr, q, variables_copy)
+                # saving the current variable's possible domain, if it changes later on than it is interesting
+                #  to check again. False indicates that the flag of neighbours changed didn't occur.
                 visited[curr] = (False, variables_copy[curr].get_possible_domain())
+                # updates the possible domain, if it returns empty -> than we return False.
                 is_wiped_out = self.__check_possible_domain(curr, assignment, variables_copy)
                 if is_wiped_out:
                     return False

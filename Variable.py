@@ -22,6 +22,10 @@ class Variable:
 
         self.neighbours_names = set()
 
+    def add_constraint(self, constraint):
+        if constraint not in self.constraints:
+            self.constraints.append(constraint)
+
     def set_neighbours(self, set_of_neighbours):
         self.neighbours_names = set_of_neighbours
 
@@ -86,7 +90,7 @@ class Variable:
         """
         Removes value from self.possible_domain
         """
-        self.possible_domain -= set([value])
+        self.possible_domain -= {value}  # TODO check if this is better over set([value])
 
     def set_possible_domain(self, new_domain):
         self.possible_domain = set(new_domain)
