@@ -1,14 +1,11 @@
 ###########
 # Imports #
 ###########
-import magicNums
+from magicNums import *
 
 #############
 # Constants #
 #############
-AND = magicNums.AND
-OR = magicNums.OR
-
 
 class FormulaTree:
     """
