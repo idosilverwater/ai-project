@@ -17,16 +17,18 @@ problem_type.add_argument('-w', help="Worker Satisfication Problem", action='sto
 parser.add_argument('--no-soft', help='With/out soft constraints', action='store_true')
 
 algorithm = parser.add_mutually_exclusive_group(required=True)
-algorithm.add_argument('--bt', help='Solve using BackTrack algorithm')
-algorithm.add_argument('--ws', help='Solve using WalkSAT algorithm')
-algorithm.add_argument('--lws', help='Solve using LogicalWalkSAT WalkSAT varient algorithm')
+algorithm.add_argument('--bt', help='Solve using BackTrack algorithm', action='store_true')
+algorithm.add_argument('--ws', help='Solve using WalkSAT algorithm', action='store_true')
+algorithm.add_argument('--lws', help='Solve using LogicalWalkSAT WalkSAT varient algorithm', action='store_true')
 
 
 domain_heuristic = parser.add_mutually_exclusive_group()
-parser.add_argument('--domain-heuristic', choices=domain_heuristics, default='', type=str, nargs=1,
-                    help='Domain heuristic to be used by the solver')
-parser.add_argument('--variable-heuristic', choices=variable_heuristics, default='', type=str, nargs=1,
-                    help='Variable heuristic to be used by the solver')
+domain_heuristic.add_argument('--mc', help="Use the Minimum Conflict domain heuristic. only when using the Backtrack algoroithm", action='store_true')
+domain_heuristic.add_argument('--lc', help="Use the Least Constraining Value domain heuristic. only when using the Backtrack algoroithm", action='store_true')
+
+variable_heuristic = parser.add_mutually_exclusive_group()
+domain_heuristic.add_argument('--mr', help="Use the Minimum Remaining Val variable heuristic. only when using the Backtrack algoroithm", action='store_true')
+domain_heuristic.add_argument('--deg', help="Use the Degree variable heuristic. only when using the Backtrack algoroithm", action='store_true')
 
 
 def welcome():
@@ -49,14 +51,24 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 
 if __name__ == "__main__":
     welcome()
+    print(12123123)
     args = parser.parse_args()
-    if (args.domain_heuristic[0] or args.variable_heuristic[0]) and args.algo[0] != BACKTRACK:
+
+    print(args)
+
+    if (args.lc or args.mc or args.lws or args.mr) and not args.bt:
         parser.error('Heurisitics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
 
-    if args.prob_type[0] == WORKER_PROB:
-        if args.algo[0] == BACKTRACK:
-            worker_solve(args.filename, args.algo[0], args.no_soft, args.variable_heuristic[0],
-                         args.domain_heuristic[0])
-        elif args.algo[0] == WALKSAT:
-            print('no soft', args.no_soft)
-            worker_solve(args.filename, args.algo[0], args.no_soft, None, None)
+    if args.w:
+        if args.bt == BACKTRACK:
+            if args.mc:
+                domain_heuristic = MIN_CONFLICT
+            elif args.lc:
+                domain_heuristic = LEAST_CONSTRAINING_VAL
+            if args.mr:
+                variable_heuristic = MIN_REMAINING_VAL
+            elif args.deg:
+                variable_heuristic = DEGREE
+            worker_solve(args.filename, BACKTRACK, args.no_soft,variable_heuristic, domain_heuristic)
+        elif args.ws:
+            worker_solve(args.filename, WALKSAT, args.no_soft, None, None)
