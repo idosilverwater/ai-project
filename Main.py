@@ -10,10 +10,19 @@ algorithms = {BACKTRACK: Backtrack, WALKSAT: WalkSat}
 parser = argparse.ArgumentParser(description="CSP solver.")
 
 parser.add_argument('filename', type=str, help='Problem filename')
-parser.add_argument('--prob-type', choices=[WORKER_PROB], type=str, default='w', nargs=1, help='Problem type')
+
+problem_type = parser.add_mutually_exclusive_group(required=True)
+problem_type.add_argument('-w', help="Worker Satisfication Problem", action='store_true')
+
 parser.add_argument('--no-soft', help='With/out soft constraints', action='store_true')
-parser.add_argument('--algo', choices=[BACKTRACK, WALKSAT], default='b', type=str, nargs=1,
-                    help='Algorithm to be used by the solver')
+
+algorithm = parser.add_mutually_exclusive_group(required=True)
+algorithm.add_argument('--bt', help='Solve using BackTrack algorithm')
+algorithm.add_argument('--ws', help='Solve using WalkSAT algorithm')
+algorithm.add_argument('--lws', help='Solve using LogicalWalkSAT WalkSAT varient algorithm')
+
+
+domain_heuristic = parser.add_mutually_exclusive_group()
 parser.add_argument('--domain-heuristic', choices=domain_heuristics, default='', type=str, nargs=1,
                     help='Domain heuristic to be used by the solver')
 parser.add_argument('--variable-heuristic', choices=variable_heuristics, default='', type=str, nargs=1,
