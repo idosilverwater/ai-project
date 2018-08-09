@@ -1,4 +1,4 @@
-from Solver import Solver
+from Solver.BaseSolver import *
 import random
 import magicNums
 
@@ -139,7 +139,7 @@ class WalkSat(Solver):
         """
 
         def put_flip_coin_val():
-            if self.__flip():
+            if self.__flip_coin():
                 return magicNums.DOMAIN_TRUE_VAL
             return magicNums.DOMAIN_FALSE_VAL
 

@@ -288,6 +288,5 @@ class Constraints:
                 self.__visible_constraints[key] = [soft_constraint]
         return soft_constraint
 
-
-def get_constraints_by_variable(self, variable_name):
-    return self.__constraints_by_var[variable_name]
+    def get_constraints_by_variable(self, variable_name):
+        return self.__constraints_by_var[variable_name]

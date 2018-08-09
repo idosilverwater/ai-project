@@ -1,4 +1,4 @@
-from Solver import Solver
+from Solver import BaseSolver
 import random
 from magicNums import *
 
@@ -30,7 +30,7 @@ WalkSat:
 """
 
 
-class LogicalWalkSat(Solver):
+class LogicalWalkSat(BaseSolver):
     """
     a Walksat based solver for csp problems.
     """
@@ -107,7 +107,6 @@ class LogicalWalkSat(Solver):
 
         return True
 
-
     def __flip(self, val):
         if val == magicNums.DOMAIN_TRUE_VAL:
             return magicNums.DOMAIN_FALSE_VAL
@@ -163,7 +162,7 @@ class LogicalWalkSat(Solver):
         :return:
         """
         if node.is_leaf:
-            return {(node.value,)} # returning a set
+            return {(node.value,)}  # returning a set
 
         right = self.recursiveCNFConverter(node.right, i + 1)
         left = self.recursiveCNFConverter(node.left, i + 1)

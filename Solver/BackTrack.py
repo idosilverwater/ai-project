@@ -1,4 +1,4 @@
-from Solver import Solver
+from Solver.BaseSolver import *
 
 
 class Backtrack(Solver):
@@ -51,6 +51,7 @@ class Backtrack(Solver):
             return False
 
         while res and self.csp.add_constraint():  # while we can still add constraints - continues
+            print("Adding constraint")
             self.reset_assignment()
             res = self.backtrack()
         return True

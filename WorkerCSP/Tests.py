@@ -47,4 +47,4 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 
 
 if __name__ == "__main__":
-    worker_solve("examples/all_can't_work_in_the_same_shift", WALKSAT, False, None, None)
+    worker_solve("/Users/yonatanweiss/PycharmProjects/ai-project/examples/all_can't_work_in_the_same_shift", WALKSAT, False, None, None)

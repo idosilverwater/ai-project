@@ -1,4 +1,4 @@
-from CSP import CSP
+from CSP.CspHandler import *
 from WorkerCSP.Constraints import *
 from BackTrackHeuristics.Degree import *
 from BackTrackHeuristics.MinimumRemainingValue import *
@@ -81,4 +81,4 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
         variable_factory = Degree
 
     constraints = Constraints(preferences, non_work_shift, variables)
-    return CSP(domain, variables, constraints, variable_factory, domain_factory)
+    return CspHandler(domain, variables, constraints, variable_factory, domain_factory)
