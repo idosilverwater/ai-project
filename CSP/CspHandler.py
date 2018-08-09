@@ -30,19 +30,19 @@ class CspHandler(object):
         if variable_heuristic_creator is not None:  # For the case in which WalkSAT is used (No heuristic)
             self.variable_heuristic = variable_heuristic_creator(self.variables)
             # TODO TEST and check, this list take a whole lot of time!
-            self.variable_heuristic.sorted_variables = ['Moshe 4 1', 'Moshe 0 1', 'Moshe 3 2', 'Moshe 0 2', 'Noga 4 2',
-                                                        'David 3 0', 'David 5 2', 'David 2 0', 'Noga 6 1', 'Moshe 4 0',
-                                                        'David 0 2', 'Moshe 1 0', 'David 2 1', 'Moshe 2 2', 'David 3 1',
-                                                        'Moshe 2 0', 'Noga 5 2', 'David 4 0', 'Noga 1 0', 'David 6 2',
-                                                        'Moshe 0 0', 'Noga 0 0', 'Moshe 1 1', 'Noga 3 0', 'Moshe 5 0',
-                                                        'Noga 3 1', 'Noga 0 1', 'Noga 2 1', 'Moshe 3 1', 'Moshe 5 1',
-                                                        'Noga 2 2', 'Noga 4 0', 'David 4 1', 'Noga 1 1', 'Moshe 6 1',
-                                                        'David 6 0', 'David 0 1', 'David 1 1', 'David 6 1', 'David 4 2',
-                                                        'Moshe 3 0', 'Moshe 6 2', 'Noga 5 1', 'Noga 1 2', 'Moshe 4 2',
-                                                        'David 1 0', 'Moshe 6 0', 'Noga 2 0', 'David 5 1', 'Noga 3 2',
-                                                        'David 0 0', 'Noga 6 2', 'Moshe 1 2', 'David 2 2', 'David 1 2',
-                                                        'Moshe 2 1', 'David 5 0', 'Noga 6 0', 'David 3 2', 'Moshe 5 2',
-                                                        'Noga 4 1', 'Noga 0 2', 'Noga 5 0']
+            # self.variable_heuristic.sorted_variables = ['Moshe 4 1', 'Moshe 0 1', 'Moshe 3 2', 'Moshe 0 2', 'Noga 4 2',
+            #                                             'David 3 0', 'David 5 2', 'David 2 0', 'Noga 6 1', 'Moshe 4 0',
+            #                                             'David 0 2', 'Moshe 1 0', 'David 2 1', 'Moshe 2 2', 'David 3 1',
+            #                                             'Moshe 2 0', 'Noga 5 2', 'David 4 0', 'Noga 1 0', 'David 6 2',
+            #                                             'Moshe 0 0', 'Noga 0 0', 'Moshe 1 1', 'Noga 3 0', 'Moshe 5 0',
+            #                                             'Noga 3 1', 'Noga 0 1', 'Noga 2 1', 'Moshe 3 1', 'Moshe 5 1',
+            #                                             'Noga 2 2', 'Noga 4 0', 'David 4 1', 'Noga 1 1', 'Moshe 6 1',
+            #                                             'David 6 0', 'David 0 1', 'David 1 1', 'David 6 1', 'David 4 2',
+            #                                             'Moshe 3 0', 'Moshe 6 2', 'Noga 5 1', 'Noga 1 2', 'Moshe 4 2',
+            #                                             'David 1 0', 'Moshe 6 0', 'Noga 2 0', 'David 5 1', 'Noga 3 2',
+            #                                             'David 0 0', 'Noga 6 2', 'Moshe 1 2', 'David 2 2', 'David 1 2',
+            #                                             'Moshe 2 1', 'David 5 0', 'Noga 6 0', 'David 3 2', 'Moshe 5 2',
+            #                                             'Noga 4 1', 'Noga 0 2', 'Noga 5 0']
         if domain_heuristic_creator is not None:  # For the case in which WalkSAT is used (No heuristic)
             self.domain_heuristic = domain_heuristic_creator()
 
