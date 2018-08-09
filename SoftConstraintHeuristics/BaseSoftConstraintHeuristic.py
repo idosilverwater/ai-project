@@ -1,7 +1,7 @@
 from functools import partial
 
 
-class SoftConstraintsHeuristic:
+class BaseSoftConstraintsHeuristic:
 
     def __init__(self, hard_constraints, soft_constraints):
         """
@@ -11,23 +11,13 @@ class SoftConstraintsHeuristic:
         self.hard_constraints = hard_constraints
         self.soft_constraints = soft_constraints
 
-    def update_constraints(self, soft_constraints):
-        self.soft_constraints = soft_constraints
-
     def constraint_level(self, soft_constraint):
         """
         Constraint in this case is a variable (ex. "David 1 1") which says that david wants the second shift on monday
         :param cosntraint: constraint
         :return:
         """
-        count = 1
-
-        for hard in self.hard_constraints:
-            for variable in soft_constraint.get_variables():
-                if variable in hard.get_variables():
-                    count += 1
-
-        return soft_constraint.is_soft, count
+        pass  # TODO implement in deriving classes.
 
     def get_adding_order(self):
         """

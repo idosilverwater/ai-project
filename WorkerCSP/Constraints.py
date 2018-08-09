@@ -41,13 +41,8 @@ class Constraints:
         self.__set_constraint_by_var()
 
         # perpetration for add constraints:
+        self.__ordered_soft_constraints = self.__generate_add_constraints_list(constraint_heuristic_factory)
 
-        # self.__constraint_heuristic = constraint_heuristic
-        self.__soft_constraint_pos_index = 0
-        # TODO change it so it works with the factory!
-        self.__ordered_soft_constraints = None
-        # self.__ordered_soft_constraints = self.__generate_add_constraints_list(
-        #     ConstraintChooserHeuristic.SoftConstraintsHeuristic)
         # self.__ordered_soft_constraints = self.__generate_add_constraints_list(constraint_heuristic_factory)
 
     ###################
@@ -60,6 +55,9 @@ class Constraints:
                 constraints and a list of soft constraints.
         :return: an ordered list of soft constraints.
         """
+        if constraint_heuristic_factory is None:
+            return None
+
         soft_const = []
         hard_consts = []
         for key in self.__all_constraints:
@@ -274,22 +272,22 @@ class Constraints:
         adds one constraint to the visible constraints and returns said constraint. if it fails returns None.
         :return: Constraint object or None.
         """
-        return None  # TODO make this work.
+        # return None  # TODO make this work.
+        if self.__ordered_soft_constraints is None or len(self.__ordered_soft_constraints) > -1:
+            return None
 
-        # if self.__soft_constraint_pos_index > len(self.__ordered_soft_constraints):
-        #     return None
-        #
-        # constraint_to_add = self.__ordered_soft_constraints[self.__soft_constraint_pos_index]
-        # variables = constraint_to_add.get_variables()
-        # keys = self.__get_all_keys_containing_vars(self.__all_constraints, variables)
-        # for key in keys:
-        #     if key in self.__visible_constraints:
-        #         if constraint_to_add in self.__visible_constraints:
-        #             raise Exception("There shouldn't be the same soft constraint in the visible!")
-        #         self.__visible_constraints[key].append(constraint_to_add)
-        #     else:
-        #         self.__visible_constraints[key] = [constraint_to_add]
-        # return constraint_to_add
+        soft_constraint = self.__ordered_soft_constraints.pop()
+        variables = soft_constraint.get_variables()
+        keys = self.__get_all_keys_containing_vars(self.__all_constraints, variables)
+        for key in keys:
+            if key in self.__visible_constraints:
+                if soft_constraint in self.__visible_constraints:
+                    raise Exception("There shouldn't be the same soft constraint in the visible!")
+                self.__visible_constraints[key].append(soft_constraint)
+            else:
+                self.__visible_constraints[key] = [soft_constraint]
+        return soft_constraint
 
-    def get_constraints_by_variable(self, variable_name):
-        return self.__constraints_by_var[variable_name]
+
+def get_constraints_by_variable(self, variable_name):
+    return self.__constraints_by_var[variable_name]
