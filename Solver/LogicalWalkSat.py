@@ -108,9 +108,9 @@ class LogicalWalkSat(BaseSolver):
         return True
 
     def __flip(self, val):
-        if val == magicNums.DOMAIN_TRUE_VAL:
-            return magicNums.DOMAIN_FALSE_VAL
-        return magicNums.DOMAIN_TRUE_VAL
+        if val == DOMAIN_TRUE_VAL:
+            return DOMAIN_FALSE_VAL
+        return DOMAIN_TRUE_VAL
 
     def __flip_value(self, variable_name):
         """
@@ -129,8 +129,8 @@ class LogicalWalkSat(BaseSolver):
 
         def put_flip_coin_val():
             if self.__flip():
-                return magicNums.DOMAIN_TRUE_VAL
-            return magicNums.DOMAIN_FALSE_VAL
+                return DOMAIN_TRUE_VAL
+            return DOMAIN_FALSE_VAL
 
         for name in self.__variable_names:
             self.assign_value(name, put_flip_coin_val())
