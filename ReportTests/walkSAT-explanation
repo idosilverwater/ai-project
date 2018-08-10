@@ -1,0 +1,17 @@
+0 0 - All can't
+0 1 - ABCDE can't F prefers
+0 2 - ABCDE can't F neutral
+1 0 - All prefers
+1 1 - ABCDE prefer F can't
+1 2 - ABCDE prefer F neutral
+2 0 - DEF prefer ABC can't
+2 1 - DEF can't ABC prefer
+
+Every worker is neutral about every one of the remaining shifts.
+
+The total amount of constraints here is 88, (21 - At least one per shift, 21 - No more then 2 per shift,
+23 - preferences, 23 - no work days).
+
+Also it could be shown that that the minimum amount of unsatisfied constraints is 13.
+And in practice the walkSAT satisfies 75.
+Meaning that it dissatisfies the least possible constraints.

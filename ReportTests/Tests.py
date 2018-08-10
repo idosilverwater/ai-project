@@ -14,21 +14,26 @@ def make_csv(filename, assignment):
 
     domain, names, preferences, non_work_shift = parser(lines)
 
-    f = open('test.csv', 'w')
+    f = open(filename + '.csv', 'w')
+
+    first_line = ","
+    for j in range(magicNums.DAYS_IN_WEEK):
+        first_line += str(j) + ","
+    f.writelines(first_line[:-1] + "\n")
 
     for i in range(magicNums.SHIFTS_IN_DAY):
-        line = ""
+        line = str(i) + ","
         for j in range(magicNums.DAYS_IN_WEEK):
             for name in names:
                 if assignment[name + " " + str(j) + " " + str(i)] == magicNums.DOMAIN_TRUE_VAL:
                     line += name + " & "
+            line = line[:-3]
             line += ","
         line = line[:-1]
         if i != magicNums.SHIFTS_IN_DAY - 1:
             line += '\n'
         f.writelines(line)
 
-    print('sdf')
     f.close()
 
 
@@ -38,8 +43,8 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
     if algorithm.solve():
         print("Satisfiable")
         dic = algorithm.get_assignment()
-        for key in dic:
-            print(key + " : " + dic[key])
+        # for key in dic:
+        #     print(key + " : " + dic[key])
         make_csv(filename, dic)
     else:
         print("Unsatisfiable")
@@ -47,4 +52,4 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 
 
 if __name__ == "__main__":
-    worker_solve("/Users/yonatanweiss/PycharmProjects/ai-project/examples/all_can't_work_in_the_same_shift", WALKSAT, False, None, None)
+    worker_solve("ReportTests/walkSAT", WALKSAT, False, None, None, )

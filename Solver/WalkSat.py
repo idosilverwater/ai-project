@@ -146,49 +146,6 @@ class WalkSat(Solver):
         for name in self.__variable_names:
             self.assign_value(name, put_flip_coin_val())  # TODO Notice i changed it to work with actual domain values.
 
-    # def assign_value(self, variable_name, value):
-    #     """
-    #     Assign the value (value) to all literals of the variable named variable_name.
-    #     :param variable_name:
-    #     :param value:
-    #     :return:
-    #     """
-    #     self.assignment[variable_name] = value
-    #     for literal in self.__formula_tree.get_literals_related_to_var(variable_name):
-    #         literal.assign_value(value)
-
-    # def cnfConverter(self):
-    #     """
-    #     :return: Convert the Formula tree (which represents a CSP problem) to CNF form.
-    #     """
-    #     rec = self.recursiveCNFConverter(self.__formula_tree.get_root(), 0)
-    #     print("finished conversion")
-    #     return rec
-
-    # def recursiveCNFConverter(self, node, i):
-    #     """
-    #     Given tree that represents a csp problem. (a csp with literals and *only* AND and OR operators)
-    #     convert to cnf form. according to the algorithm presented at: http://cs.jhu.edu/~jason/tutorials/convert-to-CNF
-    #     :param node:
-    #     :return:
-    #     """
-    #     if node.is_leaf:
-    #         return {(node.value,)} # returning a set
-    #
-    #     right = self.recursiveCNFConverter(node.right, i + 1)
-    #     left = self.recursiveCNFConverter(node.left, i + 1)
-    #
-    #     print(i)
-    #
-    #     if node.value == AND:
-    #         return left.union(right)
-    #     if node.value == OR:
-    #         new = set()
-    #         for p in left:
-    #             for q in right:
-    #                 new.add(p + q)
-    #         return new
-
     def random_constraint(self):
         """
         :return: return uniformly picked clause
@@ -263,7 +220,7 @@ class WalkSat(Solver):
             return True
         else:
             for i in range(self.__max_flips):
-                print(i, self.get_num_satisfied())
+                # print(i, self.get_num_satisfied())
                 constraint = self.random_constraint()
                 if self.__flip_coin():
                     self.__flip_random_variable(constraint)
