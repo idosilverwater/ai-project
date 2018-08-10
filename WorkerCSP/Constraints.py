@@ -225,7 +225,9 @@ class Constraints:
                         if var_name not in self.__constraints_by_var:
                             self.__constraints_by_var[var_name] = [constraint]
                         else:
-                            self.__constraints_by_var[var_name].append(constraint)
+                            # in efficient but necessary. can be overcome by use of more memory.
+                            if constraint not in self.__constraints_by_var[var_name]:
+                                self.__constraints_by_var[var_name].append(constraint)
 
     @staticmethod
     def __get_all_keys_containing_vars(dictionary_of_constraints, iterable_of_variables):
@@ -269,12 +271,13 @@ class Constraints:
         makes all constraints visible.
         """
         self.__visible_constraints = dict(self.__all_constraints)
+        self.__set_constraint_by_var()
 
     def add_constraint(self):
         """
         adds one constraint to the visible constraints and returns said constraint. if it fails returns None.
         :return: Constraint object or None.
-        """
+        """  # TODO problem here.
         # If it is None or an empty list: returns None.
         if not self.__ordered_soft_constraints:
             return None

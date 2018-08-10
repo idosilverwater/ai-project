@@ -28,7 +28,7 @@ class Backtrack(Solver):
             if self.assignment[var] is None:
                 var_name = var
                 break
-
+        # Notice, if this jumped: probably more variables in CSPHandler than there are in the assignment.
         assert (var_name is not None)  # TODO remove after tests. (sanity check)
 
         for value in self.csp.order_domain_values(var_name):
@@ -57,7 +57,7 @@ class Backtrack(Solver):
             self.reset_assignment()
             backtrack_succeed = self.backtrack()
             # add_const = self.csp.add_constraint()
-            i+=1
+            i += 1
             print("Adding soft constraint number:", i)
 
         self.assignment = current_assignment

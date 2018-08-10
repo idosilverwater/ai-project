@@ -15,7 +15,7 @@ class Variable:
         self.constraints = constraints
         self.possible_domain = self.domain.copy()  # will get smaller or larger in time.
         self.value = None
-
+        self.__constraint_set_holder = set(self.constraints)
         # forward checking relevant attributes:
         # self.affected_variables = []  # remembers the variables that were affected by forward checking.
         self.affecting_value = None  # remember the value to return in the end of forward checking restoration.
@@ -23,8 +23,9 @@ class Variable:
         self.neighbours_names = set()
 
     def add_constraint(self, constraint):
-        if constraint not in self.constraints:
+        if constraint not in self.__constraint_set_holder:
             self.constraints.append(constraint)
+            self.__constraint_set_holder.add(constraint)
 
     def set_neighbours(self, set_of_neighbours):
         self.neighbours_names = set_of_neighbours
@@ -33,7 +34,7 @@ class Variable:
         for neighbour in set_of_neighbours:
             self.neighbours_names.add(neighbour)
 
-    def forward_checking_restore_self(self):
+    def forward_checking_restore_self(self):על
         """
         declares the variable as non affecting anybody, should be called when forward checking is done.
         :return: None.

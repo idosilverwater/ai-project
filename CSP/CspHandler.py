@@ -4,9 +4,9 @@ from copy import *
 
 
 # TODO arc consistency.
+# TODO make a RESTORE function for CSP such that backtrack can call it before new run with more constraints!
 
-
-class CspHandler(object):
+class CspHandler:
     """
     main CSP handler. should be main authority for handling variables, domains and constraints.
     """
@@ -26,18 +26,18 @@ class CspHandler(object):
         self.constraints = constraints
         self.variables = {}
         self._generate_variables(variables, domain)  # builds a dictionary of variables.
-
+        self.variable_heuristic = None
         if variable_heuristic_creator is not None:  # For the case in which WalkSAT is used (No heuristic)
             self.variable_heuristic = variable_heuristic_creator(self.variables)
             # print(self.variable_heuristic.sorted_variables)
             # TODO This can produce a horrid bug! where random takes over somewhere and as a (continue in line below)
-            # result the backtrack doesn't manage to solve everything.
-            self.variable_heuristic.sorted_variables = ['Moshe 3 1', 'Noga 1 0', 'Noga 3 1', 'David 3 1', 'Moshe 0 0',
-                                                        'Moshe 3 0', 'David 1 0', 'David 0 1', 'Moshe 2 1', 'Noga 2 0',
-                                                        'Noga 2 1', 'Moshe 1 0', 'David 2 1', 'Noga 0 0', 'David 0 0',
-                                                        'David 1 1', 'Moshe 0 1', 'Noga 1 1', 'David 3 0', 'David 2 0',
-                                                        'Moshe 2 0', 'Noga 3 0', 'Moshe 1 1', 'Noga 0 1']
-
+            # # result the backtrack doesn't manage to solve everything.
+            # self.variable_heuristic.sorted_variables = ['Moshe 3 1', 'Noga 1 0', 'Noga 3 1', 'David 3 1', 'Moshe 0 0',
+            #                                             'Moshe 3 0', 'David 1 0', 'David 0 1', 'Moshe 2 1', 'Noga 2 0',
+            #                                             'Noga 2 1', 'Moshe 1 0', 'David 2 1', 'Noga 0 0', 'David 0 0',
+            #                                             'David 1 1', 'Moshe 0 1', 'Noga 1 1', 'David 3 0', 'David 2 0',
+            #                                             'Moshe 2 0', 'Noga 3 0', 'Moshe 1 1', 'Noga 0 1']
+        self.domain_heuristic = None
         if domain_heuristic_creator is not None:  # For the case in which WalkSAT is used (No heuristic)
             # self.domain_heuristic = domain_heuristic_creator()
             self.domain_heuristic = None  # TODO REMOVE.
@@ -75,7 +75,13 @@ class CspHandler(object):
         makes all constraints visible.
         :return: None
         """
-        self.constraints.set_constraints_visible()
+        self.constraints.set_constraints_visible()  # TODO this isn't making all the constraints visible!!
+        for variable_name in self.variables:
+            # update variables with new constraints, and neighbours.
+            constraints = self.constraints.get_constraints_by_variable(variable_name)
+            for constraint in constraints:
+                self.variables[variable_name].add_constraint(constraint)
+                self.__add_neighbours_to_var(variable_name, constraint.get_variables())
 
     def order_domain_values(self, variable_name):
         """
@@ -84,7 +90,10 @@ class CspHandler(object):
         :return: a list of values to assign.
         """
         if self.domain_heuristic is None:
-            return self.variables[variable_name].get_possible_domain()
+            ret = list(self.variables[variable_name].domain)
+            ret.sort()
+            ret.reverse()  # TODO return possible_domain instead.
+            return ret
         variable = self.variables[variable_name]
         assignment = self.__get_assignment_of_neighbours(variable)
         assignment[variable.name] = variable.value
@@ -149,6 +158,12 @@ class CspHandler(object):
             res = self.forward_checking(variable_name, value)
         return res
 
+    def __add_neighbours_to_var(self, var_name, neighbours_names):
+        self.variables[var_name].add_neighbours(neighbours_names)
+        # removing var_name from the variable's neighbours if it was added.
+        if var_name in self.variables[var_name].neighbours_names:
+            self.variables[var_name].neighbours_names.remove(var_name)
+
     def add_constraint(self):
         """
         add constraint to the visible constraint list.
@@ -161,10 +176,7 @@ class CspHandler(object):
         all_var_names = constraint.get_variables()
         for var_name in all_var_names:
             # adding every ones as my new neighbours.
-            self.variables[var_name].add_neighbours(all_var_names)
-            # removing var_name from the variable's neighbours if it was added.
-            if var_name in self.variables[var_name].neighbours_names:
-                self.variables[var_name].neighbours_names.remove(var_name)
+            self.__add_neighbours_to_var(var_name, all_var_names)
             self.variables[var_name].add_constraint(constraint)
         return True
 
@@ -312,9 +324,12 @@ class CspHandler(object):
         visited = {}  # A dictionary of the form: {variable name: (flag, domain)} the flag is used in __is_relevant.
         variables_copy = self.__copy_variables()
         assignment[variable_name] = value
+        # shortcut: we assign the only possible value as the wanted assignment.
         var_obj = variables_copy[variable_name]
+        stored_possible_domain = deepcopy(var_obj.get_possible_domain())
         var_obj.set_value(value)
         var_obj.set_possible_domain([value])
+
         q = queue.Queue()
         q.put(variable_name)
 
@@ -329,6 +344,9 @@ class CspHandler(object):
                 is_wiped_out = self.__check_possible_domain(curr, assignment, variables_copy)
                 if is_wiped_out:
                     return False
+        var_obj.set_possible_domain(stored_possible_domain)  # restoring the possible domain.
+        self.__check_possible_domain(var_obj.name, assignment, variables_copy)  # doing final clean on possible domain
+        # storing the non changed variables for a restore later.
         self.__fc_variables_backup.append(self.variables)
         self.variables = variables_copy  # The fc succeeded so we keep the changes in the variables.
         return True
