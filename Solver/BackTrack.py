@@ -22,6 +22,7 @@ class Backtrack(Solver):
             if self.assignment_legit():
                 return True
             return False
+
         # Body of recursion:
         var_name = None
         for var in self.csp.select_unassigned_variable():  # choose the variable that isn't assigned.
@@ -50,13 +51,13 @@ class Backtrack(Solver):
         if not backtrack_succeed:
             self.reset_assignment()  # resetting the assignment.
             return False
-        i = 1
+        i = 0
         current_assignment = self.assignment
         while backtrack_succeed and self.csp.add_constraint():  # while we can still add constraints - continues
+            self.csp.restore_csp_handler()  # restores cso for re run.
             current_assignment = self.assignment
             self.reset_assignment()
             backtrack_succeed = self.backtrack()
-            # add_const = self.csp.add_constraint()
             i += 1
             print("Adding soft constraint number:", i)
 

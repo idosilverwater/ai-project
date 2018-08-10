@@ -34,14 +34,6 @@ class Variable:
         for neighbour in set_of_neighbours:
             self.neighbours_names.add(neighbour)
 
-    def forward_checking_restore_self(self):על
-        """
-        declares the variable as non affecting anybody, should be called when forward checking is done.
-        :return: None.
-        """
-        self.affected_variables = []
-        self.affecting_value = None
-
     def is_value_legit(self, value):
         """
         checks if a given value is in the domain of this variable, and if the value is in the possible domain.
@@ -50,23 +42,26 @@ class Variable:
         """
         return value in self.domain and value in self.possible_domain
 
-    def is_not_assigned(self):
-        return self.value is None
-
-    # def __repr__(self):
-    #     return "#name: " + self.name + ",dom: " + str(self.domain) + ", pos domain: " + str(self.possible_domain) + ", value: " + str(self.value)
-
-    #####################
-    # Getters & Setters #
-    #####################
+    def __repr__(self):
+        return "#name: " + self.name + ",dom: " + str(self.domain) + ", pos domain: " + str(
+            self.possible_domain) + ", value: " + str(self.value)
 
     def get_neighbors(self):
+        """
+        returns a set object of neighbours names.
+        """
         return self.neighbours_names
 
     def get_constraints(self):
+        """
+        returns a list of constraints this variable is tied too.
+        """
         return self.constraints
 
     def get_possible_domain(self):
+        """
+        returns the domain this varible can still use.
+        """
         return self.possible_domain
 
     def get_name(self):
@@ -85,13 +80,17 @@ class Variable:
         return self.affecting_value
 
     def get_domain(self):
+        """
+        returns the full domain and not the possible domain.
+        :return:
+        """
         return self.domain
 
     def remove_from_possible_domain(self, value):
         """
         Removes value from self.possible_domain
         """
-        self.possible_domain -= {value}  # TODO check if this is better over set([value])
+        self.possible_domain -= {value}
 
     def set_possible_domain(self, new_domain):
         self.possible_domain = set(new_domain)

@@ -4,7 +4,6 @@ from copy import *
 
 
 # TODO arc consistency.
-# TODO make a RESTORE function for CSP such that backtrack can call it before new run with more constraints!
 
 class CspHandler:
     """
@@ -23,27 +22,26 @@ class CspHandler:
                 DomainHeuristic.
         :param forward_checking_flag: determines if we use forward checking in this CSP object.
         """
+        self._forward_checking_flag = forward_checking_flag
+
         self.constraints = constraints
         self.variables = {}
         self._generate_variables(variables, domain)  # builds a dictionary of variables.
+
         self.variable_heuristic = None
         if variable_heuristic_creator is not None:  # For the case in which WalkSAT is used (No heuristic)
             self.variable_heuristic = variable_heuristic_creator(self.variables)
-            # print(self.variable_heuristic.sorted_variables)
-            # TODO This can produce a horrid bug! where random takes over somewhere and as a (continue in line below)
-            # # result the backtrack doesn't manage to solve everything.
-            # self.variable_heuristic.sorted_variables = ['Moshe 3 1', 'Noga 1 0', 'Noga 3 1', 'David 3 1', 'Moshe 0 0',
-            #                                             'Moshe 3 0', 'David 1 0', 'David 0 1', 'Moshe 2 1', 'Noga 2 0',
-            #                                             'Noga 2 1', 'Moshe 1 0', 'David 2 1', 'Noga 0 0', 'David 0 0',
-            #                                             'David 1 1', 'Moshe 0 1', 'Noga 1 1', 'David 3 0', 'David 2 0',
-            #                                             'Moshe 2 0', 'Noga 3 0', 'Moshe 1 1', 'Noga 0 1']
+
         self.domain_heuristic = None
         if domain_heuristic_creator is not None:  # For the case in which WalkSAT is used (No heuristic)
             # self.domain_heuristic = domain_heuristic_creator()
             self.domain_heuristic = None  # TODO REMOVE.
 
-        self.__fc_variables_backup = [self.variables]  # a stack contains the previous versions of variables.
-        self._forward_checking_flag = forward_checking_flag
+        self.__fc_variables_backup = []  # a stack contains the previous versions of variables.
+
+        # Restore values for csp restore.
+        self.__domain_list = domain
+        self.__variables_list = variables
 
     def _generate_variables(self, names, domain):
         """
@@ -69,6 +67,17 @@ class CspHandler:
                     neighbours_names)  # give a reference to the set.
             else:
                 raise Exception("Variable name repeats twice!")
+
+    def restore_csp_handler(self):
+        """
+        Restarts all variables and re initialize the csp handler using the current constraints.
+            will operate as a new CspHandler. if the constraints were updated - would not
+            restore them to previous condition.
+        :return: None.
+        """
+        self.variables = {}
+        self._generate_variables(self.__variables_list, self.__domain_list)
+        self.__fc_variables_backup = []
 
     def make_visible(self):
         """
@@ -159,6 +168,11 @@ class CspHandler:
         return res
 
     def __add_neighbours_to_var(self, var_name, neighbours_names):
+        """
+        adds neighbours to the variable, update it such that it would not add itself to the neighbours.
+        :param var_name: a variable name.
+        :param neighbours_names: the names of all the neighbours.
+        """
         self.variables[var_name].add_neighbours(neighbours_names)
         # removing var_name from the variable's neighbours if it was added.
         if var_name in self.variables[var_name].neighbours_names:
