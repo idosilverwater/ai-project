@@ -8,6 +8,56 @@ WALKSAT = 'w'
 
 algorithms = {'b': Backtrack, 'w': WalkSat}
 
+def random_shifts(amount, names):
+    shifts = []
+
+    count = 0
+    while count <= amount:
+        name = random.choice(names)
+        day = random.randint(0, DAYS_IN_WEEK - 1)
+        shift_in_day = random.randint(0, SHIFTS_IN_DAY - 1)
+        shift = name + " " + str(day) + " " + str(shift_in_day)
+
+        if shift not in shifts:
+            shifts.append(shift)
+            count += 1
+
+    return shifts
+
+
+def create_random_test(people_amount, preference_amount, no_work_shift_amount):
+    lines = []
+
+    lines.append("Domain:\n")
+    lines.append("True\n")
+    lines.append("False\n")
+
+    names = list()
+    lines.append("Names:\n")
+    for i in range(people_amount):
+        names.append(str(chr(i + 65)))
+        lines.append(str(chr(i + 65)) + "\n")
+
+    shifts = random_shifts(preference_amount + no_work_shift_amount, names)
+    preferences = shifts[:preference_amount]
+    no_work_shifts = shifts[preference_amount:]
+
+    lines.append("Preferences:\n")
+    for preference in preferences:
+        lines.append(preference + "\n")
+
+    lines.append("NonWorkShift:\n")
+    for no_work_shift in no_work_shifts:
+        lines.append(no_work_shift + "\n")
+
+    return lines
+
+
+def create_random_tests(amount):
+
+    for i in range(1, amount + 1):
+        with open('ReportTests/random_test' + str(i), 'w') as random_example:
+            random_example.writelines(create_random_test(5, 8, 10))
 
 def make_csv(filename, assignment):
     with open(filename, 'r') as csp_file:
@@ -53,5 +103,7 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 
 
 if __name__ == "__main__":
-    # worker_solve("ReportTests/walkSAT", WALKSAT, False, None, None)
-    worker_solve("ReportTests/walkSAT", BACKTRACK, False, LEAST_CONSTRAINING_VAL, MIN_REMAINING_VAL)
+    # worker_solve("ReportTests/test1", WALKSAT, False, None, None)
+    # worker_solve("ReportTests/test1", BACKTRACK, False, MIN_REMAINING_VAL, LEAST_CONSTRAINING_VAL)
+    create_random_tests(1)
+

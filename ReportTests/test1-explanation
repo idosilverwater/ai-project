@@ -13,5 +13,22 @@ The total amount of constraints here is 88, (21 - At least one per shift, 21 - N
 23 - preferences, 23 - no work days).
 
 Also it could be shown that that the minimum amount of unsatisfied constraints is 13.
+
+===========
+= WalkSAT =
+===========
+
 And in practice the walkSAT satisfies 75.
 Meaning that it dissatisfies the least possible constraints.
+
+============
+= Backtrack=
+============
+
+--------------------
+- Forward Checking -
+--------------------
+
+-------------------
+- Arc Consistency -
+-------------------
