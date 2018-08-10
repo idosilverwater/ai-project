@@ -2,6 +2,8 @@ from CSP.Constraint import *
 import magicNums
 
 # magic Nums.
+from SoftConstraintHeuristics.DegreeSoftHeuristic import *
+
 DOMAIN_TRUE_VAL = magicNums.DOMAIN_TRUE_VAL
 DOMAIN_FALSE_VAL = magicNums.DOMAIN_FALSE_VAL
 
@@ -41,9 +43,10 @@ class Constraints:
         self.__set_constraint_by_var()
 
         # perpetration for add constraints:
-        self.__ordered_soft_constraints = self.__generate_add_constraints_list(constraint_heuristic_factory)
-
         # self.__ordered_soft_constraints = self.__generate_add_constraints_list(constraint_heuristic_factory)
+        # TODO add heuristics to the main and what to choose.
+        self.__ordered_soft_constraints = self.__generate_add_constraints_list(DegreeSoftConstraintsHeuristic)
+        self.__ordered_soft_constraints.reverse()  # TODO check if needed!
 
     ###################
     # Private Methods #
@@ -272,8 +275,8 @@ class Constraints:
         adds one constraint to the visible constraints and returns said constraint. if it fails returns None.
         :return: Constraint object or None.
         """
-        # return None  # TODO make this work.
-        if self.__ordered_soft_constraints is None or len(self.__ordered_soft_constraints) > -1:
+        # If it is None or an empty list: returns None.
+        if not self.__ordered_soft_constraints:
             return None
 
         soft_constraint = self.__ordered_soft_constraints.pop()

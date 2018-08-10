@@ -55,12 +55,12 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
 
     domain, names, preferences, non_work_shift = parser(lines)
 
-    domain = [domain] * (len(names) * 7 * 3)
+    domain = [domain] * (len(names) * magicNums.DAYS_IN_WEEK * magicNums.SHIFTS_IN_DAY)
 
     variables = list()
     for name in names:
-        for d in range(DAYS_IN_WEEK):
-            for s in range(SHIFTS_IN_DAY):
+        for d in range(magicNums.DAYS_IN_WEEK):
+            for s in range(magicNums.SHIFTS_IN_DAY):
                 variables.append(str(name) + magicNums.SEPARATOR + str(d) + magicNums.SEPARATOR + str(s))
 
     if no_soft:

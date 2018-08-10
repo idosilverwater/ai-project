@@ -128,7 +128,7 @@ class LogicalWalkSat(BaseSolver):
         """
 
         def put_flip_coin_val():
-            if self.__flip():
+            if self.__flip_coin():
                 return DOMAIN_TRUE_VAL
             return DOMAIN_FALSE_VAL
 

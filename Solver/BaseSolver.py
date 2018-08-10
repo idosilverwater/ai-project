@@ -27,6 +27,7 @@ class Solver:
         :return: None
         """
         self.assignment = self.assignment.fromkeys(self.assignment, None)
+        self.num_of_assigned = 0
 
     #########################
     # Protected functions Not to be used by other than derivative classes:

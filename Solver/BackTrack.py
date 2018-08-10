@@ -46,12 +46,19 @@ class Backtrack(Solver):
         tries and solve for the csp problem while adding more and more constraints to the problem.
         :return: False if there isn't a solution, True otherwise.
         """
-        res = self.backtrack()  # try to satisfy hard constraints.
-        if not res:
+        backtrack_succeed = self.backtrack()  # try to satisfy hard constraints.
+        if not backtrack_succeed:
+            self.reset_assignment()  # resetting the assignment.
             return False
-
-        while res and self.csp.add_constraint():  # while we can still add constraints - continues
-            print("Adding constraint")
+        i = 1
+        current_assignment = self.assignment
+        while backtrack_succeed and self.csp.add_constraint():  # while we can still add constraints - continues
+            current_assignment = self.assignment
             self.reset_assignment()
-            res = self.backtrack()
+            backtrack_succeed = self.backtrack()
+            # add_const = self.csp.add_constraint()
+            i+=1
+            print("Adding soft constraint number:", i)
+
+        self.assignment = current_assignment
         return True
