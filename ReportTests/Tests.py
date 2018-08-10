@@ -1,5 +1,6 @@
 from WorkerCSP.WorkersCSP import create_workers_csp, parser
 from Solver.BackTrack import *
+from magicNums import *
 from Solver.WalkSat import *
 
 BACKTRACK = 'b'
@@ -52,4 +53,5 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 
 
 if __name__ == "__main__":
-    worker_solve("ReportTests/walkSAT", WALKSAT, False, None, None, )
+    # worker_solve("ReportTests/walkSAT", WALKSAT, False, None, None)
+    worker_solve("ReportTests/walkSAT", BACKTRACK, False, LEAST_CONSTRAINING_VAL, MIN_REMAINING_VAL)
