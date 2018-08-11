@@ -1,10 +1,33 @@
 from CSP.Variable import *
 import queue
 from copy import *
+import time
+from threading import Thread, Lock
+
+# todo, try and find a way to assign a value in the cs and backtrack when you do forward checking and theres 1 value left.
+# TODO notice that when we remove almost every one of the super soft constraints there is a crash, check why? (notice down below the text.)
+"""
+for example put in the example: 
+Domain:
+True
+False
+Names:
+David
+Noga
+Moshe
+Preferences:
+David 0 0
+David 2 1
+NonWorkShift:
+Noga 0 0
+Noga 0 1
+David 1 0
+MinimumWantedShifts:
+Moshe 3
+
+"""
 
 
-# TODO arc consistency.
-# TODO for some reason same constraint appears twice fix it!
 class CspHandler:
     """
     main CSP handler. should be main authority for handling variables, domains and constraints.
@@ -22,6 +45,7 @@ class CspHandler:
                 DomainHeuristic.
         :param forward_checking_flag: determines if we use forward checking in this CSP object.
         """
+        print(forward_checking_flag)
         self._forward_checking_flag = forward_checking_flag
 
         self.constraints = constraints
@@ -222,11 +246,34 @@ class CspHandler:
         gets a bunch of constraints and an assignment and checks whether all constraints are not violated or not.
         :return True if assignment agrees with all of the constraints, False otherwise.
         """
-        # if we wish to parallel this function-we need to split the dictionary of constraints and give it to each thread
+        return CspHandler.__sequence_check_agreement(constraints, assignment)
+        # TODO TRY finding a way to reuse same threads. that way they can re run everything without overhead of creating thread.
+        # res1 = [True]
+        # res2 = [True]
+        # t1 = Thread(target=CspHandler.__parralel_check_agreement, args=(res1, constraints, assignment, 0))
+        # t2 = Thread(target=CspHandler.__parralel_check_agreement, args=(res2, constraints, assignment, 1))
+        # t1.start()
+        # t2.start()
+        # t1.join()
+        # t2.join()
+        # if not res1[0] or not res2[0]:
+        #     return False
+        # return True
+
+    @staticmethod
+    def __parralel_check_agreement(ret_val, constraints, assignment, index):
+        for i in range(index, len(constraints), 2):
+            if not constraints[i].check_assignment(assignment):
+                ret_val[0] = False
+                break
+
+    @staticmethod
+    def __sequence_check_agreement(constraints, assignment):
         for constraint in constraints:
             if not constraint.check_assignment(assignment):
                 return False
         return True
+        pass
 
     ####################
     # FORWARD CHECKING #
@@ -255,7 +302,9 @@ class CspHandler:
         """
         variables_copy = {}
         for var_name in self.variables:
-            variables_copy[var_name] = deepcopy(self.variables[var_name])
+            # TODO softer clone - does not copy the constraints.
+            # variables_copy[var_name] = deepcopy(self.variables[var_name])
+            variables_copy[var_name] = copy(self.variables[var_name])
         return variables_copy
 
     def __update_neighbours_as_wanting_a_visit(self, var_obj, visited):
@@ -273,28 +322,15 @@ class CspHandler:
         :return: True if relevant, otherwise False.
         """
         # TODO BUG.
-        """
-        if not visted: 
-            add to visited and pull out of queue.
-        elif my neighbour that added me to queue was changed:
-            if i was changed:
-                add my neighbours. 
-            pull out of queue.
-        else:
-            if i was changed - notify that my neighbours should be visited too.
-            
-        /////
-        What is the problem?  
-        What if my neighbour added me, but i also was changed? shouldn't i add all my neighbours to the queue?
-        """
         var_obj = variables_copy[variable]
         if variable not in visited:
             return True
         elif visited[variable][0]:
+
             # meaning we checked the neighbour and don't need to do it again for same reason.
             visited[variable][0] = False
-            if len(var_obj.get_possible_domain()) < len(visited[var_obj.name][1]):
-                self.__update_neighbours_as_wanting_a_visit(var_obj, visited)
+            # if len(var_obj.get_possible_domain()) < len(visited[var_obj.name][1]):
+            #     self.__update_neighbours_as_wanting_a_visit(var_obj, visited)
             return True
         else:
             if len(var_obj.get_possible_domain()) < len(visited[variable][1]):
@@ -330,6 +366,9 @@ class CspHandler:
         :return: True if the domain of the current variable is wiped out, False otherwise.
         """
         var_obj = variables_copy[curr_variable]
+        # if the variable has an assignment already - do not check it!
+        if var_obj.value is not None:
+            return False
         copy_of_possible_domain = deepcopy(var_obj.get_possible_domain())
         previous_val = assignment[curr_variable]
         for domain_value in copy_of_possible_domain:  # for d in possible domain.
@@ -338,9 +377,11 @@ class CspHandler:
             if not self.check_constraint_agreement(constraints, assignment):
                 var_obj.remove_from_possible_domain(domain_value)
                 # we should remove this value because there is at least one constraint who isn't happy about it.
-
         assignment[curr_variable] = previous_val
         if len(var_obj.get_possible_domain()) != 0:
+            if len(var_obj.get_possible_domain()) == 1:
+                # TODO you mofo add it into the fucking variable too! this way you don't need to assign the value?
+                assignment[curr_variable] = next(iter(var_obj.get_possible_domain()))
             return False  # variable has at least one value in it's possible domain meaning still isn't empty.
         return True  # curr_variable is wiped out.
 
@@ -364,22 +405,30 @@ class CspHandler:
         q = queue.Queue()
         q.put(variable_name)
 
+        a = time.time()
         while not q.empty():
             curr = q.get()
             if self.__is_relevant(curr, visited, variables_copy):
+
                 self.__enter_neighbors_to_queue(curr, q, variables_copy)
                 # saving the current variable's possible domain, if it changes later on than it is interesting
                 #  to check again. False indicates that the flag of neighbours changed didn't occur.
                 visited[curr] = [False, variables_copy[curr].get_possible_domain()]
                 # updates the possible domain, if it returns empty -> than we return False.
+                # a = time.time()
                 is_wiped_out = self.__check_possible_domain(curr, assignment, variables_copy)
+                # print("Wipe Out Time:", time.time() - a)
                 if is_wiped_out:
+                    # print(time.time() - a)
+                    # print("exit False")
                     return False
         var_obj.set_possible_domain(stored_possible_domain)  # restoring the possible domain.
         self.__check_possible_domain(var_obj.name, assignment, variables_copy)  # doing final clean on possible domain
         # storing the non changed variables for a restore later.
         self.__fc_variables_backup.append(self.variables)
         self.variables = variables_copy  # The fc succeeded so we keep the changes in the variables.
+        # print(time.time() - a)
+        # print("exit True")
         return True
 
     def __restore(self):
