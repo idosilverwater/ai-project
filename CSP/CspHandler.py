@@ -4,7 +4,7 @@ from copy import *
 
 
 # TODO arc consistency.
-
+# TODO for some reason same constraint appears twice fix it!
 class CspHandler:
     """
     main CSP handler. should be main authority for handling variables, domains and constraints.
@@ -258,6 +258,12 @@ class CspHandler:
             variables_copy[var_name] = deepcopy(self.variables[var_name])
         return variables_copy
 
+    def __update_neighbours_as_wanting_a_visit(self, var_obj, visited):
+        for neighbour in var_obj.get_neighbors():
+            if self.variables[neighbour] in visited:
+                # meaning we wish to revisit this neighbour.
+                visited[var_obj.name][0] = True
+
     def __is_relevant(self, variable, visited, variables_copy):
         """
         Tests if a certain variable relevant for the rest of the FC tests. A variable is not relevant if it is either
@@ -266,22 +272,34 @@ class CspHandler:
         :param visited: A list of visited variable objects.
         :return: True if relevant, otherwise False.
         """
+        # TODO BUG.
+        """
+        if not visted: 
+            add to visited and pull out of queue.
+        elif my neighbour that added me to queue was changed:
+            if i was changed:
+                add my neighbours. 
+            pull out of queue.
+        else:
+            if i was changed - notify that my neighbours should be visited too.
+            
+        /////
+        What is the problem?  
+        What if my neighbour added me, but i also was changed? shouldn't i add all my neighbours to the queue?
+        """
         var_obj = variables_copy[variable]
         if variable not in visited:
-            visited[variable] = [False, var_obj.get_possible_domain()]
             return True
         elif visited[variable][0]:
             # meaning we checked the neighbour and don't need to do it again for same reason.
             visited[variable][0] = False
+            if len(var_obj.get_possible_domain()) < len(visited[var_obj.name][1]):
+                self.__update_neighbours_as_wanting_a_visit(var_obj, visited)
             return True
         else:
-            var_obj = variables_copy[variable]
-            if len(var_obj.get_possible_domain()) != len(visited[variable][1]):
-                for neighbour in var_obj.get_neighbors():
-                    if self.variables[neighbour] in visited:
-                        # meaning we wish to revisit this neighbour.
-                        visited[variable][0] = True
-                return True
+            if len(var_obj.get_possible_domain()) < len(visited[variable][1]):
+                self.__update_neighbours_as_wanting_a_visit(var_obj, visited)
+            # return True
             return False
 
     def generate_current_assignment(self):
@@ -313,14 +331,16 @@ class CspHandler:
         """
         var_obj = variables_copy[curr_variable]
         copy_of_possible_domain = deepcopy(var_obj.get_possible_domain())
-        for domain_value in copy_of_possible_domain:
+        previous_val = assignment[curr_variable]
+        for domain_value in copy_of_possible_domain:  # for d in possible domain.
             assignment[curr_variable] = domain_value
             constraints = var_obj.get_constraints()
             if not self.check_constraint_agreement(constraints, assignment):
                 var_obj.remove_from_possible_domain(domain_value)
                 # we should remove this value because there is at least one constraint who isn't happy about it.
 
-        if len(var_obj.get_possible_domain()) > -1:
+        assignment[curr_variable] = previous_val
+        if len(var_obj.get_possible_domain()) != 0:
             return False  # variable has at least one value in it's possible domain meaning still isn't empty.
         return True  # curr_variable is wiped out.
 
@@ -350,7 +370,7 @@ class CspHandler:
                 self.__enter_neighbors_to_queue(curr, q, variables_copy)
                 # saving the current variable's possible domain, if it changes later on than it is interesting
                 #  to check again. False indicates that the flag of neighbours changed didn't occur.
-                visited[curr] = (False, variables_copy[curr].get_possible_domain())
+                visited[curr] = [False, variables_copy[curr].get_possible_domain()]
                 # updates the possible domain, if it returns empty -> than we return False.
                 is_wiped_out = self.__check_possible_domain(curr, assignment, variables_copy)
                 if is_wiped_out:

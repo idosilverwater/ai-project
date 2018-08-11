@@ -192,7 +192,8 @@ class Constraints:
         Helper function for the hard constraints adding items.
         """
         if key in dictionary:
-            dictionary[key].append(value)
+            if value not in dictionary[key]:  # TODO maybe make into set for faster check.
+                dictionary[key].append(value)
         else:
             dictionary[key] = [value]
 

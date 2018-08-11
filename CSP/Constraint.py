@@ -74,5 +74,5 @@ class Constraint:
         """
         return len(self.collect_possible_assignments(assignment))
 
-    def __repr__(self):
-        return str(self.variables) + str(self.possible_values)
+    # def __repr__(self):
+    #     return str(self.variables) + str(self.possible_values)
