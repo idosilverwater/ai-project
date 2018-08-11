@@ -26,17 +26,18 @@ def parser(lines):
     domain = new_lines[1:new_lines.index('Names:')]
     names = new_lines[new_lines.index('Names:') + 1:new_lines.index('Preferences:')]
     preferences = new_lines[new_lines.index('Preferences:') + 1:new_lines.index('NonWorkShift:')]
-    non_work_shift = new_lines[new_lines.index('NonWorkShift:') + 1:]
+    non_work_shift = new_lines[new_lines.index('NonWorkShift:') + 1:new_lines.index("MinimumWantedShifts:")]
+    list_of_wanted_shifts = new_lines[new_lines.index('MinimumWantedShifts:') + 1:]
+
+    minimum_wanted_shifts = {name: int(value) for name, value in
+                             map(str.split, list_of_wanted_shifts)}
 
     new_preferences = list()
 
     for preference in preferences:
         new_preferences.append(preference.split())
-    # if non_work_shift[0] == '':
-    #     non_work_shift = []
-    # if preference[0] == '':
-    #     preference = []
-    return domain, names, new_preferences, non_work_shift
+
+    return domain, names, new_preferences, non_work_shift, minimum_wanted_shifts
 
 
 def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
@@ -53,7 +54,7 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
     with open(filename, 'r') as csp_file:
         lines = csp_file.readlines()
 
-    domain, names, preferences, non_work_shift = parser(lines)
+    domain, names, preferences, non_work_shift, minimum_wanted_shifts = parser(lines)
 
     domain = [domain] * (len(names) * magicNums.DAYS_IN_WEEK * magicNums.SHIFTS_IN_DAY)
 
@@ -61,7 +62,8 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
     for name in names:
         for d in range(magicNums.DAYS_IN_WEEK):
             for s in range(magicNums.SHIFTS_IN_DAY):
-                variables.append(str(name) + magicNums.SEPARATOR + str(d) + magicNums.SEPARATOR + str(s))
+                variables.append(str(name) + magicNums.VARIABLE_NAME_SHIFT_SEPARATOR + str(
+                    d) + magicNums.VARIABLE_NAME_SHIFT_SEPARATOR + str(s))
 
     if no_soft:
         preferences = list()
@@ -80,5 +82,5 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
     elif variable_heuristic == DEGREE:
         variable_factory = Degree
 
-    constraints = Constraints(preferences, non_work_shift, variables)
+    constraints = Constraints(preferences, non_work_shift, variables, minimum_wanted_shifts)
     return CspHandler(domain, variables, constraints, variable_factory, domain_factory)

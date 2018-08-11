@@ -15,8 +15,8 @@ class Constraints:
     parser's output.
     """
 
-    def __init__(self, preferences, non_workable_shifts, variable_names, constraint_heuristic_factory=None,
-                 maximum_workers_per_shift=2):
+    def __init__(self, preferences, non_workable_shifts, variable_names, minimum_wanted_shift_dict=None,
+                 maximum_workers_per_shift=2, constraint_heuristic_factory=None):
         """
         Creates several dictionaries of constraints.
         :param preferences: A list of the workers preferences. For example:
@@ -26,6 +26,7 @@ class Constraints:
         example would be "(1,2,3)"
         """
         self.__maximum_workers_per_shift = maximum_workers_per_shift
+        self.__minimum_shifts_num = minimum_wanted_shift_dict
 
         self.__preferences = preferences
         self.__non_workable_shifts = non_workable_shifts
@@ -69,6 +70,7 @@ class Constraints:
         """
         self.__visible_constraints = dict(self.__all_constraints)
         self.__set_constraint_by_var()
+        self.__ordered_soft_constraints = []
 
     def add_constraint(self):
         """
@@ -147,7 +149,7 @@ class Constraints:
         """
         relevant_vars = []
         for name in self.__variable_names:
-            if name.endswith(str(day) + magicNums.SEPARATOR + str(shift_number)):
+            if name.endswith(str(day) + magicNums.VARIABLE_NAME_SHIFT_SEPARATOR + str(shift_number)):
                 relevant_vars.append(name)
         return tuple(relevant_vars)
 
@@ -193,7 +195,6 @@ class Constraints:
             dictionary[key].append(value)
         else:
             dictionary[key] = [value]
-        pass
 
     def __create_constraints_for_worker_in_same_shift(self, assignment_generator):
         """
@@ -233,6 +234,19 @@ class Constraints:
                 lst_of_assignments.append(item)
         return lst_of_assignments
 
+    def __generate_assignments_for_at_least_x_possible_true(self, num_workers, x):
+        """
+        creates assignment list for constraint that wish to have at most x workers.
+        :param num_workers: the number of variables in a shift.
+        :param x: the maximum amount of workers we want to have in a shift.
+        :return: a list of possible assignments.
+        """
+        lst_of_assignments = []
+        for item in self.__generate_assignments_for_at_least_one_worker(num_workers):
+            if item.count(magicNums.DOMAIN_TRUE_VAL) >= x:
+                lst_of_assignments.append(item)
+        return lst_of_assignments
+
     def __generate_hard_const(self):
         """
         Generates the hard constraints and updates self.constraints.
@@ -249,15 +263,71 @@ class Constraints:
 
         self.__create_constraints_for_worker_in_same_shift(x_workers_at_most)
 
-    def __generate_soft_const(self):
-        """
-        Generates the soft constraints and updates self.constraints.
-        """
+    def __preference_days_constraints(self):
         for preference in self.__preferences:
             var_name = (" ".join(preference),)
             # Adding constraint to all_constraints:
             new_constraint = Constraint(var_name, [[DOMAIN_TRUE_VAL]], magicNums.BAKERY_SOFT_CONSTRAINT_VALUE)
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
+
+    def __gather_all_possible_shifts(self, name):
+        """
+        generates all possible variations of variable according to its name.  That is a list of all possible days and
+            shifts: [David i j for i, j in days, shifts]
+        :param name: a string representing the name of the variable.
+        :return: a tuple.
+        """
+        all_possible_days = []
+        for day in range(magicNums.DAYS_IN_WEEK):
+            for shift in range(magicNums.SHIFTS_IN_DAY):
+                all_possible_days.append(magicNums.VARIABLE_NAME_SHIFT_SEPARATOR.join([name, str(day), str(shift)]))
+        return tuple(all_possible_days)
+
+    def __wanted_amount_of_shifts(self):
+        """
+        :return:
+        """
+        if self.__minimum_shifts_num:
+            visited = set()
+            for variable_name in self.__variable_names:
+                name = variable_name.split(magicNums.VARIABLE_NAME_SHIFT_SEPARATOR)[0]
+                if name not in visited:
+                    visited.add(name)
+                    possible_assignment = self.__generate_assignments_for_at_least_x_possible_true(
+                        magicNums.DAYS_IN_WEEK * magicNums.SHIFTS_IN_DAY,
+                        self.__minimum_shifts_num[name])
+                    all_names = self.__gather_all_possible_shifts(name)
+                    new_constraint = Constraint(all_names, possible_assignment,
+                                                magicNums.SHIFTS_IN_WEEK_CONSTRAINT_VALUE)
+                    self.__add_constraint_to_all_constraints_dict(self.__all_constraints, all_names,
+                                                                  new_constraint)
+
+    def __exac_amount_of_shifts(self):
+        if self.__minimum_shifts_num:
+            visited = set()
+            for variable_name in self.__variable_names:
+                name = variable_name.split(magicNums.VARIABLE_NAME_SHIFT_SEPARATOR)[0]
+                if name not in visited:
+                    visited.add(name)
+                    all_assignments = self.__generate_assignments_for_at_least_one_worker(
+                        magicNums.DAYS_IN_WEEK * magicNums.SHIFTS_IN_DAY)
+                    res = [
+                        *filter(lambda x: x.count(DOMAIN_TRUE_VAL) == self.__minimum_shifts_num[name], all_assignments)]
+                    if res:
+                        all_names = self.__gather_all_possible_shifts(name)
+                        new_constraint = Constraint(all_names, res,
+                                                    magicNums.SHIFTS_IN_WEEK_CONSTRAINT_VALUE)
+                        self.__add_constraint_to_all_constraints_dict(self.__all_constraints, all_names,
+                                                                      new_constraint)
+        pass
+
+    def __generate_soft_const(self):
+        """
+        Generates the soft constraints and updates self.__all_constraints.
+        """
+        self.__preference_days_constraints()
+        # self.__wanted_amount_of_shifts()
+        self.__exac_amount_of_shifts()
 
     def __set_constraint_by_var(self):
         """

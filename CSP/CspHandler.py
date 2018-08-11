@@ -59,12 +59,12 @@ class CspHandler:
                 # adding neighbours to a variable:
                 neighbours_names = set()
                 for constraint in constraints:
-                    for neighbour in constraint.variables:
-                        neighbours_names.add(neighbour)
-                if name in neighbours_names:  # I added this if because it isn't guaranteed (ido).
-                    neighbours_names.remove(name)
-                self.variables[name].set_neighbours(
-                    neighbours_names)  # give a reference to the set.
+                    self.__add_neighbours_to_var(name, constraint.get_variables())
+                #     for neighbour in constraint.variables:
+                #         neighbours_names.add(neighbour)
+                # if name in neighbours_names:
+                #     neighbours_names.remove(name)  # remove self from neighbours.
+                # self.variables[name].set_neighbours(neighbours_names)  # give a reference to the set.
             else:
                 raise Exception("Variable name repeats twice!")
 
@@ -75,16 +75,16 @@ class CspHandler:
             restore them to previous condition.
         :return: None.
         """
+        self.__fc_variables_backup = []
         self.variables = {}
         self._generate_variables(self.__variables_list, self.__domain_list)
-        self.__fc_variables_backup = []
 
     def make_visible(self):
         """
         makes all constraints visible.
         :return: None
         """
-        self.constraints.set_constraints_visible()  # TODO this isn't making all the constraints visible!!
+        self.constraints.set_constraints_visible()
         for variable_name in self.variables:
             # update variables with new constraints, and neighbours.
             constraints = self.constraints.get_constraints_by_variable(variable_name)
@@ -99,10 +99,7 @@ class CspHandler:
         :return: a list of values to assign.
         """
         if self.domain_heuristic is None:
-            ret = list(self.variables[variable_name].domain)
-            ret.sort()
-            ret.reverse()  # TODO return possible_domain instead.
-            return ret
+            return self.variables[variable_name].get_possible_domain()
         variable = self.variables[variable_name]
         assignment = self.__get_assignment_of_neighbours(variable)
         assignment[variable.name] = variable.value

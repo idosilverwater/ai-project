@@ -51,15 +51,16 @@ class Backtrack(Solver):
         if not backtrack_succeed:
             self.reset_assignment()  # resetting the assignment.
             return False
-        i = 0
-        current_assignment = self.assignment
-        while backtrack_succeed and self.csp.add_constraint():  # while we can still add constraints - continues
-            self.csp.restore_csp_handler()  # restores cso for re run.
-            current_assignment = self.assignment
-            self.reset_assignment()
-            backtrack_succeed = self.backtrack()
-            i += 1
-            print("Adding soft constraint number:", i)
-
-        self.assignment = current_assignment
-        return True
+        return backtrack_succeed
+        # i = 0
+        # current_assignment = self.assignment
+        # while backtrack_succeed and self.csp.add_constraint():  # while we can still add constraints - continues
+        #     self.csp.restore_csp_handler()  # restores cso for re run.
+        #     current_assignment = self.assignment
+        #     self.reset_assignment()
+        #     backtrack_succeed = self.backtrack()
+        #     i += 1
+        #     print("Adding soft constraint number:", i)
+        #
+        # self.assignment = current_assignment
+        # return True
