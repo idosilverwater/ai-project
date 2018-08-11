@@ -48,6 +48,56 @@ class Constraints:
         self.__ordered_soft_constraints = self.__generate_add_constraints_list(DegreeSoftConstraintsHeuristic)
         self.__ordered_soft_constraints.reverse()  # TODO check if needed!
 
+    #####################
+    # Getters & Setters #
+    #####################
+    def get_visible_constraints(self):
+        """
+        gets a dictionary of all visible constraints.
+        """
+        return self.__visible_constraints
+
+    def get_all_constraints(self):
+        """
+        gets a dictionary of visible constraints.
+        """
+        return self.__all_constraints
+
+    def set_constraints_visible(self):
+        """
+        makes all constraints visible.
+        """
+        self.__visible_constraints = dict(self.__all_constraints)
+        self.__set_constraint_by_var()
+
+    def add_constraint(self):
+        """
+        adds one constraint to the visible constraints and returns said constraint. if it fails returns None.
+        :return: Constraint object or None.
+        """
+        # If self.__ordered_soft_constraints is None or it is an empty list: returns None.
+        if not self.__ordered_soft_constraints:
+            return None
+
+        soft_constraint = self.__ordered_soft_constraints.pop()
+        variables = soft_constraint.get_variables()
+        keys = self.__get_all_keys_containing_vars(self.__all_constraints, variables)
+        for key in keys:
+            if key in self.__visible_constraints:
+                if soft_constraint in self.__visible_constraints:
+                    raise Exception("There shouldn't be the same soft constraint in the visible!")
+                self.__visible_constraints[key].append(soft_constraint)
+            else:
+                self.__visible_constraints[key] = [soft_constraint]
+        return soft_constraint
+
+    def get_constraints_by_variable(self, variable_name):
+        """
+        :param: variable_name: a string name of a variable.
+        :return: a list of constraints objects that are tied to this variable name.
+        """
+        return self.__constraints_by_var[variable_name]
+
     ###################
     # Private Methods #
     ###################
@@ -225,7 +275,9 @@ class Constraints:
                         if var_name not in self.__constraints_by_var:
                             self.__constraints_by_var[var_name] = [constraint]
                         else:
-                            self.__constraints_by_var[var_name].append(constraint)
+                            # in efficient but necessary. can be overcome by use of more memory.
+                            if constraint not in self.__constraints_by_var[var_name]:
+                                self.__constraints_by_var[var_name].append(constraint)
 
     @staticmethod
     def __get_all_keys_containing_vars(dictionary_of_constraints, iterable_of_variables):
@@ -248,48 +300,3 @@ class Constraints:
                 if counter == len(key) and counter == len(iterable_of_variables):
                     lst_of_keys.append(key)
         return lst_of_keys
-
-    #####################
-    # Getters & Setters #
-    #####################
-    def get_visible_constraints(self):
-        """
-        gets a dictionary of all visible constraints.
-        """
-        return self.__visible_constraints
-
-    def get_all_constraints(self):
-        """
-        gets a dictionary of visible constraints.
-        """
-        return self.__all_constraints
-
-    def set_constraints_visible(self):
-        """
-        makes all constraints visible.
-        """
-        self.__visible_constraints = dict(self.__all_constraints)
-
-    def add_constraint(self):
-        """
-        adds one constraint to the visible constraints and returns said constraint. if it fails returns None.
-        :return: Constraint object or None.
-        """
-        # If it is None or an empty list: returns None.
-        if not self.__ordered_soft_constraints:
-            return None
-
-        soft_constraint = self.__ordered_soft_constraints.pop()
-        variables = soft_constraint.get_variables()
-        keys = self.__get_all_keys_containing_vars(self.__all_constraints, variables)
-        for key in keys:
-            if key in self.__visible_constraints:
-                if soft_constraint in self.__visible_constraints:
-                    raise Exception("There shouldn't be the same soft constraint in the visible!")
-                self.__visible_constraints[key].append(soft_constraint)
-            else:
-                self.__visible_constraints[key] = [soft_constraint]
-        return soft_constraint
-
-    def get_constraints_by_variable(self, variable_name):
-        return self.__constraints_by_var[variable_name]
