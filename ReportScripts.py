@@ -69,3 +69,4 @@ def success_rates(max_flips):
     """
     Checks in if the algorithm succeed as a function of the number of attempts that the algorithm make.
     """
+
