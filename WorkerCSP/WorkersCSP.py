@@ -78,6 +78,7 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
     # if variable_heuristic is None: # For the case where WalkSAT is used. therefore we don't use heuristics.
     variable_factory = None
     if variable_heuristic == MIN_REMAINING_VAL:
+
         variable_factory = MinimumRemainingValue
     elif variable_heuristic == DEGREE:
         variable_factory = Degree

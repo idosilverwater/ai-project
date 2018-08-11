@@ -18,14 +18,14 @@ QUESTIONS:
 
 def soft_constraints_test(input_file):
     """
-    This test checks how many soft constraints BT satisfies VS. how many walkSAT does.
+    This test checks how many soft constraints BT satisfies VS. how many test1 does.
     """
     pass
 
 
 def hard_constraints_test(input_file):
     """
-    This test checks how many hard constraints BT satisfies VS. how many walkSAT does.
+    This test checks how many hard constraints BT satisfies VS. how many test1 does.
     """
     pass
 
