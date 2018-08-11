@@ -1,4 +1,5 @@
 from WorkerCSP.WorkersCSP import create_workers_csp, parser
+import time
 from Solver.BackTrack import *
 from magicNums import *
 from Solver.WalkSat import *
@@ -53,11 +54,9 @@ def create_random_test(people_amount, preference_amount, no_work_shift_amount):
     return lines
 
 
-def create_random_tests(amount):
-
-    for i in range(1, amount + 1):
-        with open('ReportTests/random_test' + str(i), 'w') as random_example:
-            random_example.writelines(create_random_test(5, 8, 10))
+def create_random_test_file(test_num, people_amount, preference_amount, no_work_shift_amount):
+    with open('ReportTests/random_test' + str(test_num), 'w') as random_example:
+        random_example.writelines(create_random_test(people_amount, preference_amount, no_work_shift_amount))
 
 def make_csv(filename, assignment):
     with open(filename, 'r') as csp_file:
@@ -105,5 +104,8 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 if __name__ == "__main__":
     # worker_solve("ReportTests/test1", WALKSAT, False, None, None)
     # worker_solve("ReportTests/test1", BACKTRACK, False, MIN_REMAINING_VAL, LEAST_CONSTRAINING_VAL)
-    create_random_tests(1)
+    create_random_test_file(0, 10, 30, 30)
+    t = time.time()
+    worker_solve("ReportTests/random_test0", WALKSAT, False, None, None)
+    print(time.time() - t)
 
