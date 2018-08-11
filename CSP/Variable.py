@@ -1,3 +1,6 @@
+from copy import *
+
+
 class Variable:
     """
     Represent variable and saves relevant information inside it.
@@ -15,17 +18,14 @@ class Variable:
         self.constraints = constraints
         self.possible_domain = self.domain.copy()  # will get smaller or larger in time.
         self.value = None
-        self.__constraint_set_holder = set(self.constraints)
+        # self.__constraint_set_holder = set(constraints)
         # forward checking relevant attributes:
-        # self.affected_variables = []  # remembers the variables that were affected by forward checking.
-        self.affecting_value = None  # remember the value to return in the end of forward checking restoration.
 
         self.neighbours_names = set()
 
     def add_constraint(self, constraint):
-        if constraint not in self.__constraint_set_holder:
+        if constraint not in self.constraints:
             self.constraints.append(constraint)
-            self.__constraint_set_holder.add(constraint)
 
     def set_neighbours(self, set_of_neighbours):
         self.neighbours_names = set_of_neighbours
@@ -73,12 +73,6 @@ class Variable:
     def get_value(self):
         return self.value
 
-    def set_affecting_value(self, value):
-        self.affecting_value = value
-
-    def get_affecting_value(self):
-        return self.affecting_value
-
     def get_domain(self):
         """
         returns the full domain and not the possible domain.
@@ -94,3 +88,10 @@ class Variable:
 
     def set_possible_domain(self, new_domain):
         self.possible_domain = set(new_domain)
+
+    def __copy__(self):
+        new_one = type(self)(self.name, self.domain, self.constraints)
+        new_one.set_neighbours(self.neighbours_names)
+        new_one.value = self.value
+        new_one.possible_domain = deepcopy(self.possible_domain)
+        return new_one
