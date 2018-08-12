@@ -1,3 +1,6 @@
+import magicNums  # TODO REMOVE?
+
+
 class Constraint:
     def __init__(self, variables, possible_values, softness=1):
         """
@@ -14,6 +17,8 @@ class Constraint:
         self.possible_values = possible_values
         self.is_soft = softness
         self.set_of_variables = set(variables)
+        # TODO DELETE LATER:
+
 
     def check_assignment(self, assignment):
         """

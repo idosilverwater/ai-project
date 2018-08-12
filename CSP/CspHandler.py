@@ -24,7 +24,6 @@ Noga 0 1
 David 1 0
 MinimumWantedShifts:
 Moshe 3
-
 """
 
 
@@ -36,6 +35,9 @@ class CspHandler:
     def __init__(self, domain, variables, constraints,
                  variable_heuristic_creator, domain_heuristic_creator, forward_checking_flag=True):
         """
+        A csp handler, will hold and translate a problem for a solver.
+        Can use forward checking.
+
         :param domain: a lists of lists such that list i corresponds with variable name i.
         :param variables: a list of variable names.
         :param constraints: a constraints function that corresponds with the names of the variables.
@@ -45,7 +47,7 @@ class CspHandler:
                 DomainHeuristic.
         :param forward_checking_flag: determines if we use forward checking in this CSP object.
         """
-        print(forward_checking_flag)
+
         self._forward_checking_flag = forward_checking_flag
 
         self.constraints = constraints
@@ -233,6 +235,8 @@ class CspHandler:
         :param variable_assignment:
         :return:g
         """
+        # TODO TRY finding a way to reuse same threads. that way they can re run everything without overhead of creating thread.
+
         all_constraints_dict = self.constraints.get_visible_constraints()
         all_consts_lst = []
         for list_of_consts in all_constraints_dict.values():
@@ -247,7 +251,6 @@ class CspHandler:
         :return True if assignment agrees with all of the constraints, False otherwise.
         """
         return CspHandler.__sequence_check_agreement(constraints, assignment)
-        # TODO TRY finding a way to reuse same threads. that way they can re run everything without overhead of creating thread.
         # res1 = [True]
         # res2 = [True]
         # t1 = Thread(target=CspHandler.__parralel_check_agreement, args=(res1, constraints, assignment, 0))
@@ -329,6 +332,7 @@ class CspHandler:
 
             # meaning we checked the neighbour and don't need to do it again for same reason.
             visited[variable][0] = False
+            # TODO is this down here needed?
             # if len(var_obj.get_possible_domain()) < len(visited[var_obj.name][1]):
             #     self.__update_neighbours_as_wanting_a_visit(var_obj, visited)
             return True
@@ -380,7 +384,6 @@ class CspHandler:
         assignment[curr_variable] = previous_val
         if len(var_obj.get_possible_domain()) != 0:
             if len(var_obj.get_possible_domain()) == 1:
-                # TODO you mofo add it into the fucking variable too! this way you don't need to assign the value?
                 assignment[curr_variable] = next(iter(var_obj.get_possible_domain()))
             return False  # variable has at least one value in it's possible domain meaning still isn't empty.
         return True  # curr_variable is wiped out.
@@ -404,8 +407,6 @@ class CspHandler:
 
         q = queue.Queue()
         q.put(variable_name)
-
-        a = time.time()
         while not q.empty():
             curr = q.get()
             if self.__is_relevant(curr, visited, variables_copy):
@@ -417,18 +418,14 @@ class CspHandler:
                 # updates the possible domain, if it returns empty -> than we return False.
                 # a = time.time()
                 is_wiped_out = self.__check_possible_domain(curr, assignment, variables_copy)
-                # print("Wipe Out Time:", time.time() - a)
                 if is_wiped_out:
-                    # print(time.time() - a)
-                    # print("exit False")
                     return False
         var_obj.set_possible_domain(stored_possible_domain)  # restoring the possible domain.
         self.__check_possible_domain(var_obj.name, assignment, variables_copy)  # doing final clean on possible domain
         # storing the non changed variables for a restore later.
         self.__fc_variables_backup.append(self.variables)
         self.variables = variables_copy  # The fc succeeded so we keep the changes in the variables.
-        # print(time.time() - a)
-        # print("exit True")
+
         return True
 
     def __restore(self):

@@ -3,12 +3,12 @@ import magicNums
 
 # magic Nums.
 from SoftConstraintHeuristics.DegreeSoftHeuristic import *
+from WorkerCSP.ExacShiftsConstraint import ExacShiftsConstraints
 
 DOMAIN_TRUE_VAL = magicNums.DOMAIN_TRUE_VAL
 DOMAIN_FALSE_VAL = magicNums.DOMAIN_FALSE_VAL
 
 
-# TODO ADD complicated constraints still.
 class Constraints:
     """
     This class is generating the soft and hard constrains according to the
@@ -316,8 +316,8 @@ class Constraints:
                         *filter(lambda x: x.count(DOMAIN_TRUE_VAL) == self.__minimum_shifts_num[name], all_assignments)]
                     if res:
                         all_names = self.__gather_all_possible_shifts(name)
-                        new_constraint = Constraint(all_names, res,
-                                                    magicNums.SHIFTS_IN_WEEK_CONSTRAINT_VALUE)
+                        new_constraint = ExacShiftsConstraints(all_names, res,
+                                                               magicNums.SHIFTS_IN_WEEK_CONSTRAINT_VALUE)
                         self.__add_constraint_to_all_constraints_dict(self.__all_constraints, all_names,
                                                                       new_constraint)
         pass
