@@ -32,19 +32,23 @@ domain_heuristic.add_argument('--lc',
 
 variable_heuristic = parser.add_mutually_exclusive_group()
 variable_heuristic.add_argument('--mr',
-                              help="Use the Minimum Remaining Val variable heuristic. only when using the Backtrack algoroithm",
-                              action='store_true')
+                                help="Use the Minimum Remaining Val variable heuristic. only when using the Backtrack algoroithm",
+                                action='store_true')
 variable_heuristic.add_argument('--deg',
-                              help="Use the Degree variable heuristic. only when using the Backtrack algoroithm",
-                              action='store_true')
+                                help="Use the Degree variable heuristic. only when using the Backtrack algoroithm",
+                                action='store_true')
 
-# TODO (For Jonathan) in the next line change the help message to a correct one. and change the default time to what you see fit.
-# TODO cont. this is the time constant you asked for the backtrack. also you can change the type to int if it is more correct.
-parser.add_argument('--bt-t', help="This is the max time for backtrack iteration (in secs)", default=5.0, nargs=1, type=float)
+# TODO (For Jonathan) in the next line change the help message to a correct one. and change the default time to what
+# you see fit. this is the time constant you asked for the backtrack. also you can change the type to int
+# if it is more correct.
+parser.add_argument('--bt-t', help="This is the max time for backtrack iteration (in secs)", default=5.0, nargs=1,
+                    type=float)
 parser.add_argument('--bt-forward-check', help="Use forward checking in backtrack", action='store_true')
 
 parser.add_argument('--max-flips', help="Max flips in the WalkSAT algorithm", default=50, nargs=1, type=int)
-parser.add_argument('--walksat-alpha', help="In the WalkSAT algorithm exploration with alpha, exploitation with 1-alpha", default=0.5, nargs=1, type=float)
+parser.add_argument('--walksat-alpha',
+                    help="In the WalkSAT algorithm exploration with alpha, exploitation with 1-alpha", default=0.5,
+                    nargs=1, type=float)
 
 
 def welcome():
@@ -53,6 +57,8 @@ def welcome():
 
 
 days_of_week = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+
+
 def seven_days_a_week(number):
     if 0 <= number <= 6:
         return days_of_week[number]
@@ -96,12 +102,13 @@ def print_by_days(assignment):
         print("-----------------")
 
 
-def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, backtrack_timeout, forward_check, max_flips, walksat_alpha):
+def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, backtrack_timeout, forward_check,
+                 max_flips, walksat_alpha):
     csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic, forward_check)
     if algo == WALKSAT:
-        algorithm = algorithms[algo](csp, max_flips = max_flips, random_value = walksat_alpha)
+        algorithm = algorithms[algo](csp, max_flips=max_flips, random_value=walksat_alpha)
     elif algo == BACKTRACK:
-        algorithm = algorithms[algo](csp, timeout = backtrack_timeout)
+        algorithm = algorithms[algo](csp, timeout=backtrack_timeout)
     print(type(algorithm))
     if algorithm.solve():
         print("Satisfiable")
@@ -117,11 +124,11 @@ if __name__ == "__main__":
     print(args)
 
     if not (args.lc or args.mc or args.lws or args.mr or args.bt_t or args.bt_forward_check) and args.bt:
-        parser.error('Heurisitics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
+        parser.error('Heuristics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
 
     if not (args.max_flips or args.walksat_alpha) and args.ws:
-        parser.error("max_flip and walksat_alpha are to be used only in conjunction with WalkSAT! \n Come on... you don't need a babysitter.")
-
+        parser.error("max_flip and walksat_alpha are to be used only in conjunction with WalkSAT! \n Come on... you "
+                     "don't need a babysitter.")
 
     if args.w:
         if args.bt:
@@ -133,6 +140,8 @@ if __name__ == "__main__":
                 variable_heuristic = MIN_REMAINING_VAL
             elif args.deg:
                 variable_heuristic = DEGREE
-            worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic, args.bt_t, args.bt_forward_check, None, None)
+            worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic, args.bt_t,
+                         args.bt_forward_check, None, None)
         elif args.ws:
-            worker_solve(args.filename, WALKSAT, args.no_soft, None, None, None, None, args.max_flips[0], args.walksat_alpha)
+            worker_solve(args.filename, WALKSAT, args.no_soft, None, None, None, None, args.max_flips[0],
+                         args.walksat_alpha)
