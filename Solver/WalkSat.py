@@ -1,6 +1,7 @@
 from Solver.BaseSolver import *
 import random
 import magicNums
+import time
 
 """
 Literal inner class. // contains: assignment_value, var_name that it is tied too, isNot - is this literal has a
@@ -45,12 +46,10 @@ class WalkSat(Solver):
         self.__p = random_value
         self.__variable_names = list(self.csp.variables)  # a list of all names.
         self.__max_flips = max_flips
-        # self.__formula_tree = FormulaTree(csp.constraints.get_all_constraints())
 
         self.constraints = list()
         self.list_of_constraints()
 
-        # self.clauses = self.cnfConverter()
 
     def list_of_constraints(self):  # TODO check this?
         constraints = set()
@@ -150,7 +149,9 @@ class WalkSat(Solver):
         """
         :return: return uniformly picked clause
         """
-        return random.choice(self.constraints)
+        t = time.time()
+        constraint = random.choice(self.constraints)
+        return constraint
 
     def __flip_most_satisfying(self):
         """
@@ -199,7 +200,7 @@ class WalkSat(Solver):
 
         count = 0
 
-        for constraint in self.constraints:
+        for constraint in self.csp.variables[variable_name].get_constraints(): #self.constraints:
             if constraint.check_assignment(self.assignment):
                 count += 1
 
@@ -220,7 +221,7 @@ class WalkSat(Solver):
             return True
         else:
             for i in range(self.__max_flips):
-                # print(i, self.get_num_satisfied())
+                print(i, self.get_num_satisfied())
                 constraint = self.random_constraint()
                 if self.__flip_coin():
                     self.__flip_random_variable(constraint)

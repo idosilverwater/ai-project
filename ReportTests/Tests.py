@@ -102,10 +102,12 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 
 
 if __name__ == "__main__":
-    # worker_solve("ReportTests/test1", WALKSAT, False, None, None)
+    worker_solve("ReportTests/test1", WALKSAT, False, None, None)
     # worker_solve("ReportTests/test1", BACKTRACK, False, MIN_REMAINING_VAL, LEAST_CONSTRAINING_VAL)
-    create_random_test_file(0, 10, 30, 30)
+    # create_random_test_file(0, 10, 30, 30)
     t = time.time()
-    worker_solve("ReportTests/random_test0", WALKSAT, False, None, None)
+    print(1)
+    # worker_solve("ReportTests/random_test0", WALKSAT, False, None, None)
+    print(2)
     print(time.time() - t)
 
