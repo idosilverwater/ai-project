@@ -40,7 +40,7 @@ def parser(lines):
     return domain, names, new_preferences, non_work_shift, minimum_wanted_shifts
 
 
-def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
+def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic, forward_check):
     """
     gets filename of a workers csp kind and returns a an initialized CSP object ready for the employee worker problem.
 
@@ -84,4 +84,4 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic):
         variable_factory = Degree
 
     constraints = Constraints(preferences, non_work_shift, variables, minimum_wanted_shifts)
-    return CspHandler(domain, variables, constraints, variable_factory, domain_factory)
+    return CspHandler(domain, variables, constraints, variable_factory, domain_factory, forward_check)

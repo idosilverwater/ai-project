@@ -7,6 +7,7 @@ from magicNums import *
 # domain_heuristics = [MIN_CONFLICT, LEAST_CONSTRAINING_VAL]
 # variable_heuristics = [MIN_REMAINING_VAL, DEGREE]
 algorithms = {BACKTRACK: Backtrack, WALKSAT: WalkSat}
+
 parser = argparse.ArgumentParser(description="CSP solver.")
 
 parser.add_argument('filename', type=str, help='Problem filename')
@@ -30,12 +31,20 @@ domain_heuristic.add_argument('--lc',
                               action='store_true')
 
 variable_heuristic = parser.add_mutually_exclusive_group()
-domain_heuristic.add_argument('--mr',
+variable_heuristic.add_argument('--mr',
                               help="Use the Minimum Remaining Val variable heuristic. only when using the Backtrack algoroithm",
                               action='store_true')
-domain_heuristic.add_argument('--deg',
+variable_heuristic.add_argument('--deg',
                               help="Use the Degree variable heuristic. only when using the Backtrack algoroithm",
                               action='store_true')
+
+# TODO (For Jonathan) in the next line change the help message to a correct one. and change the default time to what you see fit.
+# TODO cont. this is the time constant you asked for the backtrack. also you can change the type to int if it is more correct.
+parser.add_argument('--bt-t', help="This is the max time for backtrack iteration (in secs)", default=5.0, nargs=1, type=float)
+parser.add_argument('--bt-forward-check', help="Use forward checking in backtrack", action='store_true')
+
+parser.add_argument('--max-flips', help="Max flips in the WalkSAT algorithm", default=50, nargs=1, type=int)
+parser.add_argument('--walksat-alpha', help="In the WalkSAT algorithm exploration with alpha, exploitation with 1-alpha", default=0.5, nargs=1, type=float)
 
 
 def welcome():
@@ -43,23 +52,11 @@ def welcome():
     print("Let's see if we can solve your problem")
 
 
+days_of_week = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
 def seven_days_a_week(number):
-    if number == 0:
-        return "sunday"
-    elif number == 1:
-        return "monday"
-    elif number == 2:
-        return "tuesday"
-    elif number == 3:
-        return "wednesday"
-    elif number == 4:
-        return "thursday"
-    elif number == 5:
-        return "friday"
-    elif number == 6:
-        return "saturday"
-    else:
-        return str(number)
+    if 0 <= number <= 6:
+        return days_of_week[number]
+    return str(number)
 
 
 def print_by_days(assignment):
@@ -99,9 +96,13 @@ def print_by_days(assignment):
         print("-----------------")
 
 
-def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
-    csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic)
-    algorithm = algorithms[algo](csp)
+def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, backtrack_timeout, forward_check, max_flips, walksat_alpha):
+    csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic, forward_check)
+    if algo == WALKSAT:
+        algorithm = algorithms[algo](csp, max_flips = max_flips, random_value = walksat_alpha)
+    elif algo == BACKTRACK:
+        algorithm = algorithms[algo](csp, timeout = backtrack_timeout)
+    print(type(algorithm))
     if algorithm.solve():
         print("Satisfiable")
         print_by_days(algorithm.get_assignment())
@@ -113,15 +114,17 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 if __name__ == "__main__":
     welcome()
     args = parser.parse_args()
-
-    print(12123123)
     print(args)
 
-    if not (args.lc or args.mc or args.lws or args.mr) and args.bt:
+    if not (args.lc or args.mc or args.lws or args.mr or args.bt_t or args.bt_forward_check) and args.bt:
         parser.error('Heurisitics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
 
+    if not (args.max_flips or args.walksat_alpha) and args.ws:
+        parser.error("max_flip and walksat_alpha are to be used only in conjunction with WalkSAT! \n Come on... you don't need a babysitter.")
+
+
     if args.w:
-        if args.bt == BACKTRACK:
+        if args.bt:
             if args.mc:
                 domain_heuristic = MIN_CONFLICT
             elif args.lc:
@@ -130,6 +133,6 @@ if __name__ == "__main__":
                 variable_heuristic = MIN_REMAINING_VAL
             elif args.deg:
                 variable_heuristic = DEGREE
-            worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic)
+            worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic, args.bt_t, args.bt_forward_check, None, None)
         elif args.ws:
-            worker_solve(args.filename, WALKSAT, args.no_soft, None, None)
+            worker_solve(args.filename, WALKSAT, args.no_soft, None, None, None, None, args.max_flips[0], args.walksat_alpha)
