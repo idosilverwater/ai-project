@@ -15,6 +15,11 @@ class ExacShiftsConstraints(Constraint.Constraint):
         self.__special_name_check = self.variables[0].split(magicNums.VARIABLE_NAME_SHIFT_SEPARATOR)[0]
 
     def check_assignment(self, assignment):
+        """
+        Checks if an assignment is legit or isn't.
+        :param assignment:
+        :return:
+        """
         none_counter = 0
         for var_name in self.variables:
             if assignment[var_name] is None:

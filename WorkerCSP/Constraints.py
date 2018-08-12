@@ -306,8 +306,7 @@ class Constraints:
     def __exac_amount_of_shifts(self):
         if self.__minimum_shifts_num:
             visited = set()
-            for variable_name in self.__variable_names:
-                name = variable_name.split(magicNums.VARIABLE_NAME_SHIFT_SEPARATOR)[0]
+            for name in self.__minimum_shifts_num:
                 if name not in visited:
                     visited.add(name)
                     all_assignments = self.__generate_assignments_for_at_least_one_worker(
@@ -320,7 +319,6 @@ class Constraints:
                                                                magicNums.SHIFTS_IN_WEEK_CONSTRAINT_VALUE)
                         self.__add_constraint_to_all_constraints_dict(self.__all_constraints, all_names,
                                                                       new_constraint)
-        pass
 
     def __generate_soft_const(self):
         """

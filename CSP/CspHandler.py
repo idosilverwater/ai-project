@@ -2,29 +2,11 @@ from CSP.Variable import *
 import queue
 from copy import *
 import time
-from threading import Thread, Lock
+from threading import Thread
+
 
 # todo, try and find a way to assign a value in the cs and backtrack when you do forward checking and theres 1 value left.
 # TODO notice that when we remove almost every one of the super soft constraints there is a crash, check why? (notice down below the text.)
-"""
-for example put in the example: 
-Domain:
-True
-False
-Names:
-David
-Noga
-Moshe
-Preferences:
-David 0 0
-David 2 1
-NonWorkShift:
-Noga 0 0
-Noga 0 1
-David 1 0
-MinimumWantedShifts:
-Moshe 3
-"""
 
 
 class CspHandler:
@@ -68,6 +50,7 @@ class CspHandler:
         # Restore values for csp restore.
         self.__domain_list = domain
         self.__variables_list = variables
+        self.__current_assignment = dict.fromkeys(self.variables, None)
 
     def _generate_variables(self, names, domain):
         """
@@ -209,7 +192,6 @@ class CspHandler:
         constraint = self.constraints.add_constraint()
         if constraint is None:
             return False
-
         all_var_names = constraint.get_variables()
         for var_name in all_var_names:
             # adding every ones as my new neighbours.
@@ -235,14 +217,26 @@ class CspHandler:
         :param variable_assignment:
         :return:g
         """
-        # TODO TRY finding a way to reuse same threads. that way they can re run everything without overhead of creating thread.
-
         all_constraints_dict = self.constraints.get_visible_constraints()
         all_consts_lst = []
         for list_of_consts in all_constraints_dict.values():
             all_consts_lst += list_of_consts
-        return self.check_constraint_agreement(all_consts_lst,
-                                               variable_assignment)
+
+        if len(all_consts_lst) > 120:  # is more efficient only when we pass large amounts of constraints..
+            res1 = [True]
+            res2 = [True]
+            t1 = Thread(target=CspHandler.__parralel_check_agreement,
+                        args=(res1, all_consts_lst, variable_assignment, 0))
+            t2 = Thread(target=CspHandler.__parralel_check_agreement,
+                        args=(res2, all_consts_lst, variable_assignment, 1))
+            t1.start()
+            t2.start()
+            t1.join()
+            t2.join()
+            if not res1[0] or not res2[0]:
+                return False
+            return True
+        return self.__sequence_check_agreement(all_consts_lst, variable_assignment)
 
     @staticmethod
     def check_constraint_agreement(constraints, assignment):
@@ -251,17 +245,6 @@ class CspHandler:
         :return True if assignment agrees with all of the constraints, False otherwise.
         """
         return CspHandler.__sequence_check_agreement(constraints, assignment)
-        # res1 = [True]
-        # res2 = [True]
-        # t1 = Thread(target=CspHandler.__parralel_check_agreement, args=(res1, constraints, assignment, 0))
-        # t2 = Thread(target=CspHandler.__parralel_check_agreement, args=(res2, constraints, assignment, 1))
-        # t1.start()
-        # t2.start()
-        # t1.join()
-        # t2.join()
-        # if not res1[0] or not res2[0]:
-        #     return False
-        # return True
 
     @staticmethod
     def __parralel_check_agreement(ret_val, constraints, assignment, index):

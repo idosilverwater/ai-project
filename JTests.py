@@ -70,16 +70,15 @@ if __name__ == '__main__':
     algorithm = Backtrack(csp)
 
     print("make visible:")
-    csp.make_visible()
+    # csp.make_visible()
     a = time.time()
-    # if algorithm.backtrack():
-    if algorithm.solve():  # TODO need the calling for the function to be generic (instead of "backtrack" "run")
-        print("Satisfiable")
+    # if algorithm.backtrack_on_timer():
+    if algorithm.solve():
+        res_message = "Satisfiable"
         res = algorithm.get_assignment()
         print_by_days(res)
-        print(".........if theres a bug........")
-        print(res)
     else:
-        print("Unsatisfiable")
-    print("Done")
-    print(time.time() - a)
+        res_message = "Unsatisfiable"
+    print(res_message)
+    print("Runtime is concluded after %s seconds. " % (time.time() - a))
+#
