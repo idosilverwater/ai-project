@@ -5,6 +5,8 @@ from BackTrackHeuristics.MinimumRemainingValue import *
 from BackTrackHeuristics.LeastConstrainingValue import *
 from BackTrackHeuristics.MinimumConflict import *
 from magicNums import *
+from SoftConstraintHeuristics.MaxAssignmentSoftConstraintHeuristic import *
+from SoftConstraintHeuristics.NameSoftConstraintHeuristic import *
 
 
 # from MinimumConflict import *
@@ -40,17 +42,10 @@ def parser(lines):
     return domain, names, new_preferences, non_work_shift, minimum_wanted_shifts
 
 
-def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic, forward_check):
+def __file_extractor(filename, no_soft):
     """
-    gets filename of a workers csp kind and returns a an initialized CSP object ready for the employee worker problem.
-
-    :param filename: file that contains the problem
-    :param no_soft: if True -> there will be no soft constraints.
-    :param variable_heuristic: an init function of a variable heuristic class.
-    :param domain_heuristic: an init function of a domain heuristic class.
-    :return: a CSP to work with the employee worker problem constraints.
+    Reads the file and return the information gathered from parsing it.
     """
-
     with open(filename, 'r') as csp_file:
         lines = csp_file.readlines()
 
@@ -67,21 +62,60 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic, 
 
     if no_soft:
         preferences = list()
+    return variables, domain, preferences, non_work_shift, minimum_wanted_shifts
 
-    # domain_heuristic is None: # For the case where WalkSAT is used. therefore we don't use heuristics.
+
+def __heuristic_chooser(variable_heuristic_type, domain_heuristic_type, soft_constraint_heuristic_type):
+    """
+    returns factories to use in Constraints, and CspHandler.
+    """
     domain_factory = None
-    if domain_heuristic == LEAST_CONSTRAINING_VAL:
+    if domain_heuristic_type == LEAST_CONSTRAINING_VAL:
         domain_factory = LeastConstrainingValue
-    elif domain_heuristic == MIN_CONFLICT:
+    elif domain_heuristic_type == MIN_CONFLICT:
         domain_factory = MinimumConflict
 
-    # if variable_heuristic is None: # For the case where WalkSAT is used. therefore we don't use heuristics.
     variable_factory = None
-    if variable_heuristic == MIN_REMAINING_VAL:
-
+    if variable_heuristic_type == MIN_REMAINING_VAL:
         variable_factory = MinimumRemainingValue
-    elif variable_heuristic == DEGREE:
+    elif variable_heuristic_type == DEGREE:
         variable_factory = Degree
 
-    constraints = Constraints(preferences, non_work_shift, variables, minimum_wanted_shifts)
+    # creating soft heuristic:
+    soft_constraint_heuristic_factory = None
+    if soft_constraint_heuristic_type == magicNums.DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE:
+        soft_constraint_heuristic_factory = DegreeSoftConstraintsHeuristic
+    elif soft_constraint_heuristic_type == magicNums.MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC:
+        soft_constraint_heuristic_factory = MaxAssignmentSoftConstraintHeuristic
+    elif soft_constraint_heuristic_type == magicNums.NAME_SOFT_CONSTRAINT_HEURISTIC:
+        soft_constraint_heuristic_factory = NameSoftConstraintHeuristic
+    #
+    return variable_factory, domain_factory, soft_constraint_heuristic_factory
+
+
+def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic,
+                       soft_constraint_heuristic_type, forward_check=True, num_of_max_workers_in_shifts=2):
+    """
+    gets filename of a workers csp kind and returns a an initialized CSP object ready for the employee worker problem.
+
+    :param filename: file that contains the problem
+    :param no_soft: if True -> there will be no soft constraints.
+    :param variable_heuristic: an init function of a variable heuristic class.
+    :param domain_heuristic: an init function of a domain heuristic class.
+    :param soft_constraint_heuristic_type: The type of soft constraint heuristic factory to create. Can choose between
+        Degree, Max assignment and name heuristics.
+    :param forward_check: True or false , determines if the CSP will employ  forward checking or not.
+    :param num_of_max_workers_in_shifts: the amount of possible workers in a shift.
+    :return: a CSP to work with the employee worker problem constraints.
+    """
+    # extracting information from the file.
+    variables, domain, preferences, non_work_shift, minimum_wanted_shifts = __file_extractor(filename, no_soft)
+
+    # choosing the heuristics:
+    variable_factory, domain_factory, soft_constraint_heuristic = __heuristic_chooser(variable_heuristic,
+                                                                                      domain_heuristic,
+                                                                                      soft_constraint_heuristic_type)
+    #
+    constraints = Constraints(preferences, non_work_shift, variables, minimum_wanted_shifts, soft_constraint_heuristic,
+                              num_of_max_workers_in_shifts)
     return CspHandler(domain, variables, constraints, variable_factory, domain_factory, forward_check)

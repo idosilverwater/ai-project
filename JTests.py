@@ -24,7 +24,7 @@ def seven_days_a_week(number):
     elif number == 6:
         return "saturday"
     else:
-        return str(number)
+        return "%s day" % str(number)
 
 
 def print_by_days(assignment):
@@ -65,14 +65,10 @@ def print_by_days(assignment):
 
 
 if __name__ == '__main__':
-    csp = create_workers_csp("examples/example2.csp", False, magicNums.DEGREE, magicNums.MIN_CONFLICT)
-    # csp.add_constraint()
-    algorithm = Backtrack(csp)
-
-    print("make visible:")
-    # csp.make_visible()
+    csp = create_workers_csp("examples/example1.csp", False, magicNums.DEGREE, magicNums.MIN_CONFLICT,
+                             magicNums.DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, True, 2)
+    algorithm = Backtrack(csp, 10)
     a = time.time()
-    # if algorithm.backtrack_on_timer():
     if algorithm.solve():
         res_message = "Satisfiable"
         res = algorithm.get_assignment()
@@ -81,4 +77,3 @@ if __name__ == '__main__':
         res_message = "Unsatisfiable"
     print(res_message)
     print("Runtime is concluded after %s seconds. " % (time.time() - a))
-#

@@ -14,18 +14,7 @@ class ExacShiftsConstraints(Constraint.Constraint):
         self.num_for_okay = possible_values[0].count(magicNums.DOMAIN_TRUE_VAL)
         self.__special_name_check = self.variables[0].split(magicNums.VARIABLE_NAME_SHIFT_SEPARATOR)[0]
 
-    def check_assignment(self, assignment):
-        """
-        Checks if an assignment is legit or isn't.
-        :param assignment:
-        :return:
-        """
-        none_counter = 0
-        for var_name in self.variables:
-            if assignment[var_name] is None:
-                none_counter += 1
-        if none_counter == len(self.variables):
-            return True
+    def __get_counters(self, assignment):
         counter = 0
         none_counter = 0
         for var_name in assignment:
@@ -34,6 +23,19 @@ class ExacShiftsConstraints(Constraint.Constraint):
                     counter += 1
                 elif assignment[var_name] is None:
                     none_counter += 1
+        return counter, none_counter
+
+    def check_assignment(self, assignment):
+        """
+        Checks if an assignment is legit or isn't.
+        :param assignment:
+        :return:
+        """
+        none_counter = self.check_num_of_nones(assignment)
+        if none_counter == len(self.variables):
+            return True
+
+        counter, none_counter = self.__get_counters(assignment)
 
         if counter == self.num_for_okay:
             return True

@@ -97,7 +97,7 @@ class Backtrack(Solver):
             add_const = self.csp.add_constraint()
 
         if not backtrack_succeed and add_const:
-            print("couldn't satisfy last constraint. Terminating solver.")
+            print("couldn't satisfy constraint.")
             print("--------")
         self.assignment = current_assignment
         return True

@@ -3,31 +3,40 @@
 ###########
 import WorkerCSP.WorkersCSP
 
-
 #########################
 # BackTrack VS. WalkSAT #
 #########################
 
-def generate_input_file(n):
+"""
+Generate a file with at least 3 workers, 2 of them will always want X amount of shifts exactly.
+2 of them will prefer a certain shift exactly.
+"""
+
+preferred_shifts = [[4, 2], [3, 2], [1, 2], [1, 2], [4, 1]]
+amount_of_exac_shifts = [8, 6, 4, 3, 6]
+
+
+def generate_input_file(n, num_of_vars_wants_exac_shifts=2, amount_of_exac_shifts=3, num_of_preffered_days=4):
     """
     This one generates an example with n variables. Problems tend to be harder when n is high.
     :param n: The number of variables in the example.
     :return: A name(string) of a txt file representing an input to a CSP problem.
     """
+    
     pass
 
 
-def soft_constraints_test(domain_heuristic, variable_heuristic, no_soft=1, range=(1,20)):
+def soft_constraints_test(domain_heuristic, variable_heuristic, no_soft=1, variables_num_range=(3, 10)):
     """
     This test checks how many soft constraints BT satisfies VS. how many Walk-SAT does as a function of the number of
     variables in the problem.
     :param no_soft: if True -> there will be no soft constraints.
     :param variable_heuristic: an init function of a variable heuristic class.
     :param domain_heuristic: an init function of a domain heuristic class.
-    :param range: A tuple (x,y) when x is the lowest number of variables we use to test the problems and y is the highest.
+    :param variables_num_range: A tuple (x,y) when x is the lowest number of variables we use to test the problems and y is the highest.
     """
-    lowest, highest = range[0], range[1]
-    for i in range(lowest, highest):
+    lowest, highest = variables_num_range[0], variables_num_range[1]
+    for i in variables_num_range(lowest, highest):
         file_name = generate_input_file(i)
         csp = WorkerCSP.WorkersCSP.create_workers_csp(file_name, no_soft, variable_heuristic, domain_heuristic)
 

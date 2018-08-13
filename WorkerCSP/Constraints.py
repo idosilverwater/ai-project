@@ -16,7 +16,7 @@ class Constraints:
     """
 
     def __init__(self, preferences, non_workable_shifts, variable_names, minimum_wanted_shift_dict=None,
-                 maximum_workers_per_shift=2, constraint_heuristic_factory=None):
+                 constraint_heuristic_factory=None, maximum_workers_per_shift=2):
         """
         Creates several dictionaries of constraints.
         :param preferences: A list of the workers preferences. For example:
@@ -24,6 +24,8 @@ class Constraints:
          shift 3 on Tuesday.
         :param variable_names: A list of variables names. A variable name for
         example would be "(1,2,3)"
+        :param minimum_wanted_shift_dict:  is a dictionary as follows : {var_name: integer} where the integer dectates
+        the number of shifts wanted.
         """
         self.__maximum_workers_per_shift = maximum_workers_per_shift
         self.__minimum_shifts_num = minimum_wanted_shift_dict
@@ -44,10 +46,8 @@ class Constraints:
         self.__set_constraint_by_var()
 
         # perpetration for add constraints:
-        # self.__ordered_soft_constraints = self.__generate_add_constraints_list(constraint_heuristic_factory)
-        # TODO add heuristics to the main and what to choose.
-        self.__ordered_soft_constraints = self.__generate_add_constraints_list(DegreeSoftConstraintsHeuristic)
-        self.__ordered_soft_constraints.reverse()  # TODO check if needed!
+        self.__ordered_soft_constraints = self.__generate_add_constraints_list(constraint_heuristic_factory)
+        self.__ordered_soft_constraints.reverse()
 
     #####################
     # Getters & Setters #
@@ -222,7 +222,7 @@ class Constraints:
             new_constraint = Constraint(var_name, [[DOMAIN_FALSE_VAL]], magicNums.HARD_CONSTRAINT_VALUE)
             self.__add_constraint_to_all_constraints_dict(self.__all_constraints, var_name, new_constraint)
 
-    def __generate_assignments_for_at_most_x_workers(self, num_workers, x=2):
+    def __generate_assignments_for_at_most_x_workers(self, num_workers, num_of_possible_shifts):
         """
         creates assignment list for constraint that wish to have at most x workers.
         :param num_workers: the number of variables in a shift.
@@ -231,7 +231,7 @@ class Constraints:
         """
         lst_of_assignments = []
         for item in self.__generate_assignments_for_at_least_one_worker(num_workers):
-            if item.count(magicNums.DOMAIN_TRUE_VAL) <= x:
+            if item.count(magicNums.DOMAIN_TRUE_VAL) <= num_of_possible_shifts:
                 lst_of_assignments.append(item)
         return lst_of_assignments
 
@@ -248,6 +248,9 @@ class Constraints:
                 lst_of_assignments.append(item)
         return lst_of_assignments
 
+    def x_workers_at_most(self, num_workers):
+        return self.__generate_assignments_for_at_most_x_workers(num_workers, self.__maximum_workers_per_shift)
+
     def __generate_hard_const(self):
         """
         Generates the hard constraints and updates self.constraints.
@@ -256,13 +259,11 @@ class Constraints:
         """
 
         # generates at most two worker assignments, to work with the __create_constraints_for_worker_in_same_shift func.
-        def x_workers_at_most(num_workers):
-            return self.__generate_assignments_for_at_most_x_workers(num_workers, self.__maximum_workers_per_shift)
 
         self.__create_constraints_for_worker_in_same_shift(self.__generate_assignments_for_at_least_one_worker)
         self.__generate_non_workable_days()
 
-        self.__create_constraints_for_worker_in_same_shift(x_workers_at_most)
+        self.__create_constraints_for_worker_in_same_shift(self.x_workers_at_most)
 
     def __preference_days_constraints(self):
         for preference in self.__preferences:
