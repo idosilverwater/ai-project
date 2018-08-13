@@ -49,6 +49,7 @@ class WalkSat(Solver):
 
         self.constraints = list()
         self.list_of_constraints()
+        self.satisfied = {}
 
 
     def list_of_constraints(self):  # TODO check this?
@@ -62,13 +63,16 @@ class WalkSat(Solver):
     def get_assignment(self):
         return self.assignment
 
-    def __flip_coin(self):
+    def __flip_coin(self, prob = None):
         """
         Return True with probability __p otherwise False.
         :return:
         """
+        if prob == None:
+            prob = self.__p
+
         r = random.random()
-        if r < self.__p:
+        if r < prob:
             return True
         return False
 
@@ -160,10 +164,18 @@ class WalkSat(Solver):
         variable_name = self.__most_satisfying()
         self.__flip_value(variable_name)
 
+        for constraint in self.csp.variables[variable_name].get_constraints():
+            if constraint.check_assignment(self.assignment):
+                self.satisfied[constraint] = True
+            else:
+                self.satisfied[constraint] = False
+
+
     def __most_satisfying(self):
         """
         :return: the variable who's flipping will satisfy the most clauses.
         """
+
 
         max_var = self.__variable_names[0]
         max_num = self.__num_satisfied(max_var)
@@ -173,8 +185,32 @@ class WalkSat(Solver):
             if cur > max_num:
                 max_num = cur
                 max_var = variable_name
+            elif cur == max_num:
+                # if len(max_vars) < 20:
+                max_var = variable_name
+            # else:
+            #     if len(max_vars) < 20:
+            #         max_vars.append(variable_name)
+            #     else:
+            #         if self.__flip_coin(0.5):
+            #             i = random.randint(0,len(max_vars) - 1)
+            #             max_vars[i] = variable_name
+
+
+
+
+
+        # shortest = max_vars[0]
+        # length = self.variable_length(shortest)
+        # for max_var in max_vars:
+        #     cur = self.variable_length(max_var)
+        #     if cur > length:
+        #         length = cur
+        #         shortest = max_var
 
         return max_var
+
+        # return max_vars[0]
 
     def get_num_satisfied(self):
         """
@@ -198,13 +234,31 @@ class WalkSat(Solver):
         """
         self.__flip_value(variable_name)
 
-        count = 0
+        restore = {}
 
-        for constraint in self.csp.variables[variable_name].get_constraints(): #self.constraints:
-            if constraint.check_assignment(self.assignment):
+        if len(self.satisfied) == 0:
+            for constraint in self.constraints:
+                if constraint.check_assignment(self.assignment):
+                    self.satisfied[constraint] = True
+                else:
+                    self.satisfied[constraint] = False
+        else:
+            for constraint in self.csp.variables[variable_name].get_constraints():
+                restore[constraint] = self.satisfied[constraint]
+                if constraint.check_assignment(self.assignment):
+                    self.satisfied[constraint] = True
+                else:
+                    self.satisfied[constraint] = False
+
+        count = 0
+        for constraint in self.satisfied:
+            if self.satisfied[constraint]:
                 count += 1
 
         self.__flip_value(variable_name)  # flip back
+
+        for constraint in restore:
+            self.satisfied[constraint] = restore[constraint]
 
         return count
 
@@ -224,8 +278,10 @@ class WalkSat(Solver):
                 print(i, self.get_num_satisfied())
                 constraint = self.random_constraint()
                 if self.__flip_coin():
+                    print("random")
                     self.__flip_random_variable(constraint)
                 else:
+                    print("most")
                     self.__flip_most_satisfying()
 
         print("Total Amount of Constraints:", len(self.constraints))

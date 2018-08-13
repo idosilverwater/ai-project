@@ -47,7 +47,8 @@ class Constraints:
 
         # perpetration for add constraints:
         self.__ordered_soft_constraints = self.__generate_add_constraints_list(constraint_heuristic_factory)
-        self.__ordered_soft_constraints.reverse()
+        if constraint_heuristic_factory != None: # For the case in which WalkSAT is used and constraint_heuristic_facotry == None
+            self.__ordered_soft_constraints.reverse()
 
     #####################
     # Getters & Setters #

@@ -26,7 +26,7 @@ def random_shifts(amount, names):
     return shifts
 
 
-def create_random_test(people_amount, preference_amount, no_work_shift_amount):
+def create_random_test(people_amount, preference_amount, no_work_shift_amount, num_people_with_amnt_shifts):
     lines = []
 
     lines.append("Domain:\n")
@@ -51,18 +51,25 @@ def create_random_test(people_amount, preference_amount, no_work_shift_amount):
     for no_work_shift in no_work_shifts:
         lines.append(no_work_shift + "\n")
 
+    lines.append("MinimumWantedShifts:\n")
+
+    for i in range(num_people_with_amnt_shifts):
+        name = names[i]
+        shifts = random.randint(5, 8) # TODO smokingkills You can edit the possible wanted amount of hours
+        lines.append(name + " " + str(shifts) + "\n")
+
     return lines
 
 
-def create_random_test_file(test_num, people_amount, preference_amount, no_work_shift_amount):
+def create_random_test_file(test_num, people_amount, preference_amount, no_work_shift_amount, num_people_with_amnt_shifts):
     with open('ReportTests/random_test' + str(test_num), 'w') as random_example:
-        random_example.writelines(create_random_test(people_amount, preference_amount, no_work_shift_amount))
+        random_example.writelines(create_random_test(people_amount, preference_amount, no_work_shift_amount, num_people_with_amnt_shifts))
 
 def make_csv(filename, assignment):
     with open(filename, 'r') as csp_file:
         lines = csp_file.readlines()
 
-    domain, names, preferences, non_work_shift = parser(lines)
+    domain, names, preferences, non_work_shift, min_shifts = parser(lines)
 
     f = open(filename + '.csv', 'w')
 
@@ -87,9 +94,13 @@ def make_csv(filename, assignment):
     f.close()
 
 
-def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
-    csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic)
-    algorithm = algorithms[algo](csp)
+def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, backtrack_timeout, forward_check,
+                 max_flips, walksat_alpha):
+    csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic, forward_check)
+    if algo == WALKSAT:
+        algorithm = algorithms[algo](csp, max_flips=max_flips, random_value=walksat_alpha)
+    elif algo == BACKTRACK:
+        algorithm = algorithms[algo](csp, timeout=backtrack_timeout)
     if algorithm.solve():
         print("Satisfiable")
         dic = algorithm.get_assignment()
@@ -102,12 +113,12 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic):
 
 
 if __name__ == "__main__":
-    worker_solve("ReportTests/test1", WALKSAT, False, None, None)
+    # worker_solve("ReportTests/test1", WALKSAT, False, None, None)
     # worker_solve("ReportTests/test1", BACKTRACK, False, MIN_REMAINING_VAL, LEAST_CONSTRAINING_VAL)
-    # create_random_test_file(0, 10, 30, 30)
+    create_random_test_file(0, 10, 30, 30, 4)
     t = time.time()
     print(1)
-    # worker_solve("ReportTests/random_test0", WALKSAT, False, None, None)
+    # worker_solve("ReportTests/test1", WALKSAT, False, None, None, None, None, 50, 0.0)
     print(2)
     print(time.time() - t)
 
