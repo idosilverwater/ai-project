@@ -17,7 +17,6 @@ class Constraint:
         self.possible_values = possible_values
         self.is_soft = softness
         self.set_of_variables = frozenset(variables)  # shouldn't change after creation.
-        self.length = len(variables)
 
     # A protected method. meant to be used by deriving classes.
     def check_num_of_nones(self, assignment):

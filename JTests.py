@@ -65,14 +65,20 @@ def print_by_days(assignment):
 
 
 if __name__ == '__main__':
+    print("Creating CSP")
     csp = create_workers_csp("examples/example2.csp", False, magicNums.DEGREE, magicNums.MIN_CONFLICT,
                              magicNums.DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, True, 2)
     algorithm = Backtrack(csp, 10)
+    print("Starting")
     a = time.time()
-    if algorithm.solve():
+    solve_results = algorithm.solve()
+    res = algorithm.get_assignment()
+    if solve_results:
         res_message = "Satisfiable"
-        res = algorithm.get_assignment()
         print_by_days(res)
+    elif solve_results is None:
+        res_message = "Time out exceed."
+        print(res)
     else:
         res_message = "Unsatisfiable"
     print(res_message)

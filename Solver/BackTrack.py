@@ -14,7 +14,7 @@ class Backtrack(Solver):
         """
         super(Backtrack, self).__init__(csp)
         self.__timeout = timeout
-        self.terminate_flag = False
+        self.__termination_flag = False
         self.__lock = Lock()
 
     def backtrack(self):
@@ -40,12 +40,13 @@ class Backtrack(Solver):
         for value in self.csp.order_domain_values(var_name):
             if self.csp.is_consistent(var_name, value):
                 self.assign_value(var_name, value)
-                self.__lock.acquire()
-                if self.terminate_flag:
+
+                self.__lock.acquire()  # Locking before checking shared variable.
+                if self.__termination_flag:
                     self.__lock.release()
                     return False  # terminate run before recursion call.
-                if self.__lock.locked():
-                    self.__lock.release()
+                self.__lock.release()
+
                 res = self.backtrack()
                 if not res:
                     self.remove_value(var_name)
@@ -70,7 +71,7 @@ class Backtrack(Solver):
 
             # acquire lock, and change exclusive variable termination flag.
             self.__lock.acquire()
-            self.terminate_flag = True
+            self.__termination_flag = True
             self.__lock.release()
 
             thread.join()  # awaits thread to stop
@@ -109,5 +110,7 @@ class Backtrack(Solver):
         if not backtrack_succeed and add_const:
             print("couldn't satisfy constraint.")
             print("--------")
+            if self.__termination_flag:
+                return None
         self.assignment = current_assignment
         return True

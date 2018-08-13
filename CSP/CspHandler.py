@@ -5,10 +5,6 @@ import time
 from threading import Thread
 
 
-# todo, try and find a way to assign a value in the cs and backtrack when you do forward checking and theres 1 value left.
-# TODO notice that when we remove almost every one of the super soft constraints there is a crash, check why? (notice down below the text.)
-
-
 class CspHandler:
     """
     main CSP handler. should be main authority for handling variables, domains and constraints.
@@ -42,8 +38,7 @@ class CspHandler:
 
         self.domain_heuristic = None
         if domain_heuristic_creator is not None:  # For the case in which WalkSAT is used (No heuristic)
-            # self.domain_heuristic = domain_heuristic_creator()
-            self.domain_heuristic = None  # TODO REMOVE.
+            self.domain_heuristic = domain_heuristic_creator()
 
         self.__fc_variables_backup = []  # a stack contains the previous versions of variables.
 
@@ -211,20 +206,23 @@ class CspHandler:
         if self._forward_checking_flag:
             self.__restore()
 
+    def __get_all_visible_constraints(self):
+        all_constraints_dict = self.constraints.get_visible_constraints()
+        all_consts_lst = []
+        for list_of_consts in all_constraints_dict.values():
+            all_consts_lst += list_of_consts
+        return all_consts_lst
+
     def check_assignment(self, variable_assignment):
         """
         # checks the full assignment over all constraints
         :param variable_assignment:
         :return:g
         """
-        all_constraints_dict = self.constraints.get_visible_constraints()
-        all_consts_lst = []
-        for list_of_consts in all_constraints_dict.values():
-            all_consts_lst += list_of_consts
-
+        all_consts_lst = self.__get_all_visible_constraints()
         if len(all_consts_lst) > 120:  # is more efficient only when we pass large amounts of constraints..
-            res1 = [True]
-            res2 = [True]
+            res1 = [1]
+            res2 = [1]
             t1 = Thread(target=CspHandler.__parralel_check_agreement,
                         args=(res1, all_consts_lst, variable_assignment, 0))
             t2 = Thread(target=CspHandler.__parralel_check_agreement,
@@ -233,10 +231,8 @@ class CspHandler:
             t2.start()
             t1.join()
             t2.join()
-            if not res1[0] or not res2[0]:
-                return False
-            return True
-        return self.__sequence_check_agreement(all_consts_lst, variable_assignment)
+            return res1[0] + res2[0] == 2
+        return self.check_constraint_agreement(all_consts_lst, variable_assignment)
 
     @staticmethod
     def check_constraint_agreement(constraints, assignment):
@@ -244,22 +240,17 @@ class CspHandler:
         gets a bunch of constraints and an assignment and checks whether all constraints are not violated or not.
         :return True if assignment agrees with all of the constraints, False otherwise.
         """
-        return CspHandler.__sequence_check_agreement(constraints, assignment)
+        for constraint in constraints:
+            if not constraint.check_assignment(assignment):
+                return False
+        return True
 
     @staticmethod
     def __parralel_check_agreement(ret_val, constraints, assignment, index):
         for i in range(index, len(constraints), 2):
             if not constraints[i].check_assignment(assignment):
-                ret_val[0] = False
+                ret_val[0] = 0
                 break
-
-    @staticmethod
-    def __sequence_check_agreement(constraints, assignment):
-        for constraint in constraints:
-            if not constraint.check_assignment(assignment):
-                return False
-        return True
-        pass
 
     ####################
     # FORWARD CHECKING #
@@ -417,3 +408,21 @@ class CspHandler:
         """
         if len(self.__fc_variables_backup) > -1:
             self.variables = self.__fc_variables_backup.pop()
+
+    ####################
+    #   STATS REPORT   #
+    ####################
+    def get_report(self, assignment):
+        """
+        Generates a counter {softness level: [number of satisfied constraints, number of constraints over all]}
+        where each key points to specific type of constraints.
+        """
+        all_consts_lst = self.__get_all_visible_constraints()
+        counter = {}
+        for constraint in all_consts_lst:
+            if constraint.is_soft not in counter:
+                counter[constraint.is_soft] = [0, 0]  # number of satisfied, number of constraint from this type.
+            if constraint.check_assignment(assignment):
+                counter[constraint.is_soft][0] += 1
+            counter[constraint.is_soft][1] += 1
+        return counter
