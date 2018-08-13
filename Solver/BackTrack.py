@@ -1,6 +1,6 @@
 from Solver.BaseSolver import *
 
-from threading import Thread
+from threading import Thread, Lock
 
 
 class Backtrack(Solver):
@@ -15,6 +15,7 @@ class Backtrack(Solver):
         super(Backtrack, self).__init__(csp)
         self.__timeout = timeout
         self.terminate_flag = False
+        self.__lock = Lock()
 
     def backtrack(self):
         """
@@ -39,8 +40,12 @@ class Backtrack(Solver):
         for value in self.csp.order_domain_values(var_name):
             if self.csp.is_consistent(var_name, value):
                 self.assign_value(var_name, value)
+                self.__lock.acquire()
                 if self.terminate_flag:
+                    self.__lock.release()
                     return False  # terminate run before recursion call.
+                if self.__lock.locked():
+                    self.__lock.release()
                 res = self.backtrack()
                 if not res:
                     self.remove_value(var_name)
@@ -62,8 +67,13 @@ class Backtrack(Solver):
         # wait a timeout, if thread is already finished joins it with no waiting.
         thread.join(self.__timeout)
         if thread.is_alive():  # time out ended and the thread is still running - kill it..
+
+            # acquire lock, and change exclusive variable termination flag.
+            self.__lock.acquire()
             self.terminate_flag = True
-            thread.join()
+            self.__lock.release()
+
+            thread.join()  # awaits thread to stop
             print("Time out reached. Terminating solver.")
             result[0] = False
         return result[0]

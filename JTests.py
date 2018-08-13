@@ -65,7 +65,7 @@ def print_by_days(assignment):
 
 
 if __name__ == '__main__':
-    csp = create_workers_csp("examples/example1.csp", False, magicNums.DEGREE, magicNums.MIN_CONFLICT,
+    csp = create_workers_csp("examples/example2.csp", False, magicNums.DEGREE, magicNums.MIN_CONFLICT,
                              magicNums.DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, True, 2)
     algorithm = Backtrack(csp, 10)
     a = time.time()
