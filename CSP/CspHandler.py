@@ -72,6 +72,9 @@ class CspHandler:
             else:
                 raise Exception("Variable name repeats twice!")
 
+    def shuffle(self):
+        self.variable_heuristic.shuffle()
+
     def restore_csp_handler(self):
         """
         Restarts all variables and re initialize the csp handler using the current constraints.
@@ -82,6 +85,7 @@ class CspHandler:
         self.__fc_variables_backup = []
         self.variables = {}
         self._generate_variables(self.__variables_list, self.__domain_list)
+        self.variable_heuristic.re_initialize_sort(self.variables)
 
     def make_visible(self):
         """
@@ -95,6 +99,7 @@ class CspHandler:
             for constraint in constraints:
                 self.variables[variable_name].add_constraint(constraint)
                 self.__add_neighbours_to_var(variable_name, constraint.get_variables())
+        self.variable_heuristic.re_initialize_sort(self.variables)
 
     def order_domain_values(self, variable_name):
         """
@@ -192,6 +197,7 @@ class CspHandler:
             # adding every ones as my new neighbours.
             self.__add_neighbours_to_var(var_name, all_var_names)
             self.variables[var_name].add_constraint(constraint)
+        self.variable_heuristic.re_initialize_sort(self.variables)
         return True
 
     def un_assign_variable(self, variable_name):

@@ -20,10 +20,9 @@ class Degree(VariableHeuristic):
         variable with most neighbors is first and so on.
         """
         variables_by_neighbors = []  # A list of (var_name, |neighbors|)
-        for variable in self.variables:
-            number_of_neighbors = len(self.variables[variable].get_neighbors())
-            name = self.variables[variable].get_name()
-            variables_by_neighbors.append((name, number_of_neighbors))
+        for variable in self.var_names:
+            variables_by_neighbors.append(
+                (self.variables[variable].get_name(), len(self.variables[variable].get_neighbors())))
 
         # In this part we sort the variables according to the heuristic:
         variables_by_neighbors = sorted(variables_by_neighbors, key=lambda tup: tup[1], reverse=True)
@@ -32,7 +31,3 @@ class Degree(VariableHeuristic):
 
     def select_unassigned_variable(self):
         return self.sorted_variables
-
-
-def degree_heuristic_factory(variables):
-    return Degree(variables)

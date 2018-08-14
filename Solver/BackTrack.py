@@ -100,17 +100,17 @@ class Backtrack(Solver):
         add_const = self.csp.add_constraint()
         while backtrack_succeed and add_const:  # while we can still add constraints - continues
             print("Adding soft constraint number:", i)
-            self.csp.restore_csp_handler()  # restores cso for re run.
+            self.csp.restore_csp_handler()  # restores csp for re run.
             current_assignment = self.assignment
             self.reset_assignment()
             backtrack_succeed = self.backtrack_on_timer()
             i += 1
             add_const = self.csp.add_constraint()
 
+        self.assignment = current_assignment
         if not backtrack_succeed and add_const:
             print("couldn't satisfy constraint.")
             print("--------")
             if self.__termination_flag:
                 return None
-        self.assignment = current_assignment
         return True

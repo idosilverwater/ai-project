@@ -46,7 +46,7 @@ class ReportGenerator:
             running_time = time.time() - running_time
             if res is None:
                 csp_handler.restore_csp_handler()  # Restore csp handler for a retry.
-                # TODO should we add a shuffle - might give better results ?
+                csp_handler.shuffle()  # Shuffle the csp handler, might find a better path.
                 continue
             elif not res:
                 report_assignment = False
@@ -54,8 +54,8 @@ class ReportGenerator:
         return report_assignment, running_time, algorithm.get_assignment()
 
     @staticmethod
-    def __backtrack_suffix(heuristic_triplet, running_time):
-        return "_Backtrack_" + "_".join(heuristic_triplet) + str(int(running_time))
+    def __backtrack_suffix(heuristic_triplet):
+        return "_Backtrack_" + "_".join(heuristic_triplet)
 
     def generate_backtrack_report(self):
         """
@@ -66,20 +66,24 @@ class ReportGenerator:
             Can be processed later on and saved into a file via some way we define.
         """
         results = {}
-        for file in self.files:
+        for file_name in self.files:
             for heuristic_triplet in self.heuristics:
-                csp_handler = WorkerCSP.WorkersCSP.create_workers_csp(file, False, *heuristic_triplet, True, 2)
+                csp_handler = WorkerCSP.WorkersCSP.create_workers_csp(file_name, False, *heuristic_triplet, True, 2)
 
                 report_assignment, running_time, curr_assignment = self.__run_backtrack(csp_handler)
-                suffix = self.__backtrack_suffix(heuristic_triplet, running_time)
+                suffix = self.__backtrack_suffix(heuristic_triplet)
 
                 if report_assignment:
-                    results[file + suffix] = (curr_assignment, csp_handler.get_report(curr_assignment))
+                    results[file_name + suffix] = (
+                        curr_assignment, csp_handler.get_report(curr_assignment), running_time)
                 else:
-                    results[file + suffix] = None
+                    results[file_name + suffix] = None
                     break
         return results
 
+    def print_backtrack_results(self, file_name):
+        # generate_backtrack_report
+        pass
 
 ################
 def soft_heuristic_check():

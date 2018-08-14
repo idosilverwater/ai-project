@@ -15,11 +15,9 @@ class MinimumRemainingValue(VariableHeuristic):
         variable with least remaining values is first.
         """
         variables_by_values = []  # A list of (var_name, |domains|)
-        for variable in self.variables:
+        for variable in self.var_names:
             var_obj = self.variables[variable]
-            possible_values = len(var_obj.get_possible_domain())
-            name = var_obj.get_name()
-            variables_by_values.append((name, possible_values))
+            variables_by_values.append((var_obj.get_name(), len(var_obj.get_possible_domain())))
 
         # In this part we sort the variables according to the heuristic:
         variables_by_values.sort(key=lambda tup: tup[1])
@@ -27,7 +25,3 @@ class MinimumRemainingValue(VariableHeuristic):
 
     def select_unassigned_variable(self):
         return self.sorted_variables
-
-
-def minimum_remaining_value_heuristic_factory(variables):
-    return MinimumRemainingValue(variables)
