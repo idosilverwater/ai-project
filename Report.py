@@ -5,29 +5,150 @@ import WorkerCSP.WorkersCSP
 from ReportTests import Tests as ts
 from magicNums import *
 from Solver.BackTrack import Backtrack
+import magicNums
 import time
 
 NUM_TESTS = 4
+# folder names;
+REPORT_FILES = "ReportScriptFiles"
+TEST_FOLDER = REPORT_FILES + "/" + "TestFiles"
+RESULTS_FOLDER = REPORT_FILES + "/" + "ResultFiles"
+# file prefix names.
 TEST_FILE_NAME = "Test"
-TEST_FOLDER = "ReportScriptFiles"
+RESULTS_FILE_BACKTRACK = "_BACKTRACK_RESULTS"
 
 
 def create_random_test_file(test_num, people_amount, preference_amount, no_work_shift_amount,
-                            num_people_with_amnt_shifts):
+                            num_people_with_amount_shifts):
     with open(TEST_FOLDER + "/" + TEST_FILE_NAME + str(test_num), 'w') as random_example:
         random_example.writelines(
-            ts.create_random_test(people_amount, preference_amount, no_work_shift_amount, num_people_with_amnt_shifts))
+            ts.create_random_test(people_amount, preference_amount, no_work_shift_amount,
+                                  num_people_with_amount_shifts))
 
 
 def generate_test_files():
-    pass  # TODO
+    create_random_test_file(1, 4, 5, 3, 2)
+    create_random_test_file(2, 6, 5, 3, 2)
+
+
+class Printer:
+    """
+    Printer class, provides an easy way to print assignments and make reports.
+    """
+
+    def __init__(self, file_name=None):
+        self.file_name = file_name
+
+    def set_new_file(self, file_name):
+        self.file_name = file_name
+
+    @staticmethod
+    def __seven_days_a_week(number):
+        if number == 0:
+            return "sunday"
+        elif number == 1:
+            return "monday"
+        elif number == 2:
+            return "tuesday"
+        elif number == 3:
+            return "wednesday"
+        elif number == 4:
+            return "thursday"
+        elif number == 5:
+            return "friday"
+        elif number == 6:
+            return "saturday"
+        else:
+            return "%s day" % str(number)
+
+    def print(self, msg):
+        print(msg, file=self.file_name)
+
+    def print_by_days(self, assignment):
+        """
+        Works only for the bakery problem.
+        meant to present the workers that work in each shift nicely.
+        :param assignment: a dictionary of workers, and if they work or not on a certain shift.
+        """
+        all_shifts = [[] for i in range(magicNums.DAYS_IN_WEEK)]
+        for day_list in all_shifts:
+            for i in range(magicNums.SHIFTS_IN_DAY):
+                day_list.append([])
+
+        num_days_var_works = {}
+        for key in assignment:
+            name_vals = key.split(" ")
+            name = name_vals[0]
+            if name not in num_days_var_works:
+                num_days_var_works[name] = 0
+            if assignment[key] == magicNums.DOMAIN_TRUE_VAL:
+                all_shifts[int(name_vals[1])][int(name_vals[2])].append(name)
+                num_days_var_works[name] += 1
+
+        print(file=self.file_name)
+        print("Printing shifts:", file=self.file_name)
+        print("----------------", file=self.file_name)
+        for i, day in enumerate(all_shifts):
+            print("%s workers are: " % Printer.__seven_days_a_week(i), file=self.file_name)
+            print(day, file=self.file_name)
+            print("-----------------", file=self.file_name)
+
+        print(file=self.file_name)
+        print("Shifts per worker: ", file=self.file_name)
+        print("-----------------", file=self.file_name)
+        for name in num_days_var_works:
+            print("%s if working %s shifts" % (name, num_days_var_works[name]), file=self.file_name)
+            print("-----------------", file=self.file_name)
+
+    def print_result_of_file(self, result_name, results, max_amount_of_workers_per_shift):
+        """
+        generates a report.
+        :param result_name: the name of the report, should look like a filename where the filename is of the format:
+            _Backtrack_ (or _Walksat_), Variable heuristic, domain heuristic, soft heuristic,
+        :param results:
+        :param max_amount_of_workers_per_shift:
+        :return:
+        """
+
+        self.print("Results of: %s" % result_name)
+        if results is None:
+            self.print("Couldn't satisfy.")
+            self.__seperate_result()
+            return
+
+        # Printing stats:
+        num_vars, constraints_report, running_time = len(results[0]), results[1], results[2]
+        self.print("Number of vars: %s" % str(num_vars))
+        self.print("Max amount of workers per shift: %s" % str(max_amount_of_workers_per_shift))
+        self.print("running time: %s" % str(running_time))
+
+        for constraint_type in constraints_report:  # dict of {type: [num of satisfied, num of constraints]}
+            constraint_results = constraints_report[constraint_type]
+            temp = constraint_type, constraint_results[0], constraint_results[1]
+            self.print("Constraint type %s have %s satisfied from overall %s" % (temp[0], temp[1], temp[2]))
+        # printing shifts : (Not sure if wanted here)
+        self.print_by_days(results[0])
+        self.__seperate_result()
+
+    def __seperate_result(self):
+        self.print("*****************")
+        self.print('')
+        self.print('')
+
+    def report_time_out(self, result_name):
+        self.print("Results of: %s" % result_name)
+        self.print("TIMEOUT reached.")
+        self.__seperate_result()
 
 
 class ReportGenerator:
+    TIMEOUTE = -3
 
-    def __init__(self, file_names, v_heuristics, d_heuristics, s_heuristics):
+    def __init__(self, file_names, v_heuristics, d_heuristics, s_heuristics, max_workers_in_shift=2):
         self.heuristics = self.__make_heuristics_pairs(v_heuristics, d_heuristics, s_heuristics)
         self.files = file_names
+        self.printer = Printer()
+        self.max_amount_of_workers_in_shift = max_workers_in_shift
 
     def __make_heuristics_pairs(self, variable_heuristics, domain_heuristics, soft_heuristics):
         lst_of_pairs = []
@@ -39,19 +160,39 @@ class ReportGenerator:
 
     def __run_backtrack(self, csp_handler):
         report_assignment = True
+        prev_best_assignment = None
+        prev_running_time = 0
+        best_num_constraint = 0
         for timeout in [10, 20, 30]:  # gives at most 30 seconds for an added constraint.
             algorithm = Backtrack(csp_handler, timeout)
             running_time = time.time()
             res = algorithm.solve()
             running_time = time.time() - running_time
-            if res is None:
+            if res == magicNums.TIMEOUT_HARD_CONSTRAINT:
                 csp_handler.restore_csp_handler()  # Restore csp handler for a retry.
                 csp_handler.shuffle()  # Shuffle the csp handler, might find a better path.
-                continue
-            elif not res:
+            elif res == magicNums.TIMEOUT:
+                temp = algorithm.get_num_soft_constraints_added()
+                if temp > best_num_constraint:
+                    best_num_constraint = temp
+                    prev_best_assignment = algorithm.get_assignment()
+                    prev_running_time = running_time
+                csp_handler.restore_csp_handler()  # Restore csp handler for a retry.
+                csp_handler.shuffle()  # Shuffle the csp handler, might find a better path.
+            elif res == magicNums.FAILED:
                 report_assignment = False
-            break  # we can break. it is either satisfiable or not at this point.
-        return report_assignment, running_time, algorithm.get_assignment()
+                return report_assignment, running_time, algorithm.get_assignment()
+            else:
+                return report_assignment, running_time, algorithm.get_assignment()
+
+        if prev_best_assignment is not None:
+            print("Return value even though failure later on..")
+            return True, prev_running_time, prev_best_assignment
+
+        print("time out reached.")
+        return TIMEOUT, None, None
+        # print("True or false reached.")
+        # return report_assignment, running_time, algorithm.get_assignment()
 
     @staticmethod
     def __backtrack_suffix(heuristic_triplet):
@@ -68,7 +209,8 @@ class ReportGenerator:
         results = {}
         for file_name in self.files:
             for heuristic_triplet in self.heuristics:
-                csp_handler = WorkerCSP.WorkersCSP.create_workers_csp(file_name, False, *heuristic_triplet, True, 2)
+                csp_handler = WorkerCSP.WorkersCSP.create_workers_csp(file_name, False, *heuristic_triplet, True,
+                                                                      self.max_amount_of_workers_in_shift)
 
                 report_assignment, running_time, curr_assignment = self.__run_backtrack(csp_handler)
                 suffix = self.__backtrack_suffix(heuristic_triplet)
@@ -76,27 +218,21 @@ class ReportGenerator:
                 if report_assignment:
                     results[file_name + suffix] = (
                         curr_assignment, csp_handler.get_report(curr_assignment), running_time)
+                elif report_assignment == TIMEOUT:
+                    self.printer.report_time_out(file_name + suffix)
                 else:
                     results[file_name + suffix] = None
                     break
         return results
 
-    def print_backtrack_results(self, file_name):
-        # generate_backtrack_report
-        pass
+    def print_backtrack_results(self, result_file_path):
 
-################
-def soft_heuristic_check():
-    pass
-
-
-def backtrack_heuristic_war(test_num):
-
-
-# This is where I generate all of the interesting results :)
-def back_track_tests():
-    for i in range(NUM_TESTS):
-        pass
+        results = self.generate_backtrack_report()
+        with open(result_file_path, 'w') as file:
+            self.printer.set_new_file(file)
+            for results_name in results:
+                self.printer.print_result_of_file(results_name, results[results_name],
+                                                  self.max_amount_of_workers_in_shift)
 
 
 def overall_test():  # TODO: Add to documentation what type of file I return.
@@ -115,11 +251,21 @@ def overall_test():  # TODO: Add to documentation what type of file I return.
 
 
 if __name__ == '__main__':
-    variable_heuristics = [DEGREE, MIN_REMAINING_VAL]
-    domain_heuristics = [LEAST_CONSTRAINING_VAL, MIN_CONFLICT]
-    soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC,
-                       NAME_SOFT_CONSTRAINT_HEURISTIC]
+    # generate_test_files()
+    # variable_heuristics = [DEGREE, MIN_REMAINING_VAL]
+    # domain_heuristics = [LEAST_CONSTRAINING_VAL, MIN_CONFLICT]
+    # # # # todo consider removing random soft constraint for faster test results.
+    # soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC,
+    #                    NAME_SOFT_CONSTRAINT_HEURISTIC, RANDOM_SOFT_CONSTRAINT_HEURISTIC]
 
-    report = ReportGenerator(variable_heuristics, domain_heuristics, soft_heuristics)
-    pass
-# create_random_test_file(1, 5, 4, 3, 1)
+    # TODO DELETE: this is only for testing:
+    variable_heuristics = [DEGREE]
+    domain_heuristics = [LEAST_CONSTRAINING_VAL]
+    soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE]
+    #    -------------------------------------
+
+    # # TODO change None to actual file_names.
+    file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(1, 3)]
+
+    report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
+    report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)

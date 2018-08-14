@@ -16,6 +16,7 @@ class Backtrack(Solver):
         self.__timeout = timeout
         self.__termination_flag = False
         self.__lock = Lock()
+        self.num_constrains_added = 0
 
     def backtrack(self):
         """
@@ -87,12 +88,15 @@ class Backtrack(Solver):
     def solve(self):
         """
         tries and solve for the csp problem while adding more and more constraints to the problem.
+        Current assignment must be reseted before call!
         :return: False if there isn't a solution, True otherwise.
         """
+        print("******Starting Backtrack******")
         backtrack_succeed = self.backtrack_on_timer()  # try to satisfy hard constraints.
         if not backtrack_succeed:
-            self.reset_assignment()  # resetting the assignment.
-            return False
+            if self.__termination_flag:
+                return -2
+            return 0
         self.__hard_constraint_satisfied()
 
         i = 1
@@ -108,9 +112,13 @@ class Backtrack(Solver):
             add_const = self.csp.add_constraint()
 
         self.assignment = current_assignment
+        self.num_constrains_added = i
         if not backtrack_succeed and add_const:
             print("couldn't satisfy constraint.")
             print("--------")
             if self.__termination_flag:
-                return None
-        return True
+                return -1
+        return 1
+
+    def get_num_soft_constraints_added(self):
+        return self.num_constrains_added

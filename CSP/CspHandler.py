@@ -423,7 +423,10 @@ class CspHandler:
         Generates a counter {softness level: [number of satisfied constraints, number of constraints over all]}
         where each key points to specific type of constraints.
         """
-        all_consts_lst = self.__get_all_visible_constraints()
+        all_constraints_dict = self.constraints.get_all_constraints()
+        all_consts_lst = []
+        for list_of_consts in all_constraints_dict.values():
+            all_consts_lst += list_of_consts
         counter = {}
         for constraint in all_consts_lst:
             if constraint.is_soft not in counter:

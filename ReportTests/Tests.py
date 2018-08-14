@@ -9,6 +9,7 @@ WALKSAT = 'w'
 
 algorithms = {'b': Backtrack, 'w': WalkSat}
 
+
 def random_shifts(amount, names):
     shifts = []
 
@@ -55,15 +56,17 @@ def create_random_test(people_amount, preference_amount, no_work_shift_amount, n
 
     for i in range(num_people_with_amnt_shifts):
         name = names[i]
-        shifts = random.randint(5, 8) # TODO smokingkills You can edit the possible wanted amount of hours
+        shifts = random.randint(3, 8)  # TODO smokingkills You can edit the possible wanted amount of hours
         lines.append(name + " " + str(shifts) + "\n")
-
     return lines
 
 
-def create_random_test_file(test_num, people_amount, preference_amount, no_work_shift_amount, num_people_with_amnt_shifts):
+def create_random_test_file(test_num, people_amount, preference_amount, no_work_shift_amount,
+                            num_people_with_amnt_shifts):
     with open('ReportTests/random_test' + str(test_num), 'w') as random_example:
-        random_example.writelines(create_random_test(people_amount, preference_amount, no_work_shift_amount, num_people_with_amnt_shifts))
+        random_example.writelines(
+            create_random_test(people_amount, preference_amount, no_work_shift_amount, num_people_with_amnt_shifts))
+
 
 def make_csv(filename, assignment):
     with open(filename, 'r') as csp_file:
@@ -121,4 +124,3 @@ if __name__ == "__main__":
     # worker_solve("ReportTests/test1", WALKSAT, False, None, None, None, None, 50, 0.0)
     print(2)
     print(time.time() - t)
-
