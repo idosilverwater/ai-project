@@ -108,12 +108,12 @@ class Backtrack(Solver):
             current_assignment = self.assignment
             self.reset_assignment()
             backtrack_succeed = self.backtrack_on_timer()
-            i += 1
             add_const = self.csp.add_constraint()
+            i += 1
 
-        self.assignment = current_assignment
         self.num_constrains_added = i
         if not backtrack_succeed and add_const:
+            self.assignment = current_assignment
             print("couldn't satisfy constraint.")
             print("--------")
             if self.__termination_flag:

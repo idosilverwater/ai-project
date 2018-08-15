@@ -5,6 +5,7 @@ import WorkerCSP.WorkersCSP
 from ReportTests import Tests as ts
 from magicNums import *
 from Solver.BackTrack import Backtrack
+from Solver.WalkSat import WalkSat
 import magicNums
 import time
 
@@ -16,6 +17,7 @@ RESULTS_FOLDER = REPORT_FILES + "/" + "ResultFiles"
 # file prefix names.
 TEST_FILE_NAME = "Test"
 RESULTS_FILE_BACKTRACK = "_BACKTRACK_RESULTS"
+RESULTS_FILE_WALKSAT = "_WALKSAT_RESULTS"
 
 
 def create_random_test_file(test_num, people_amount, preference_amount, no_work_shift_amount,
@@ -183,6 +185,7 @@ class ReportGenerator:
                 report_assignment = False
                 return report_assignment, running_time, algorithm.get_assignment()
             else:
+                csp_handler.get_report(algorithm.get_assignment())
                 return report_assignment, running_time, algorithm.get_assignment()
 
         if prev_best_assignment is not None:
@@ -196,7 +199,24 @@ class ReportGenerator:
 
     @staticmethod
     def __backtrack_suffix(heuristic_triplet):
-        return "_Backtrack_" + "_".join(heuristic_triplet)
+        return "_Backtrack_ " + "  ".join(heuristic_triplet)
+
+    def __backtrack_results(self, file_name, results):
+        for heuristic_triplet in self.heuristics:
+            csp_handler = WorkerCSP.WorkersCSP.create_workers_csp(file_name, False, *heuristic_triplet, True,
+                                                                  self.max_amount_of_workers_in_shift)
+
+            report_assignment, running_time, curr_assignment = self.__run_backtrack(csp_handler)
+            suffix = self.__backtrack_suffix(heuristic_triplet)
+
+            if report_assignment:
+                results[file_name + suffix] = (
+                    curr_assignment, csp_handler.get_report(curr_assignment), running_time)
+            elif report_assignment == TIMEOUT:
+                self.printer.report_time_out(file_name + suffix)
+            else:
+                results[file_name + suffix] = None
+                break
 
     def generate_backtrack_report(self):
         """
@@ -208,31 +228,43 @@ class ReportGenerator:
         """
         results = {}
         for file_name in self.files:
-            for heuristic_triplet in self.heuristics:
-                csp_handler = WorkerCSP.WorkersCSP.create_workers_csp(file_name, False, *heuristic_triplet, True,
-                                                                      self.max_amount_of_workers_in_shift)
-
-                report_assignment, running_time, curr_assignment = self.__run_backtrack(csp_handler)
-                suffix = self.__backtrack_suffix(heuristic_triplet)
-
-                if report_assignment:
-                    results[file_name + suffix] = (
-                        curr_assignment, csp_handler.get_report(curr_assignment), running_time)
-                elif report_assignment == TIMEOUT:
-                    self.printer.report_time_out(file_name + suffix)
-                else:
-                    results[file_name + suffix] = None
-                    break
+            self.__backtrack_results(file_name, results)
         return results
 
-    def print_backtrack_results(self, result_file_path):
+    def generate_walksat_report(self):
+        results = {}
+        for file_name in self.files:
+            self.__walksat_results(file_name, results)
+        return results
 
+    def __walksat_results(self, file_name, results):
+        # walkSat does not need heuristics, and does not need forward checking at all.
+        csp_handler = WorkerCSP.WorkersCSP.create_workers_csp(file_name, False, None, None, None, False,
+                                                              self.max_amount_of_workers_in_shift)
+        for probability in [0, 0.5, 0.7, 0.9]:
+            for max_flips in [100, 500, 1000]:
+                algorithm = WalkSat(csp_handler, probability, max_flips)
+                runtime = time.time()
+                algorithm.solve()
+                runtime = time.time() - runtime
+                suffix = "probability use percent: %s %%. Max flips num: %s " % (probability * 100, max_flips)
+                results[file_name + suffix] = (
+                    algorithm.get_assignment(), csp_handler.get_report(algorithm.get_assignment()), runtime)
+
+    def print_backtrack_results(self, result_file_path):
         results = self.generate_backtrack_report()
+        self.__print_results(result_file_path, results)
+
+    def __print_results(self, result_file_path, results):
         with open(result_file_path, 'w') as file:
             self.printer.set_new_file(file)
             for results_name in results:
                 self.printer.print_result_of_file(results_name, results[results_name],
                                                   self.max_amount_of_workers_in_shift)
+
+    def print_walksat_results(self, result_file_path):
+        results = self.generate_walksat_report()
+        self.__print_results(result_file_path, results)
 
 
 def overall_test():  # TODO: Add to documentation what type of file I return.
@@ -252,20 +284,21 @@ def overall_test():  # TODO: Add to documentation what type of file I return.
 
 if __name__ == '__main__':
     # generate_test_files()
-    # variable_heuristics = [DEGREE, MIN_REMAINING_VAL]
-    # domain_heuristics = [LEAST_CONSTRAINING_VAL, MIN_CONFLICT]
-    # # # # todo consider removing random soft constraint for faster test results.
-    # soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC,
-    #                    NAME_SOFT_CONSTRAINT_HEURISTIC, RANDOM_SOFT_CONSTRAINT_HEURISTIC]
+    variable_heuristics = [DEGREE, MIN_REMAINING_VAL]
+    domain_heuristics = [LEAST_CONSTRAINING_VAL, MIN_CONFLICT]
+    soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC,
+                       NAME_SOFT_CONSTRAINT_HEURISTIC]
 
     # TODO DELETE: this is only for testing:
-    variable_heuristics = [DEGREE]
-    domain_heuristics = [LEAST_CONSTRAINING_VAL]
-    soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE]
+    # variable_heuristics = [DEGREE]
+    # domain_heuristics = [LEAST_CONSTRAINING_VAL]
+    # soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE]
     #    -------------------------------------
 
     # # TODO change None to actual file_names.
     file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(1, 3)]
 
     report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
-    report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)
+    # report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)
+    # report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)
+    report.print_walksat_results(RESULTS_FOLDER + "/" + RESULTS_FILE_WALKSAT)

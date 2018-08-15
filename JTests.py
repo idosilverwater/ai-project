@@ -10,19 +10,20 @@ from Report import Printer
 
 if __name__ == '__main__':
     print("Creating CSP")
-    csp = create_workers_csp("ReportScriptFiles/TestFiles/Test2", False,
+    csp = create_workers_csp("ReportScriptFiles/TestFiles/Test1", False,
                              magicNums.DEGREE, magicNums.LEAST_CONSTRAINING_VAL,
                              magicNums.DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, True, 2)
+    csp.shuffle()
     pr = Printer()
     algorithm = Backtrack(csp, 30)
     print("Starting")
     a = time.time()
     solve_results = algorithm.solve()
     res = algorithm.get_assignment()
-    if solve_results:
+    if solve_results == magicNums.SUCCESS:
         res_message = "Satisfiable"
         pr.print_by_days(res)
-    elif solve_results is None:
+    elif solve_results == magicNums.TIMEOUT:
         res_message = "Time out exceed."
         print(res)
     else:
