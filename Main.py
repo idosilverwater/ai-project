@@ -83,8 +83,7 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, ba
         exit(-1)
     print(type(algorithm))
     res = algorithm.solve()
-    out_file = None  # TODO add an option to add file or not, if it's None will print into stdout.
-    printer = Printer(out_file)
+    printer = Printer()
     if res == magicNums.SUCCESS:
         print("Satisfiable")
         printer.print_by_days(algorithm.get_assignment())
