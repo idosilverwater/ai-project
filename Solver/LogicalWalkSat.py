@@ -1,7 +1,7 @@
 from Solver import BaseSolver
 import random
 from magicNums import *
-
+import magicNums
 """
 Literal inner class. // contains: assignment_value, var_name that it is tied too, isNot - is this literal has a
                 not over it, formula_val - determined by assignment with isNot.
@@ -247,7 +247,7 @@ class LogicalWalkSat(BaseSolver):
         self.random_assignment()
 
         if self.is_satisfied():
-            return True
+            return magicNums.SUCCESS
         else:
             for i in range(self.__max_flips):
                 print(i, self.get_num_satisfied())
@@ -259,4 +259,4 @@ class LogicalWalkSat(BaseSolver):
 
         print("Total Amount of Constraints:", len(self.constraints))
         print("Total Satisfied Constraints:", self.get_num_satisfied())
-        return True
+        return magicNums.SUCCESS

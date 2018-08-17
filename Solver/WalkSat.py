@@ -252,7 +252,7 @@ class WalkSat(Solver):
         self.random_assignment()
 
         if self.is_satisfied():
-            return True
+            return magicNums.SUCCESS
         else:
             for i in range(self.__max_flips):
                 constraint = self.random_constraint()
@@ -265,4 +265,4 @@ class WalkSat(Solver):
 
         print("Total Amount of Constraints:", len(self.constraints))
         print("Total Satisfied Constraints:", self.get_num_satisfied())
-        return True
+        return magicNums.SUCCESS

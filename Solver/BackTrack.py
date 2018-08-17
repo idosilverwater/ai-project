@@ -1,7 +1,7 @@
 from Solver.BaseSolver import *
 
 from threading import Thread, Lock
-
+import magicNums
 
 class Backtrack(Solver):
     """
@@ -95,8 +95,8 @@ class Backtrack(Solver):
         backtrack_succeed = self.backtrack_on_timer()  # try to satisfy hard constraints.
         if not backtrack_succeed:
             if self.__termination_flag:
-                return -2
-            return 0
+                return magicNums.TIMEOUT_HARD_CONSTRAINT
+            return magicNums.FAILED
         self.__hard_constraint_satisfied()
 
         i = 1
@@ -117,8 +117,8 @@ class Backtrack(Solver):
             print("couldn't satisfy constraint.")
             print("--------")
             if self.__termination_flag:
-                return -1
-        return 1
+                return magicNums.TIMEOUT
+        return magicNums.SUCCESS
 
     def get_num_soft_constraints_added(self):
         return self.num_constrains_added
