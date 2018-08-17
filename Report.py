@@ -152,7 +152,7 @@ class ReportGenerator:
         prev_best_assignment = None
         prev_running_time = 0
         best_num_constraint = 0
-        for timeout in [10, 20, 30]:  # gives at most 30 seconds for an added constraint.
+        for timeout in [350, 350, 350]:  # gives at most 30 seconds for an added constraint.
             algorithm = Backtrack(csp_handler, timeout)
             running_time = time.time()
             res = algorithm.solve()
@@ -271,10 +271,14 @@ def overall_test():  # TODO: Add to documentation what type of file I return.
 
 if __name__ == '__main__':
     # generate_test_files()
-    variable_heuristics = [DEGREE, MIN_REMAINING_VAL]
-    domain_heuristics = [LEAST_CONSTRAINING_VAL, MIN_CONFLICT]
-    soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC,
-                       NAME_SOFT_CONSTRAINT_HEURISTIC]
+    # variable_heuristics = [DEGREE, MIN_REMAINING_VAL]
+    # domain_heuristics = [LEAST_CONSTRAINING_VAL, MIN_CONFLICT]
+    # soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC,
+    #                    NAME_SOFT_CONSTRAINT_HEURISTIC]
+
+    variable_heuristics = [MIN_REMAINING_VAL]
+    domain_heuristics = [MIN_CONFLICT]
+    soft_heuristics = [MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC]
 
     # TODO DELETE: this is only for testing:
     # variable_heuristics = [DEGREE]
@@ -283,9 +287,10 @@ if __name__ == '__main__':
     #    -------------------------------------
 
     # # TODO change None to actual file_names.
-    file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(1, 3)]
+    # file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(1, 3)]
+    file_names = ["ReportTests" + "/" + "random_test" + str(i) for i in range(100)]
 
     report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
-    # report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)
-    # report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)
-    report.print_walksat_results(RESULTS_FOLDER + "/" + RESULTS_FILE_WALKSAT)
+    report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)
+    # report.print_backtrack_results("ReportTests" + "/" + RESULTS_FILE_BACKTRACK)
+    # report.print_walksat_results(RESULTS_FOLDER + "/" + RESULTS_FILE_WALKSAT)

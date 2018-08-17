@@ -38,6 +38,19 @@ variable_heuristic.add_argument('--deg',
                                 help="Use the Degree variable heuristic. only when using the Backtrack algoroithm",
                                 action='store_true')
 
+soft_heuristic = parser.add_mutually_exclusive_group()
+soft_heuristic.add_argument('--sma',
+                                help="Use the Soft Max Assignment heuristic for the soft constraint heuristic",
+                                action='store_true')
+soft_heuristic.add_argument('--sn',
+                            help="Use the Soft Name heuristic for the soft constraint heuristic",
+                            action='store_true')
+soft_heuristic.add_argument('--sd',
+                            help="Use the Soft Degree heuristic for the soft constraint heuristic",
+                            action='store_true')
+
+
+
 # TODO (For Jonathan) in the next line change the help message to a correct one. and change the default time to what
 # you see fit. this is the time constant you asked for the backtrack. also you can change the type to int
 # if it is more correct.
@@ -50,6 +63,8 @@ parser.add_argument('--walksat-alpha',
                     help="In the WalkSAT algorithm exploration with alpha, exploitation with 1-alpha", default=0.5,
                     nargs=1, type=float)
 
+parser.add_argument('--mws', help="Max amount of workers per shift", default=2, nargs=1,
+                    type=int)
 
 def welcome():
     print("Welcome to the CSP solver problem.")
@@ -57,8 +72,6 @@ def welcome():
 
 
 days_of_week = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-
-
 def seven_days_a_week(number):
     if 0 <= number <= 6:
         return days_of_week[number]
@@ -102,9 +115,10 @@ def print_by_days(assignment):
         print("-----------------")
 
 
+
 def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, backtrack_timeout, forward_check,
-                 max_flips, walksat_alpha):
-    csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic, forward_check)
+                 max_flips, walksat_alpha, soft_constraint_heuristic_type, num_of_max_workers_in_shifts):
+    csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic,soft_constraint_heuristic_type, forward_check, num_of_max_workers_in_shifts)
     if algo == WALKSAT:
         algorithm = algorithms[algo](csp, max_flips=max_flips, random_value=walksat_alpha)
     elif algo == BACKTRACK:
@@ -123,7 +137,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
 
-    if not (args.lc or args.mc or args.lws or args.mr or args.bt_t or args.bt_forward_check) and args.bt:
+    if not (args.lc or args.mc or args.lws or args.mr or args.bt_t or args.bt_forward_check or args.sma or args.sn or args.sd) and args.bt:
         parser.error('Heuristics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
 
     if not (args.max_flips or args.walksat_alpha) and args.ws:
@@ -140,8 +154,15 @@ if __name__ == "__main__":
                 variable_heuristic = MIN_REMAINING_VAL
             elif args.deg:
                 variable_heuristic = DEGREE
+            if args.sma:
+                soft_heuristic = MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC
+            elif args.sn:
+                soft_heuristic = NAME_SOFT_CONSTRAINT_HEURISTIC
+            elif args.sd:
+                soft_heuristic = DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE
             worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic, args.bt_t,
                          args.bt_forward_check, None, None)
         elif args.ws:
             worker_solve(args.filename, WALKSAT, args.no_soft, None, None, None, None, args.max_flips[0],
-                         args.walksat_alpha)
+                         args.walksat_alpha, soft_heuristic, args.mws[0])
+

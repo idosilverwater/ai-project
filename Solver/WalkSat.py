@@ -186,27 +186,7 @@ class WalkSat(Solver):
                 max_num = cur
                 max_var = variable_name
             elif cur == max_num:
-                # if len(max_vars) < 20:
                 max_var = variable_name
-            # else:
-            #     if len(max_vars) < 20:
-            #         max_vars.append(variable_name)
-            #     else:
-            #         if self.__flip_coin(0.5):
-            #             i = random.randint(0,len(max_vars) - 1)
-            #             max_vars[i] = variable_name
-
-
-
-
-
-        # shortest = max_vars[0]
-        # length = self.variable_length(shortest)
-        # for max_var in max_vars:
-        #     cur = self.variable_length(max_var)
-        #     if cur > length:
-        #         length = cur
-        #         shortest = max_var
 
         return max_var
 
@@ -275,13 +255,12 @@ class WalkSat(Solver):
             return True
         else:
             for i in range(self.__max_flips):
-                print(i, self.get_num_satisfied())
                 constraint = self.random_constraint()
                 if self.__flip_coin():
-                    print("random")
+                    # print("random")
                     self.__flip_random_variable(constraint)
                 else:
-                    print("most")
+                    # print("most")
                     self.__flip_most_satisfying()
 
         print("Total Amount of Constraints:", len(self.constraints))

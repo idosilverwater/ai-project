@@ -96,20 +96,20 @@ def make_csv(filename, assignment):
 
     f.close()
 
-
 def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, backtrack_timeout, forward_check,
-                 max_flips, walksat_alpha):
-    csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic, forward_check)
+                 max_flips, walksat_alpha, soft_constraints_heuristic_type, num_of_max_workers_in_shifts):
+    csp = create_workers_csp(filename, softs, variable_heuristic, domain_heuristic, soft_constraints_heuristic_type, forward_check, num_of_max_workers_in_shifts)
     if algo == WALKSAT:
         algorithm = algorithms[algo](csp, max_flips=max_flips, random_value=walksat_alpha)
     elif algo == BACKTRACK:
         algorithm = algorithms[algo](csp, timeout=backtrack_timeout)
     if algorithm.solve():
-        print("Satisfiable")
+        # print("Satisfiable")
         dic = algorithm.get_assignment()
         # for key in dic:
         #     print(key + " : " + dic[key])
-        make_csv(filename, dic)
+        # make_csv(filename, dic)
+        return algorithm.get_num_satisfied()
     else:
         print("Unsatisfiable")
     print("Done")
@@ -118,9 +118,10 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, ba
 if __name__ == "__main__":
     # worker_solve("ReportTests/test1", WALKSAT, False, None, None)
     # worker_solve("ReportTests/test1", BACKTRACK, False, MIN_REMAINING_VAL, LEAST_CONSTRAINING_VAL)
-    create_random_test_file(0, 10, 30, 30, 4)
-    t = time.time()
-    print(1)
-    # worker_solve("ReportTests/test1", WALKSAT, False, None, None, None, None, 50, 0.0)
-    print(2)
-    print(time.time() - t)
+    # for i in range(100):
+    #     create_random_test_file(i, 10, 30, 30, 4)
+    for i in range(100):
+        t = time.time()
+        print(i, worker_solve("ReportTests/random_test" + str(i), BACKTRACK, False, DEGREE, LEAST_CONSTRAINING_VAL, 1500, True, None, None, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC, 4))
+        # print(i, worker_solve("ReportTests/random_test" + str(i), WALKSAT, False, None, None, None, None, 50, 0.0))
+        print(time.time() - t)

@@ -1,4 +1,4 @@
-,0,1,2,3,4,5,6
-0,C,C & D,E & F,C,F
-1,F,C & D,B,A,A,B,F
-2,F,D & E,E & F,A & B,C,C,E
+,0,1,2,3,4
+0,A,A & C,E & F,E,D
+1,F,A & C,B & C,E,D
+2,E,A & B,B,F,D
