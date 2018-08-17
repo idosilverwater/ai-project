@@ -137,6 +137,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
 
+    if not (args.bt or args.ws or args.lws):
+        parser.error('Must input an algorithm')
+
     if not (args.lc or args.mc or args.lws or args.mr or args.bt_t or args.bt_forward_check or args.sma or args.sn or args.sd) and args.bt:
         parser.error('Heuristics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
 
