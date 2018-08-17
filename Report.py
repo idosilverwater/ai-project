@@ -39,29 +39,16 @@ class Printer:
     """
 
     def __init__(self, file_name=None):
+        self.days_of_the_week = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
         self.file_name = file_name
+
+    def seven_days_a_week(self, number):
+        if 0 <= number < len(self.days_of_the_week):
+            return self.days_of_the_week[number]
+        return "%s day" % str(number)
 
     def set_new_file(self, file_name):
         self.file_name = file_name
-
-    @staticmethod
-    def __seven_days_a_week(number):
-        if number == 0:
-            return "sunday"
-        elif number == 1:
-            return "monday"
-        elif number == 2:
-            return "tuesday"
-        elif number == 3:
-            return "wednesday"
-        elif number == 4:
-            return "thursday"
-        elif number == 5:
-            return "friday"
-        elif number == 6:
-            return "saturday"
-        else:
-            return "%s day" % str(number)
 
     def print(self, msg):
         print(msg, file=self.file_name)
@@ -91,7 +78,7 @@ class Printer:
         print("Printing shifts:", file=self.file_name)
         print("----------------", file=self.file_name)
         for i, day in enumerate(all_shifts):
-            print("%s workers are: " % Printer.__seven_days_a_week(i), file=self.file_name)
+            print("%s workers are: " % self.seven_days_a_week(i), file=self.file_name)
             print(day, file=self.file_name)
             print("-----------------", file=self.file_name)
 

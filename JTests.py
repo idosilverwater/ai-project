@@ -12,7 +12,7 @@ if __name__ == '__main__':
     print("Creating CSP")
     csp = create_workers_csp("ReportScriptFiles/TestFiles/Test1", False,
                              magicNums.DEGREE, magicNums.LEAST_CONSTRAINING_VAL,
-                             magicNums.DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, True, 2)
+                             magicNums.NAME_SOFT_CONSTRAINT_HEURISTIC, True, 2)
     csp.shuffle()
     pr = Printer()
     algorithm = Backtrack(csp, 30)
