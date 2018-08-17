@@ -50,10 +50,8 @@ soft_heuristic.add_argument('--sd',
                             help="Use the Soft Degree heuristic for the soft constraint heuristic",
                             action='store_true')
 
-# TODO (For Jonathan) in the next line change the help message to a correct one. and change the default time to what
-# you see fit. this is the time constant you asked for the backtrack. also you can change the type to int
-# if it is more correct.
-parser.add_argument('--bt-t', help="This is the max time for backtrack iteration (in secs)", default=5.0, nargs=1,
+parser.add_argument('--bt-t', help="The maximum amount a backtrack session is allowed to run. Default timeout is 30",
+                    default=30.0, nargs=1,
                     type=float)
 parser.add_argument('--bt-forward-check', help="Use forward checking in backtrack", action='store_true')
 
