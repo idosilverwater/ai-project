@@ -63,7 +63,6 @@ parser.add_argument('--walksat-alpha',
 parser.add_argument('--mws', help="Max amount of workers per shift", default=2, nargs=1,
                     type=int)
 
-
 def welcome():
     print("Welcome to the CSP solver problem.")
     print("Let's see if we can solve your problem")

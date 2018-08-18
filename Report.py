@@ -288,7 +288,7 @@ if __name__ == '__main__':
 
     # # TODO change None to actual file_names.
     # file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(1, 3)]
-    file_names = ["ReportTests" + "/" + "random_test" + str(i) for i in range(100)]
+    file_names = ["ReportTests" + "/" + "random_test" + str(i) for i in range(10)]
 
     report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
     report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)
