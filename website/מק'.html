@@ -28,13 +28,21 @@
 
     <div class="content">
     <h2>Introduction</h2>
-        In workplaces some people might want to work at certain times and not in
-                others, many times their wishes cannot be fullfilled but we are determined
-                to fullfill as many worker preferences as we can.
+        <p>
+            In a workplace, such as a bakery shifts need to be manned. preferably taking the workers wishes into account.
 
+            The workplace has a minimum and maximum amount of people needed in a shift, also the minimum amount of shifts
+            a person has to work at each week.
+
+            A worker has rest days (or sick days etc.) and preferred shifts during the week.
+            <br>
+            We can't always fill everyone's request, but we certainly determined to do our best.
+
+        </p>
+        <p>
             We are (naturally) going to solve this problem using CSP techniques we have
                 learned in class.
-    </p>
+        </p>
 
     <h2> Approach and Method </h2><p> First build a general case CSP solver, and then feed it with specific
                     problems (Specific problems would also entail implementing the supplied
@@ -56,20 +64,89 @@
                         add one by one the soft constraints, if they are satisfied then we keep them otherwise we
                         dispose of them. Although we do this greedily we do use a heuristic, that might try to add them
                         in an order that will insure maximum fullfillment.</p>
+                    <p>
+                        The heuristics used here, are the heuristics for choosing what variable to satisfy at each step,
+                        and domain heuristics two the best domain value to test.
+
+                        After the satisfaction of the hard constraints, we have a heuristic to determine the best order
+                        to try and satisfy the soft-constraint.
+                    </p>
                 <h4> WalkSAT </h4>
-                    <p> All constraints are present from the very begining (not adding one by one like the backtrack).
+                    <p> All constraints are present from the very beginning (not adding one by one like the backtrack).
                         The WalkSAT will attempt to satisfy as many worker preferences as it can.</p>
 
 	<h2> Results </h2>
+        <p>
 
-    <img src="" alt="funny chart" width="620" >
+        We have ran many examples in order to compare between the two methods and test each method sepratly.
+
+        Our main analysis was based on two randomly generated examples.
+        </p>
+
+        <h3> Backtrack results</h3>
+            <p>
+                In the backtrack results we analyze the running time of the algorithm using the different heuristics.
+                reason we don't check for amount satisfied, is because these heuristics are used in the satisfication
+                of the hard constraints which are always a 100% satisfied using the backtrack algorithm. otherwise the backtrack algorithm
+                returns an exception. therefore comparing the heuristics based on precent satisfied is meaningless.
+            </p>
+
+            <p>
+            First Domain heuristics. The following diagram descirbes the median running time of the algorithm
+        using the least constraining value vs. the minimum conflict heuristic.
+                (median running time over the runs on both tests, with different parameters, such as different variable heuristics etc.)
+            <img src="img/backtrack-domain-med.png" alt="funny chart" width="600" >
+                We can see that the minimum conflict has a lower running time. therefore better.
+            </p>
+            <p>
+                Also for the variable heuristics we have a diagram representing the running time between the
+                degree heuristic and the minimum remaining value heuristic.
+
+            <img src="img/backtrack-variable-med.png" alt="funny chart" width="600" >
+                The minimum remaining value does a better job.
+            </p>
+
+        <h3> WalkSAT results</h3>
+
+            WalkSAT doesn't pay attention to the importance of the constraint, both hard and soft constraints are equal.
+
+            Also in the walksat results we try to see the amount of flips (in the walksat algorithm) effect on the precent
+        of satisfied constraints.
+
+            <img src="img/walksat-flips.png" alt="funny chart" width="600" >
+
+            And the effect of the randomness of the walksat algorithm (explore-explot ratio)
+
+            <img src="img/walksat-random.png" alt="funny chart" width="600" >
+
+            We can see here that the amount of random prefered here is 0. meaning that the greedy result is better for
+        our specific problem and constraints (not many local minima, and even those who exist not that bad). but on other problems
+        where it is easy to go into local minima this will not be true.
+
+        <h3> Walksat vs. Backtrack</h3>
+        TODO
 
     <h2>Conclusions</h2>
-    <p>
-     Discuss the results vis-a-vis your goals and make conclusions.
-    </p>
 
-    <h2>Additional Information</h2>
+        <p>
+        Our goal was to create a constraint satisfaction solver, that will take workers preferences and the workplace needs.
+        We created two algorithms that try to solve the same problem in different ways, and saw that each has a certain advantage.
+        One guarntees the satisfaction of hard constraints, but satisfies less constraints overall. The other treats the
+        hard as the soft, but satisfies more constraints overall.
+
+            The algorithms had to be tweaked for our purposes so to actually work, as backtrack for example isn't built for
+            satisfaction maximization, but for 100% satisfaction, something that isn't always possible in our scenrio, due to
+            colliding intrests.
+        </p>
+
+        <p>
+
+            TODO
+
+
+        </p>
+
+        <h2>Additional Information</h2>
     <p>
         <ul>
             <li><a href="files/report.pdf"> Link to the report (English or Hebrew)</a> <b>make sure that you haven't written your i.d. number or any other information that you don't want to be published!</b> </li>
