@@ -152,7 +152,7 @@ class ReportGenerator:
         prev_best_assignment = None
         prev_running_time = 0
         best_num_constraint = 0
-        for timeout in [350, 350, 350]:  # gives at most 30 seconds for an added constraint.
+        for timeout in [1, 1, 1]:  # gives at most 30 seconds for an added constraint.
             algorithm = Backtrack(csp_handler, timeout)
             running_time = time.time()
             res = algorithm.solve()
@@ -228,8 +228,8 @@ class ReportGenerator:
         # walkSat does not need heuristics, and does not need forward checking at all.
         csp_handler = WorkerCSP.WorkersCSP.create_workers_csp(file_name, False, None, None, None, False,
                                                               self.max_amount_of_workers_in_shift)
-        for probability in [0, 0.5, 0.7, 0.9]:
-            for max_flips in [100, 500, 1000]:
+        for probability in [0]:
+            for max_flips in [50]:
                 algorithm = WalkSat(csp_handler, probability, max_flips)
                 runtime = time.time()
                 algorithm.solve()
@@ -276,16 +276,16 @@ if __name__ == '__main__':
     # soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC,
     #                    NAME_SOFT_CONSTRAINT_HE'URISTIC]
 
-    create_random_test_file(0, 5, 10, 7, 2)
-    create_random_test_file(1, 5, 15, 10, 3)
-    create_random_test_file(2, 5, 20, 13, 4)
-    create_random_test_file(3, 10, 10, 7, 2)
-    create_random_test_file(4, 10, 15, 10, 3)
-    create_random_test_file(5, 10, 20, 13, 4)
-    create_random_test_file(6, 15, 15, 7, 2)
-    create_random_test_file(7, 15, 20, 13, 3)
-    create_random_test_file(8, 4, 5, 3, 2)
-    create_random_test_file(9, 6, 5, 3, 2)
+    # create_random_test_file(0, 5, 10, 7, 2)
+    # create_random_test_file(1, 5, 15, 10, 3)
+    # create_random_test_file(2, 5, 20, 13, 4)
+    # create_random_test_file(3, 10, 10, 7, 2)
+    # create_random_test_file(4, 10, 15, 10, 3)
+    # create_random_test_file(5, 10, 20, 13, 4)
+    # create_random_test_file(6, 15, 15, 7, 2)
+    # create_random_test_file(7, 15, 20, 13, 3)
+    # create_random_test_file(8, 4, 5, 3, 2)
+    # create_random_test_file(9, 6, 5, 3, 2)
 
     variable_heuristics = [MIN_REMAINING_VAL]
     domain_heuristics = [MIN_CONFLICT]
@@ -304,4 +304,10 @@ if __name__ == '__main__':
     report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
     # report.print_backtrack_results("zing")
     # report.print_backtrack_results("ReportTests" + "/" + RESULTS_FILE_BACKTRACK)
-    # report.print_walksat_results(RESULTS_FOLDER + "/" + RESULTS_FILE_WALKSAT)
+
+    report.print_walksat_results(RESULTS_FOLDER + "/" + RESULTS_FILE_WALKSAT)
+
+    # # Back track 6-9 tests:
+    # file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(6, 10)]
+    # report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
+    # report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)
