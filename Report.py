@@ -243,8 +243,6 @@ class ReportGenerator:
         self.__print_results(result_file_path, results)
 
     def __print_results(self, result_file_path, results):
-        print('8888888888888888888888888888888')
-        print(results)
         with open(result_file_path, 'w') as file:
             self.printer.set_new_file(file)
             for results_name in results:
@@ -289,10 +287,10 @@ if __name__ == '__main__':
     #    -------------------------------------
 
     # # TODO change None to actual file_names.
-    # file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(1, 3)]
-    file_names = ["ReportTests" + "/" + "random_test" + str(i) for i in range(10)]
+    file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(10)]
+    # file_names = ["ReportTests" + "/" + "random_test" + str(i) for i in range(1)]
 
     report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
-    report.print_backtrack_results("zing")
+    # report.print_backtrack_results("zing")
     # report.print_backtrack_results("ReportTests" + "/" + RESULTS_FILE_BACKTRACK)
     # report.print_walksat_results(RESULTS_FOLDER + "/" + RESULTS_FILE_WALKSAT)
