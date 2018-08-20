@@ -1,0 +1,46 @@
+Domain:
+True
+False
+Names:
+A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+Preferences:
+B 1 1
+D 3 1
+C 0 2
+H 4 2
+J 0 2
+C 3 0
+F 1 2
+G 1 2
+C 0 0
+F 3 1
+A 3 2
+C 0 1
+A 0 2
+E 2 1
+E 1 0
+NonWorkShift:
+H 0 2
+B 1 2
+F 3 2
+B 3 1
+J 3 1
+J 3 2
+F 1 1
+E 0 2
+B 4 0
+D 4 2
+A 1 0
+MinimumWantedShifts:
+A 3
+B 6
+C 7
