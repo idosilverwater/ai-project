@@ -63,7 +63,7 @@ def create_random_test(people_amount, preference_amount, no_work_shift_amount, n
 
 def create_random_test_file(test_num, people_amount, preference_amount, no_work_shift_amount,
                             num_people_with_amnt_shifts):
-    with open('ReportTests/random_test' + str(test_num), 'w') as random_example:
+    with open( + str(test_num), 'w') as random_example:
         random_example.writelines(
             create_random_test(people_amount, preference_amount, no_work_shift_amount, num_people_with_amnt_shifts))
 
@@ -118,10 +118,8 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, ba
 if __name__ == "__main__":
     # worker_solve("ReportTests/test1", WALKSAT, False, None, None)
     # worker_solve("ReportTests/test1", BACKTRACK, False, MIN_REMAINING_VAL, LEAST_CONSTRAINING_VAL)
-    # for i in range(100):
-    #     create_random_test_file(i, 10, 30, 30, 4)
-    for i in range(100):
+    for i in range(10):
         t = time.time()
-        print(i, worker_solve("ReportTests/random_test" + str(i), BACKTRACK, False, DEGREE, LEAST_CONSTRAINING_VAL, 1500, True, None, None, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC, 4))
+        # print(i, worker_solve("ReportTests/random_test" + str(i), BACKTRACK, False, DEGREE, LEAST_CONSTRAINING_VAL, 1500, True, None, None, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC, 4))
         # print(i, worker_solve("ReportTests/random_test" + str(i), WALKSAT, False, None, None, None, None, 50, 0.0))
         print(time.time() - t)
