@@ -274,7 +274,18 @@ if __name__ == '__main__':
     # variable_heuristics = [DEGREE, MIN_REMAINING_VAL]
     # domain_heuristics = [LEAST_CONSTRAINING_VAL, MIN_CONFLICT]
     # soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC,
-    #                    NAME_SOFT_CONSTRAINT_HEURISTIC]
+    #                    NAME_SOFT_CONSTRAINT_HE'URISTIC]
+
+    create_random_test_file(0, 5, 10, 7, 2)
+    create_random_test_file(1, 5, 15, 10, 3)
+    create_random_test_file(2, 5, 20, 13, 4)
+    create_random_test_file(3, 10, 10, 7, 2)
+    create_random_test_file(4, 10, 15, 10, 3)
+    create_random_test_file(5, 10, 20, 13, 4)
+    create_random_test_file(6, 15, 15, 7, 2)
+    create_random_test_file(7, 15, 20, 13, 3)
+    create_random_test_file(8, 4, 5, 3, 2)
+    create_random_test_file(9, 6, 5, 3, 2)
 
     variable_heuristics = [MIN_REMAINING_VAL]
     domain_heuristics = [MIN_CONFLICT]
