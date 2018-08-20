@@ -152,7 +152,7 @@ class ReportGenerator:
         prev_best_assignment = None
         prev_running_time = 0
         best_num_constraint = 0
-        for timeout in [1, 1, 1]:  # gives at most 30 seconds for an added constraint.
+        for timeout in [300, 300, 300]:  # gives at most 30 seconds for an added constraint.
             algorithm = Backtrack(csp_handler, timeout)
             running_time = time.time()
             res = algorithm.solve()
@@ -243,6 +243,8 @@ class ReportGenerator:
         self.__print_results(result_file_path, results)
 
     def __print_results(self, result_file_path, results):
+        print('8888888888888888888888888888888')
+        print(results)
         with open(result_file_path, 'w') as file:
             self.printer.set_new_file(file)
             for results_name in results:
@@ -298,14 +300,16 @@ if __name__ == '__main__':
     #    -------------------------------------
 
     # # TODO change None to actual file_names.
-    file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(10)]
+    file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(6,7)]
     # file_names = ["ReportTests" + "/" + "random_test" + str(i) for i in range(1)]
 
     report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
     # report.print_backtrack_results("zing")
-    # report.print_backtrack_results("ReportTests" + "/" + RESULTS_FILE_BACKTRACK)
+    # report.print_bac_ktrack_results("ReportTests" + "/" + RESULTS_FILE_BACKTRACK)
 
-    report.print_walksat_results(RESULTS_FOLDER + "/" + RESULTS_FILE_WALKSAT)
+
+    report.print_walksat_results("ReportTests" + "/" + RESULTS_FILE_WALKSAT + "1")
+
 
     # # Back track 6-9 tests:
     # file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(6, 10)]

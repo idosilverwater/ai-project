@@ -60,7 +60,7 @@
                     <li> WalkSAT (adjusted to our problem) </li>
                 </ul>
                 <h4> Backtracking </h4>
-                    <p> The algorithm is greedy, in the sense that after it satisfies the hard constraints, it will
+                    <p> Our modified backtrack uses a greedy approach, in the sense that after it satisfies the hard constraints, it will
                         add the soft constraints one by one, if they are satisfied then we keep them otherwise we
                         dispose of them. Although we do this greedily we do use a heuristic, that might try to add them
                         in an order that will insure maximum fullfillment.</p>
@@ -84,29 +84,32 @@
         </p>
 
         <h4> Backtrack results</h4>
-            <p>
-                We analyze the running time of the algorithm using the different heuristics.
-                We don't mesure the amount of satisfied constraints as the function of the heurisitics used
-                because one of the things our backtrack varient promises is that the hard constraints are all guarnteed
-                to be satisfied. Therefore these results are not interesting.
-            </p>
 
+            <p>
+                We measured the running time of the heuristics of the backtrack algorithm.
+                Finding the faster heuristic for our problem can help us measure many test between
+                the backtrack and the walkSat.
+            </p>
             <h5> Domain heuristics </h5>
             <p>
                 The following diagram descirbes the median running time of the algorithm
                 using the least constraining value vs. the minimum conflict heuristic.
-               (median running time over the runs on both tests, with different parameters, such as different variable heuristics etc.)
-            <img src="img/backtrack-domain-med.png" alt="funny chart" width="600" >
-                We can see that the minimum conflict has a lower running time. therefore better.
+               (median running time over the runs on several tests, with different parameters, such as different variable heuristics etc.)
+                <center>
+            <img src="img/backtrack-domain-med.png" alt="funny chart" width="500" >
+        </center>
+                We can see that the minimum conflict has a lower running time. therefore better for our problem.
             </p>
             <h5> Variable heuristics </h5>
             <p>
                 Also for the variable heuristics we have presented a diagram of the running time as a function of the
                 heuristic used. (degree heuristic and the minimum remaining value heuristic)
 
-            <img src="img/backtrack-variable-med.png" alt="funny chart" width="600" >
+                <center>
+            <img src="img/backtrack-variable-med.png" alt="funny chart" width="500" >
+        </center>
                 The minimum remaining value does a better job.
-            </p>
+            </p>website/index.html:102
 
             More comprehensive results are presented in the report. (More diagram. More explaining. More everything)
 
@@ -114,36 +117,40 @@
 
             WalkSAT doesn't respect the difference between hard and soft constraints, both get the same treatment.
 
-            In the WalkSAT results we try to find the effect of the different parameters on the run and the preformance of the algorithm.
+            In the WalkSAT results we try to find the effect of the different parameters on the run and the performance of the algorithm.
             Performance here is the amount of satisfied constraints.
             WalkSAT's parameters are the amount of flips and the randomness variable (explore/exploit ratio).
 
             <h5>Flips</h5>
-                TODO GIVE AN EXPLAINATION EXPLAINING THOSE MOST PECULIAR RESULTS
-                <img src="img/walksat-flips.png" alt="funny chart" width="600" >
+                For too little flips the results aren't good at all,
+                since the WalkSat starts with a random assignment and tries to get better from there, and it needs a certain amount of flips in order to do it.
+        <br>
+
+                Furthermore too many isn't to good as can be seen in the following graph.
+        <center>
+
+                <img src="img/walksat-flips.png" alt="funny chart" width="500" ></center>
 
             <h5>Randomness</h5>
-                And the effect of the randomness of the walksat algorithm (explore-explot ratio)
-                <img src="img/walksat-random.png" alt="funny chart" width="600" >
+                The effect of the randomness of the walksat algorithm (explore-explot ratio)
+                <center><img src="img/walksat-random.png" alt="funny chart" width="500" ></center>
 
-            We can see here that the amount of random prefered here is 0. meaning that the greedy result is better for
-        our specific problem and constraints (not many local minima, and even those who exist not that bad). but on other problems
-        where it is easy to go into local minima this will not be true.
+            We can see here that the amount of random prefered here is 0. Meaning that the greedy result is better for
+        our specific problem and constraints. But on other problems this may not be true.
 
         <h4> Walksat vs. Backtrack</h4>
-            Here we show the run of WalkSAT run compared to the run of Backtrack on 10 randomly generated
+            Here we show the run of WalkSAT compared to the run of Backtrack on 8 generated
             tests.
 
-            (WalkSAT - red
-            Backtrack - blue)
-            <img src="img/walksat-vs-backtrack.png" alt="funny chart" width="600" >
+            (WalkSAT - blue
+            Backtrack - red)
 
-            Also the median of the percent satisfiefd for each of the tests.
-            <img src="img/walksat-vs-backtrack-med.png" alt="funny chart" width="600" >
+            <center><img src="img/walksat-vs-backtrack.png" alt="funny chart" width="500" ></center>
 
             We can clearly see that WalkSAT satisfies more constraints.
+        <br>
 
-            But it's important to note that in contrast to Backtrack WalkSAT doesn't guarantee the satisfication
+            It's important to note that in contrast to Backtrack WalkSAT doesn't guarantee the satisfication
             of the hard constraints.
 
     <h2>Conclusions</h2>
@@ -151,37 +158,36 @@
         <p>
         Our goal was to create a constraint satisfaction solver, that will take workers preferences and the workplace needs.
         We created two algorithms that try to solve the same problem in different ways, and saw that each has a certain advantage.
-        One guarntees the satisfaction of hard constraints, but satisfies less constraints overall. The other treats the
+        One guarantees the satisfaction of hard constraints, but satisfies less constraints overall. The other treats the
         hard as the soft, but satisfies more constraints overall.
 
+            <br>
             The algorithms had to be tweaked for our purposes so to actually work, as backtrack for example isn't built for
             satisfaction maximization, but for 100% satisfaction, something that isn't always possible in our scenrio, due to
-            colliding intrests.
+            colliding interests.
         </p>
 
         <p>
 
-            TODO
-
+            Since each has it's advantages, as future work we would suggest to try and build a hybrid of the two.
 
         </p>
 
         <h2>Additional Information</h2>
     <p>
         <ul>
-            <li><a href="files/report.pdf"> Link to the report (English or Hebrew)</a> <b>make sure that you haven't written your i.d. number or any other information that you don't want to be published!</b> </li>
+            <li><a href="files/report.pdf"> Link to the report (English)</a></li>
             <!--
             If you wrote your report in English, change English or Hebrew to English. i.e, you should have the following line
             <li><a href="files/report.pdf"> Link to the report (English)</a>
             -->
-             <li>  Any other link </li>
         </ul>
    </p>
 
    <h2>References</h2>
    <p>
-   List any references from the literature you have consulted or used.
    </p>
+        <ul><li> Lecture Notes </li></ul>
    </div>
 
     <!-- *Don't* delete the below code, copyright issues...  -->

@@ -121,5 +121,5 @@ if __name__ == "__main__":
     for i in range(10):
         t = time.time()
         # print(i, worker_solve("ReportTests/random_test" + str(i), BACKTRACK, False, DEGREE, LEAST_CONSTRAINING_VAL, 1500, True, None, None, MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC, 4))
-        # print(i, worker_solve("ReportTests/random_test" + str(i), WALKSAT, False, None, None, None, None, 50, 0.0))
+        print(i, worker_solve("ReportTests/random_test" + str(i), WALKSAT, False, None, None, None, None, 50, 0.0))
         print(time.time() - t)
