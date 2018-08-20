@@ -51,18 +51,17 @@ soft_heuristic.add_argument('--sd',
                             action='store_true')
 
 parser.add_argument('--bt-t', help="The maximum amount a backtrack session is allowed to run. Default timeout is 30",
-                    default=30.0, nargs=1,
+                    default=500, nargs=1,
                     type=float)
 parser.add_argument('--bt-forward-check', help="Use forward checking in backtrack", action='store_true')
 
-parser.add_argument('--max-flips', help="Max flips in the WalkSAT algorithm", default=50, nargs=1, type=int)
+parser.add_argument('--max-flips', help="Max flips in the WalkSAT algorithm", default=[40], nargs=1, type=int)
 parser.add_argument('--walksat-alpha',
-                    help="In the WalkSAT algorithm exploration with alpha, exploitation with 1-alpha", default=0.5,
+                    help="In the WalkSAT algorithm exploration with alpha, exploitation with 1-alpha", default=[0],
                     nargs=1, type=float)
 
 parser.add_argument('--mws', help="Max amount of workers per shift", default=2, nargs=1,
                     type=int)
-
 
 def welcome():
     print("Welcome to the CSP solver problem.")
@@ -101,13 +100,13 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, ba
 if __name__ == "__main__":
     welcome()
     args = parser.parse_args()
-    print(args)
+    print(args) ## TODO Delete
 
     if not (args.bt or args.ws or args.lws):
         parser.error('Must input an algorithm')
 
-    if not (
-            args.lc or args.mc or args.lws or args.mr or args.bt_t or args.bt_forward_check or args.sma or args.sn or args.sd) and args.bt:
+    if (
+            args.lc or args.mc or args.lws or args.mr or args.bt_t or args.bt_forward_check or args.sma or args.sn or args.sd) and not args.bt:
         parser.error('Heuristics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
 
     if not (args.max_flips or args.walksat_alpha) and args.ws:
@@ -131,7 +130,8 @@ if __name__ == "__main__":
             elif args.sd:
                 soft_heuristic = DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE
             worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic, args.bt_t,
-                         args.bt_forward_check, None, None)
+                         args.bt_forward_check, None, None, soft_heuristic, args.mws[0])
+
         elif args.ws:
             worker_solve(args.filename, WALKSAT, args.no_soft, None, None, None, None, args.max_flips[0],
-                         args.walksat_alpha, soft_heuristic, args.mws[0])
+                         args.walksat_alpha[0], soft_heuristic, args.mws[0])
