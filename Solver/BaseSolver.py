@@ -65,3 +65,10 @@ class Solver:
         self.assignment[var] = value
         self.csp.assign_variable(var, value)
         self.num_of_assigned += 1
+
+    def print_report(self):
+        report = self.csp.get_report(self.assignment)
+        lst = ["Hard", "Soft1", "Soft2"]
+        for sat_level in report:
+            print("%s constraint satisfied %s from overall %s constraints" % (
+                lst[sat_level], report[sat_level][0], report[sat_level][1]))

@@ -56,7 +56,7 @@ def create_random_test(people_amount, preference_amount, no_work_shift_amount, n
 
     for i in range(num_people_with_amnt_shifts):
         name = names[i]
-        shifts = random.randint(3, 8)  # TODO smokingkills You can edit the possible wanted amount of hours
+        shifts = random.randint(3, 8)
         lines.append(name + " " + str(shifts) + "\n")
     return lines
 

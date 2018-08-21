@@ -2,6 +2,8 @@ from Solver import BaseSolver
 import random
 from magicNums import *
 import magicNums
+from Solver.FormulaTree import *
+
 """
 Literal inner class. // contains: assignment_value, var_name that it is tied too, isNot - is this literal has a
                 not over it, formula_val - determined by assignment with isNot.
@@ -44,20 +46,9 @@ class LogicalWalkSat(BaseSolver):
         self.__p = random_value
         self.__variable_names = list(self.csp.variables)  # a list of all names.
         self.__max_flips = max_flips
-        # self.__formula_tree = FormulaTree(csp.constraints.get_all_constraints())
-
-        # self.constraints = list()
-        # self.list_of_constraints() # TODO DELETE
+        self.__formula_tree = FormulaTree(csp.constraints.get_all_constraints())
 
         self.clauses = self.cnfConverter()
-
-    # def list_of_constraints(self):  # TODO check this?
-    #     constraints = set()
-    #
-    #     for vars in self.csp.constraints.get_all_constraints():
-    #         constraints = constraints.union(self.csp.constraints.get_all_constraints()[vars])
-    #
-    #     self.constraints = list(constraints) # TODO DELETE
 
     def __flip_coin(self):
         """

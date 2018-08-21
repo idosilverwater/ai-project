@@ -13,15 +13,16 @@ parser = argparse.ArgumentParser(description="CSP solver.")
 
 parser.add_argument('filename', type=str, help='Problem filename')
 
-problem_type = parser.add_mutually_exclusive_group()
-problem_type.add_argument('-w', help="Worker Satisfication Problem", action='store_true')
+# problem_type = parser.add_mutually_exclusive_group()
+# problem_type.add_argument('-w', help="Worker Satisfication Problem", action='store_true')
 
 parser.add_argument('--no-soft', help='With/out soft constraints', action='store_true')
 
 algorithm = parser.add_mutually_exclusive_group()
 algorithm.add_argument('--bt', help='Solve using BackTrack algorithm', action='store_true')
-algorithm.add_argument('--ws', help='Solve using WalkSAT algorithm', action='store_true')
-algorithm.add_argument('--lws', help='Solve using LogicalWalkSAT WalkSAT varient algorithm', action='store_true')
+algorithm.add_argument('--ws', help='Solve using a WalkSAT algorithm modified for binary domain CSP.',
+                       action='store_true')
+# algorithm.add_argument('--lws', help='Solve using LogicalWalkSAT WalkSAT algorithm', action='store_true')
 
 domain_heuristic = parser.add_mutually_exclusive_group()
 domain_heuristic.add_argument('--mc',
@@ -51,21 +52,21 @@ soft_heuristic.add_argument('--sd',
                             action='store_true')
 
 parser.add_argument('--bt-t', help="The maximum amount a backtrack session is allowed to run. Default timeout is 30",
-                    default=500, nargs=1,
+                    default=[30], nargs=1,
                     type=float)
-parser.add_argument('--bt-forward-check', help="Use forward checking in backtrack", action='store_true')
+parser.add_argument('--bt-no-forward-check', help="Use forward checking in backtrack", action='store_false')
 
-parser.add_argument('--max-flips', help="Max flips in the WalkSAT algorithm", default=[40], nargs=1, type=int)
+parser.add_argument('--max-flips', help="Max flips to be used in the WalkSAT algorithm", default=[40], nargs=1,
+                    type=int)
 parser.add_argument('--walksat-alpha',
-                    help="In the WalkSAT algorithm exploration with alpha, exploitation with 1-alpha", default=[0],
+                    help="In the WalkSAT algorithm exploration is determined by the alpha value, alpha= 0 full "
+                         "exploitation, alpha=1 full exploration.",
+                    default=[0],
                     nargs=1, type=float)
 
-parser.add_argument('--mws', help="Max amount of workers per shift", default=2, nargs=1,
+parser.add_argument('--mws', help="Max amount of workers per shift", default=[2], nargs=1,
                     type=int)
 
-def welcome():
-    print("Welcome to the CSP solver problem.")
-    print("Let's see if we can solve your problem")
 
 
 def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, backtrack_timeout, forward_check,
@@ -80,14 +81,12 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, ba
     else:
         print("ERROR.")
         exit(-1)
-    print(type(algorithm))
     res = algorithm.solve()
     printer = Printer()
     if res == magicNums.SUCCESS:
-        print("Satisfiable")
         printer.print_by_days(algorithm.get_assignment())
     elif res == magicNums.TIMEOUT:
-        print("Timeout on the last constraint. Printing ")
+        print("Timeout on the last constraint that was tried to be added.")
         printer.print_by_days(algorithm.get_assignment())
     elif res == magicNums.TIMEOUT_HARD_CONSTRAINT:
         print("Timeout one Hard constraints, did not achieve any assignment. "
@@ -98,40 +97,41 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, ba
 
 
 if __name__ == "__main__":
-    welcome()
+    print()
+    print()
     args = parser.parse_args()
-    print(args) ## TODO Delete
-
     if not (args.bt or args.ws or args.lws):
         parser.error('Must input an algorithm')
 
-    if (
-            args.lc or args.mc or args.lws or args.mr or args.bt_t or args.bt_forward_check or args.sma or args.sn or args.sd) and not args.bt:
-        parser.error('Heuristics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
+    # if (args.lc or args.mc or args.lws or args.mr or args.bt_t[0] or args.bt_forward_check or args.sma or args.sn or args.sd) and not args.bt:
+    #     parser.error('Heuristics are only to be used with the Backtrack algorithm.\nJust play by the rules! punk.')
 
     if not (args.max_flips or args.walksat_alpha) and args.ws:
         parser.error("max_flip and walksat_alpha are to be used only in conjunction with WalkSAT! \n Come on... you "
                      "don't need a babysitter.")
+    variable_heuristic = None
+    domain_heuristic = None
+    soft_heuristic = None
+    if args.bt:
+        if args.mc:
+            domain_heuristic = MIN_CONFLICT
+        elif args.lc:
+            domain_heuristic = LEAST_CONSTRAINING_VAL
+        if args.mr:
+            variable_heuristic = MIN_REMAINING_VAL
+        elif args.deg:
+            variable_heuristic = DEGREE
+        if args.sma:
+            soft_heuristic = MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC
+        elif args.sn:
+            soft_heuristic = NAME_SOFT_CONSTRAINT_HEURISTIC
+        elif args.sd:
+            soft_heuristic = DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE
+        else:
+            soft_heuristic = RANDOM_SOFT_CONSTRAINT_HEURISTIC
+        worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic, args.bt_t[0],
+                     args.bt_no_forward_check, None, None, soft_heuristic, args.mws[0])
 
-    if args.w:
-        if args.bt:
-            if args.mc:
-                domain_heuristic = MIN_CONFLICT
-            elif args.lc:
-                domain_heuristic = LEAST_CONSTRAINING_VAL
-            if args.mr:
-                variable_heuristic = MIN_REMAINING_VAL
-            elif args.deg:
-                variable_heuristic = DEGREE
-            if args.sma:
-                soft_heuristic = MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC
-            elif args.sn:
-                soft_heuristic = NAME_SOFT_CONSTRAINT_HEURISTIC
-            elif args.sd:
-                soft_heuristic = DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE
-            worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic, args.bt_t,
-                         args.bt_forward_check, None, None, soft_heuristic, args.mws[0])
-
-        elif args.ws:
-            worker_solve(args.filename, WALKSAT, args.no_soft, None, None, None, None, args.max_flips[0],
-                         args.walksat_alpha[0], soft_heuristic, args.mws[0])
+    elif args.ws:
+        worker_solve(args.filename, WALKSAT, args.no_soft, None, None, None, None, args.max_flips[0],
+                     args.walksat_alpha[0], soft_heuristic, args.mws[0])

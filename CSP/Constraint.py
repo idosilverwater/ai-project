@@ -1,4 +1,3 @@
-import magicNums  # TODO REMOVE?
 
 
 class Constraint:

@@ -287,7 +287,6 @@ class CspHandler:
         """
         variables_copy = {}
         for var_name in self.variables:
-            # TODO softer clone - does not copy the constraints.
             # variables_copy[var_name] = deepcopy(self.variables[var_name])
             variables_copy[var_name] = copy(self.variables[var_name])
         return variables_copy
@@ -306,7 +305,6 @@ class CspHandler:
         :param visited: A list of visited variable objects.
         :return: True if relevant, otherwise False.
         """
-        # TODO BUG.
         var_obj = variables_copy[variable]
         if variable not in visited:
             return True
@@ -314,9 +312,6 @@ class CspHandler:
 
             # meaning we checked the neighbour and don't need to do it again for same reason.
             visited[variable][0] = False
-            # TODO is this down here needed?
-            # if len(var_obj.get_possible_domain()) < len(visited[var_obj.name][1]):
-            #     self.__update_neighbours_as_wanting_a_visit(var_obj, visited)
             return True
         else:
             if len(var_obj.get_possible_domain()) < len(visited[variable][1]):

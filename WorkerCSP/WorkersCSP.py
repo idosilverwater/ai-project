@@ -7,6 +7,7 @@ from BackTrackHeuristics.MinimumConflict import *
 from magicNums import *
 from SoftConstraintHeuristics.MaxAssignmentSoftConstraintHeuristic import *
 from SoftConstraintHeuristics.NameSoftConstraintHeuristic import *
+from SoftConstraintHeuristics.RandomSoftHeuristic import *
 
 
 # from MinimumConflict import *
@@ -89,7 +90,9 @@ def __heuristic_chooser(variable_heuristic_type, domain_heuristic_type, soft_con
         soft_constraint_heuristic_factory = MaxAssignmentSoftConstraintHeuristic
     elif soft_constraint_heuristic_type == magicNums.NAME_SOFT_CONSTRAINT_HEURISTIC:
         soft_constraint_heuristic_factory = NameSoftConstraintHeuristic
-    #
+    elif soft_constraint_heuristic_type == magicNums.RANDOM_SOFT_CONSTRAINT_HEURISTIC:
+        soft_constraint_heuristic_factory = RandomSoftHeuristic
+
     return variable_factory, domain_factory, soft_constraint_heuristic_factory
 
 

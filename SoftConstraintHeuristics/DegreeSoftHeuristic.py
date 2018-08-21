@@ -27,4 +27,4 @@ class DegreeSoftConstraintsHeuristic(BaseSoftConstraintsHeuristic):
                 if variable in hard.get_variables():
                     count += 1
 
-        return soft_constraint.is_soft, count  # TODO discuss with Ido.
+        return soft_constraint.is_soft, count

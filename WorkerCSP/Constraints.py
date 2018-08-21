@@ -47,7 +47,7 @@ class Constraints:
 
         # perpetration for add constraints:
         self.__ordered_soft_constraints = self.__generate_add_constraints_list(constraint_heuristic_factory)
-        if constraint_heuristic_factory != None: # For the case in which WalkSAT is used and constraint_heuristic_facotry == None
+        if constraint_heuristic_factory != None:  # For the case in which WalkSAT is used and constraint_heuristic_facotry == None
             self.__ordered_soft_constraints.reverse()
 
     #####################
@@ -193,7 +193,7 @@ class Constraints:
         Helper function for the hard constraints adding items.
         """
         if key in dictionary:
-            if value not in dictionary[key]:  # TODO maybe make into set for faster check.
+            if value not in dictionary[key]:
                 dictionary[key].append(value)
         else:
             dictionary[key] = [value]

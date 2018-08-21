@@ -3,6 +3,7 @@
 ###########
 from magicNums import *
 
+
 #############
 # Constants #
 #############
@@ -76,7 +77,7 @@ class FormulaTree:
         is_negated = False
 
         for i, variable in enumerate(variable_names):
-            if assignment[i] == magicNums.DOMAIN_FALSE_VAL:
+            if assignment[i] == DOMAIN_FALSE_VAL:
                 is_negated = True
             literal = self.Literal(variable, is_negated)
             literals.append(literal)
@@ -186,14 +187,14 @@ class FormulaTree:
             assigns a value, should be used only when we wish to start using the literal.
             :param assignment_value: one of the domain False or domain true values.
             """
-            # TODO delete assertion when we are done testing.
-            assert (assignment_value == magicNums.DOMAIN_TRUE_VAL or assignment_value == magicNums.DOMAIN_FALSE_VAL)
+
+            assert (assignment_value == DOMAIN_TRUE_VAL or assignment_value == DOMAIN_FALSE_VAL)
             self.assignment_value = assignment_value
             if self.is_negated:
-                if self.assignment_value == magicNums.DOMAIN_TRUE_VAL:
-                    self.literal_value = magicNums.DOMAIN_FALSE_VAL
+                if self.assignment_value == DOMAIN_TRUE_VAL:
+                    self.literal_value = DOMAIN_FALSE_VAL
                 else:
-                    self.literal_value = magicNums.DOMAIN_TRUE_VAL
+                    self.literal_value = DOMAIN_TRUE_VAL
             else:
                 self.literal_value = assignment_value
 
@@ -201,31 +202,19 @@ class FormulaTree:
             """
             checks whether this literal is True or False after negation too.
             """
-            return self.literal_value == magicNums.DOMAIN_TRUE_VAL
+            return self.literal_value == DOMAIN_TRUE_VAL
 
         def flip_self(self):
             """
             Flips the value of this literal.
             :return:
             """
-            if self.assignment_value == magicNums.DOMAIN_TRUE_VAL:
-                self.assignment_value(magicNums.DOMAIN_FALSE_VAL)
+            if self.assignment_value == DOMAIN_TRUE_VAL:
+                self.assignment_value(DOMAIN_FALSE_VAL)
             else:
-                self.assignment_value(magicNums.DOMAIN_FALSE_VAL)
+                self.assignment_value(DOMAIN_FALSE_VAL)
 
         def __repr__(self):
             if self.is_negated:
                 return "not(" + str(self.var_name) + ")"
             return self.var_name
-#########
-# Tests #
-#########
-# from Constraint import *
-#
-# constraints = {}
-# c2 = Constraint(["(vividish 1 0)", "(vividisha 0, 0)"], [(magicNums.DOMAIN_FALSE_VAL, magicNums.DOMAIN_TRUE_VAL), (magicNums.DOMAIN_FALSE_VAL, magicNums.DOMAIN_FALSE_VAL)], 1)
-# c1 = Constraint(["(vividish 1 1)"], [(magicNums.DOMAIN_FALSE_VAL,), (magicNums.DOMAIN_TRUE_VAL,)], 1)
-# constraints[("(vividish 1 0)", "(vividisha 0, 0)")] = [c2]
-# constraints[("(vividish 1 1)")] = [c1]
-# tree = FormulaTree(constraints)
-# tree.print_self()

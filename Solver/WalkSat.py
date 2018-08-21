@@ -31,7 +31,6 @@ WalkSat:
 """
 
 
-# TODO work with self assignment and not csp. assignment.
 class WalkSat(Solver):
     """
     a Walksat based solver for csp problems.
@@ -51,10 +50,8 @@ class WalkSat(Solver):
         self.list_of_constraints()
         self.satisfied = {}
 
-
-    def list_of_constraints(self):  # TODO check this?
+    def list_of_constraints(self):
         constraints = set()
-
         for vars in self.csp.constraints.get_all_constraints():
             constraints = constraints.union(self.csp.constraints.get_all_constraints()[vars])
 
@@ -63,7 +60,7 @@ class WalkSat(Solver):
     def get_assignment(self):
         return self.assignment
 
-    def __flip_coin(self, prob = None):
+    def __flip_coin(self, prob=None):
         """
         Return True with probability __p otherwise False.
         :return:
@@ -147,7 +144,7 @@ class WalkSat(Solver):
             return magicNums.DOMAIN_FALSE_VAL
 
         for name in self.__variable_names:
-            self.assign_value(name, put_flip_coin_val())  # TODO Notice i changed it to work with actual domain values.
+            self.assign_value(name, put_flip_coin_val())
 
     def random_constraint(self):
         """
@@ -170,12 +167,10 @@ class WalkSat(Solver):
             else:
                 self.satisfied[constraint] = False
 
-
     def __most_satisfying(self):
         """
         :return: the variable who's flipping will satisfy the most clauses.
         """
-
 
         max_var = self.__variable_names[0]
         max_num = self.__num_satisfied(max_var)
@@ -200,7 +195,6 @@ class WalkSat(Solver):
     #     count = 0
     #
     #     for constraint in self.
-
 
     def get_num_satisfied(self):
         """
@@ -273,6 +267,7 @@ class WalkSat(Solver):
                     # print("most")
                     self.__flip_most_satisfying()
 
-        print("Total Amount of Constraints:", len(self.constraints))
-        print("Total Satisfied Constraints:", self.get_num_satisfied())
+        # print("Total Amount of Constraints:", len(self.constraints))
+        # print("Total Satisfied Constraints:", self.get_num_satisfied())
+        self.print_report()
         return magicNums.SUCCESS

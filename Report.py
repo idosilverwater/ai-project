@@ -152,7 +152,7 @@ class ReportGenerator:
         prev_best_assignment = None
         prev_running_time = 0
         best_num_constraint = 0
-        for timeout in [1, 1, 1]:  # gives at most 30 seconds for an added constraint.
+        for timeout in [30, 30, 30]:  # gives at most 30 seconds for an added constraint.
             algorithm = Backtrack(csp_handler, timeout)
             running_time = time.time()
             res = algorithm.solve()
@@ -170,17 +170,17 @@ class ReportGenerator:
                 csp_handler.shuffle()  # Shuffle the csp handler, might find a better path.
             elif res == magicNums.FAILED:
                 report_assignment = False
-                return report_assignment, running_time, algorithm.get_assignment()
+                return magicNums.FAILED, running_time, algorithm.get_assignment()
             else:
                 csp_handler.get_report(algorithm.get_assignment())
-                return report_assignment, running_time, algorithm.get_assignment()
+                return magicNums.SUCCESS, running_time, algorithm.get_assignment()
 
         if prev_best_assignment is not None:
             print("Return value even though failure later on..")
-            return True, prev_running_time, prev_best_assignment
+            return magicNums.SUCCESS, prev_running_time, prev_best_assignment
 
         print("time out reached.")
-        return TIMEOUT, None, None
+        return magicNums.TIMEOUT_HARD_CONSTRAINT, None, None
         # print("True or false reached.")
         # return report_assignment, running_time, algorithm.get_assignment()
 
@@ -196,11 +196,11 @@ class ReportGenerator:
             report_assignment, running_time, curr_assignment = self.__run_backtrack(csp_handler)
             suffix = self.__backtrack_suffix(heuristic_triplet)
 
-            if report_assignment:
+            if report_assignment == magicNums.SUCCESS:
                 results[file_name + suffix] = (
                     curr_assignment, csp_handler.get_report(curr_assignment), running_time)
-            elif report_assignment == TIMEOUT:
-                self.printer.report_time_out(file_name + suffix)
+            elif report_assignment == magicNums.TIMEOUT_HARD_CONSTRAINT:
+                results[file_name + suffix] = magicNums.TIMEOUT_HARD_CONSTRAINT
             else:
                 results[file_name + suffix] = None
                 break
@@ -246,27 +246,15 @@ class ReportGenerator:
         with open(result_file_path, 'w') as file:
             self.printer.set_new_file(file)
             for results_name in results:
-                self.printer.print_result_of_file(results_name, results[results_name],
-                                                  self.max_amount_of_workers_in_shift)
+                if results[results_name] == magicNums.TIMEOUT_HARD_CONSTRAINT:
+                    self.printer.report_time_out(results_name)
+                else:
+                    self.printer.print_result_of_file(results_name, results[results_name],
+                                                      self.max_amount_of_workers_in_shift)
 
     def print_walksat_results(self, result_file_path):
         results = self.generate_walksat_report()
         self.__print_results(result_file_path, results)
-
-
-def overall_test():  # TODO: Add to documentation what type of file I return.
-    """
-    This method generates all of the tests results.
-    :return: A file contains the results.
-    """
-
-    params = [[0, 5, 4, 3, 1], [1, 5, 4, 3, 2]]
-
-    for param_tuple in params:
-        # creating file.
-        create_random_test_file(*param_tuple)
-        # running tests:
-        # saving results.
 
 
 if __name__ == '__main__':
@@ -286,28 +274,19 @@ if __name__ == '__main__':
     # create_random_test_file(7, 15, 20, 13, 3)
     # create_random_test_file(8, 4, 5, 3, 2)
     # create_random_test_file(9, 6, 5, 3, 2)
-
+    # Choose the heuristic combinations to genrate report with.
     variable_heuristics = [MIN_REMAINING_VAL]
     domain_heuristics = [MIN_CONFLICT]
     soft_heuristics = [MAX_ASSIGNMENT_SOFT_CONSTRAINT_HEURISTIC]
 
-    # TODO DELETE: this is only for testing:
-    # variable_heuristics = [DEGREE]
-    # domain_heuristics = [LEAST_CONSTRAINING_VAL]
-    # soft_heuristics = [DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE]
     #    -------------------------------------
-
-    # # TODO change None to actual file_names.
-    file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(10)]
+    # file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(10)]
     # file_names = ["ReportTests" + "/" + "random_test" + str(i) for i in range(1)]
 
-    report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
-    # report.print_backtrack_results("zing")
-    # report.print_backtrack_results("ReportTests" + "/" + RESULTS_FILE_BACKTRACK)
-
-    report.print_walksat_results(RESULTS_FOLDER + "/" + RESULTS_FILE_WALKSAT)
+    # report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
+    # report.print_walksat_results(RESULTS_FOLDER + "/" + RESULTS_FILE_WALKSAT)
 
     # # Back track 6-9 tests:
-    # file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(6, 10)]
-    # report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
-    # report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)
+    file_names = [TEST_FOLDER + "/" + TEST_FILE_NAME + str(i) for i in range(5, 10)]
+    report = ReportGenerator(file_names, variable_heuristics, domain_heuristics, soft_heuristics)
+    report.print_backtrack_results(RESULTS_FOLDER + "/" + RESULTS_FILE_BACKTRACK)

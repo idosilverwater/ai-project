@@ -17,7 +17,7 @@ class BaseSoftConstraintsHeuristic:
         :param cosntraint: constraint
         :return:
         """
-        pass  # TODO implement in deriving classes.
+        pass  # implement in deriving classes.
 
     def get_adding_order(self):
         """

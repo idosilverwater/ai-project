@@ -8,7 +8,7 @@ class Backtrack(Solver):
     a solver class, applies backtrack solving algorithm when solve class is initialized.
     """
 
-    def __init__(self, csp, timeout=30):
+    def __init__(self, csp, timeout=None):
         """
         excepts a csp problem initialized.
         """
@@ -36,7 +36,7 @@ class Backtrack(Solver):
                 var_name = var
                 break
         # Notice, if this jumped: probably more variables in CSPHandler than there are in the assignment.
-        assert (var_name is not None)  # TODO remove after tests. (sanity check)
+        assert (var_name is not None)
 
         for value in self.csp.order_domain_values(var_name):
             if self.csp.is_consistent(var_name, value):
@@ -112,6 +112,7 @@ class Backtrack(Solver):
             i += 1
 
         self.num_constrains_added = i
+        self.print_report()
         if not backtrack_succeed and add_const:
             self.assignment = current_assignment
             print("couldn't satisfy constraint.")

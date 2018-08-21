@@ -10,7 +10,7 @@ from Report import Printer
 
 if __name__ == '__main__':
     print("Creating CSP")
-    csp = create_workers_csp("ReportScriptFiles/TestFiles/Test1", False,
+    csp = create_workers_csp("/Users/yonatanweiss/PycharmProjects/ai-project/examples/example2.csp", False,
                              magicNums.DEGREE, magicNums.LEAST_CONSTRAINING_VAL,
                              magicNums.NAME_SOFT_CONSTRAINT_HEURISTIC, True, 2)
     csp.shuffle()
