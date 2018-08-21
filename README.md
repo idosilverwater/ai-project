@@ -12,6 +12,7 @@ Jonathan Weiss
 to run the program type in terminal: python3 Main.py <the file path you we wish to use> <all other optial parameters>
 where optional parameters are:
 
+```
 positional arguments:
   filename              Problem filename
 
@@ -46,7 +47,7 @@ optional arguments:
                         the alpha value, alpha= 0 full exploitation, alpha=1
                         full exploration.
   --mws MWS             Max amount of workers per shift
-
+```
 
 
 ## About the problem and the input file:
@@ -93,7 +94,7 @@ Rivka 2 0
 Rivka 0 1
 Rivka 1 1
 MinimumWantedShifts:
-Moshe 3
+Benzion 3
 
 ```
 Notice that the last line should be empty.
