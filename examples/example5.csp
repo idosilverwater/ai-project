@@ -1,0 +1,19 @@
+Domain:
+True
+False
+Names:
+Frodo
+Bilbo
+Sam
+Preferences:
+Frodo 2 1
+Bilbo 2 1
+Bilbo 2 2
+Bilbo 4 2
+Sam 3 0
+Sam 1 0
+Sam 1 2
+Sam 4 2
+NonWorkShift:
+MinimumWantedShifts:
+Frodo 2
