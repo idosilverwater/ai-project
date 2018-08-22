@@ -113,15 +113,18 @@ class Backtrack(Solver):
             i += 1
 
         self.num_constrains_added = i
-        self.print_report()
         if not backtrack_succeed and add_const:
             self.assignment = current_assignment
             print("couldn't satisfy constraint.")
             print("--------")
+            self.print_report()
             if self.__termination_flag:
                 return magicNums.TIMEOUT
+            return magicNums.SOFT_FAIL
+
         print(self.assignment)
         print(current_assignment)
+        self.print_report()
         return magicNums.SUCCESS
 
     def get_num_soft_constraints_added(self):
