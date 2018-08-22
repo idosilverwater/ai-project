@@ -39,13 +39,13 @@ optional arguments:
   --bt-t BT_T           The maximum amount a backtrack session is allowed to
                         run. Default timeout is 30
   --bt-no-forward-check
-                        Use forward checking in backtrack
+                        Don't use forward checking in backtrack
   --max-flips MAX_FLIPS
-                        Max flips to be used in the WalkSAT algorithm
+                        Max flips to be used in the WalkSAT algorithm. The default is 40.
   --walksat-alpha WALKSAT_ALPHA
                         In the WalkSAT algorithm exploration is determined by
                         the alpha value, alpha= 0 full exploitation, alpha=1
-                        full exploration.
+                        full exploration. The default is 0.
   --mws MWS             Max amount of workers per shift
 ```
 Note: It's mandatory to enter a file path and to choose an algorithm: either WalkSAT(--ws) or BackTrack(--bt)
@@ -101,6 +101,12 @@ Benzion 3
 ```
 Notice that the last line should be empty.
 
+## About the output
+A note of BackTrack output: Please pay attention that sometimes the algorithm fails to add the n'th soft constraint,
+but returns an assignment that satisfies a greater number of soft constraints than n. It happens because the algorithm
+may fail to satisfy a certain soft constraints, but satisfy successfully the other soft constraints by accident - an assignment can
+satisfy never seen before constraints.
+
 ##
 
 This is our final project in the course "Introduction to Artificial Intelligence" in HUJI.
@@ -108,55 +114,3 @@ This is our final project in the course "Introduction to Artificial Intelligence
 We built a Constraint Satisfaction Problem solver.
 
 More specifically it gets workers preferences as to work hours, and tries to satisfy as many wishes as it can.
-
-
-# TODO delete:
-C:\Users\Noy\AppData\Local\Programs\Python\Python36\python.exe C:/Users/Noy/Desktop/Uni/year2/AI-proj/ai-project/Main.py C:\Users\Noy\Desktop\Uni\year2\AI-proj\ai-project\examples\example5.csp --bt
-
-
-******Starting Backtrack******
-found satisfying assignment for hard constraints.
------------------
-Adding soft constraint number: 1
-Adding soft constraint number: 2
-Adding soft constraint number: 3
-Adding soft constraint number: 4
-Adding soft constraint number: 5
-Adding soft constraint number: 6
-Adding soft constraint number: 7
-Adding soft constraint number: 8
-Adding soft constraint number: 9
-Time out reached. Terminating solver.
-Hard constraint satisfied 30 from overall 30 constraints
-Soft1 constraint satisfied 1 from overall 1 constraints
-Soft2 constraint satisfied 8 from overall 8 constraints
-
-Printing shifts:
-----------------
-sunday workers are:
-[[], [], []]
------------------
-monday workers are:
-[[], [], []]
------------------
-tuesday workers are:
-[[], [], []]
------------------
-wednesday workers are:
-[[], [], []]
------------------
-thursday workers are:
-[[], [], []]
------------------
-
-Shifts per worker:
------------------
-Sam is working 0 shifts
------------------
-Bilbo is working 0 shifts
------------------
-Frodo is working 0 shifts
------------------
-Done
-
-Process finished with exit code 0
