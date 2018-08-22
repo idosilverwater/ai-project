@@ -251,7 +251,6 @@ class WalkSat(Solver):
             return magicNums.SUCCESS
         else:
             for i in range(self.__max_flips):
-                print(i)
                 constraint = self.random_constraint()
                 if self.__flip_coin():
                     # print("random")

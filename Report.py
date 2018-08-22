@@ -86,7 +86,7 @@ class Printer:
         print("Shifts per worker: ", file=self.file_name)
         print("-----------------", file=self.file_name)
         for name in num_days_var_works:
-            print("%s if working %s shifts" % (name, num_days_var_works[name]), file=self.file_name)
+            print("%s is working %s shifts" % (name, num_days_var_works[name]), file=self.file_name)
             print("-----------------", file=self.file_name)
 
     def print_result_of_file(self, result_name, results, max_amount_of_workers_per_shift):

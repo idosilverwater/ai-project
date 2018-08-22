@@ -46,7 +46,8 @@ class Backtrack(Solver):
                 if self.__termination_flag:
                     self.__lock.release()
                     return False  # terminate run before recursion call.
-                self.__lock.release()
+                if self.__lock.locked():
+                    self.__lock.release()
 
                 res = self.backtrack()
                 if not res:
@@ -119,6 +120,8 @@ class Backtrack(Solver):
             print("--------")
             if self.__termination_flag:
                 return magicNums.TIMEOUT
+        print(self.assignment)
+        print(current_assignment)
         return magicNums.SUCCESS
 
     def get_num_soft_constraints_added(self):
