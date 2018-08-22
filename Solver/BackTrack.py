@@ -103,17 +103,33 @@ class Backtrack(Solver):
         i = 1
         current_assignment = self.assignment
         add_const = self.csp.add_constraint()
-        while backtrack_succeed and add_const:  # while we can still add constraints - continues
+        while add_const:  # while we can still add constraints - continues # TT
             print("Adding soft constraint number:", i)
             self.csp.restore_csp_handler()  # restores csp for re run.
             current_assignment = self.assignment
             self.reset_assignment()
             backtrack_succeed = self.backtrack_on_timer()
+            if not backtrack_succeed:
+                break
             add_const = self.csp.add_constraint()
             i += 1
 
+        # if backtrack_succeed and not add_const:  # TF
+        #     # RETURN SUCCESS. -> we manage to do everything, and the self.assignment is okay.
+        #     pass
+        #
+        # if not backtrack_succeed and add_const:  # FT
+        #     # self.assignment = prev_assignment
+        #     # return the cause of no satisfaction.
+        #     pass
+        #
+        # else:  # FF
+        #     # we failed in adding the constraint, and we failed the last. (after  last possible soft constraint)
+        #     pass
+
         self.num_constrains_added = i
-        if not backtrack_succeed and add_const:
+        if not backtrack_succeed and add_const:  # FT
+            self.num_constrains_added -= 1
             self.assignment = current_assignment
             print("couldn't satisfy constraint.")
             print("--------")
@@ -122,10 +138,17 @@ class Backtrack(Solver):
                 return magicNums.TIMEOUT
             return magicNums.SOFT_FAIL
 
-        print(self.assignment)
-        print(current_assignment)
-        self.print_report()
-        return magicNums.SUCCESS
+        elif not backtrack_succeed and not add_const:  # FF
+            self.num_constrains_added -= 1
+            self.assignment = current_assignment
+            return magicNums.SOFT_FAIL
+
+        # TF
+        else:
+            print(self.assignment)
+            print(current_assignment)
+            self.print_report()
+            return magicNums.SUCCESS
 
     def get_num_soft_constraints_added(self):
         return self.num_constrains_added
