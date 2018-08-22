@@ -85,7 +85,8 @@ class CspHandler:
         self.__fc_variables_backup = []
         self.variables = {}
         self._generate_variables(self.__variables_list, self.__domain_list)
-        self.variable_heuristic.re_initialize_sort(self.variables)
+        if self.variable_heuristic:
+            self.variable_heuristic.re_initialize_sort(self.variables)
 
     def make_visible(self):
         """
@@ -99,7 +100,7 @@ class CspHandler:
             for constraint in constraints:
                 self.variables[variable_name].add_constraint(constraint)
                 self.__add_neighbours_to_var(variable_name, constraint.get_variables())
-        if self.variable_heuristic != None:
+        if self.variable_heuristic:
             self.variable_heuristic.re_initialize_sort(self.variables)
 
 
@@ -199,7 +200,8 @@ class CspHandler:
             # adding every ones as my new neighbours.
             self.__add_neighbours_to_var(var_name, all_var_names)
             self.variables[var_name].add_constraint(constraint)
-        self.variable_heuristic.re_initialize_sort(self.variables)
+        if self.variable_heuristic:
+            self.variable_heuristic.re_initialize_sort(self.variables)
         return True
 
     def un_assign_variable(self, variable_name):
@@ -228,18 +230,6 @@ class CspHandler:
         :return:g
         """
         all_consts_lst = self.__get_all_visible_constraints()
-        if len(all_consts_lst) > 120:  # is more efficient only when we pass large amounts of constraints..
-            res1 = [1]
-            res2 = [1]
-            t1 = Thread(target=CspHandler.__parralel_check_agreement,
-                        args=(res1, all_consts_lst, variable_assignment, 0))
-            t2 = Thread(target=CspHandler.__parralel_check_agreement,
-                        args=(res2, all_consts_lst, variable_assignment, 1))
-            t1.start()
-            t2.start()
-            t1.join()
-            t2.join()
-            return res1[0] + res2[0] == 2
         return self.check_constraint_agreement(all_consts_lst, variable_assignment)
 
     @staticmethod
