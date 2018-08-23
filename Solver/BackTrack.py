@@ -114,19 +114,6 @@ class Backtrack(Solver):
             add_const = self.csp.add_constraint()
             i += 1
 
-        # if backtrack_succeed and not add_const:  # TF
-        #     # RETURN SUCCESS. -> we manage to do everything, and the self.assignment is okay.
-        #     pass
-        #
-        # if not backtrack_succeed and add_const:  # FT
-        #     # self.assignment = prev_assignment
-        #     # return the cause of no satisfaction.
-        #     pass
-        #
-        # else:  # FF
-        #     # we failed in adding the constraint, and we failed the last. (after  last possible soft constraint)
-        #     pass
-
         self.num_constrains_added = i
         if not backtrack_succeed and add_const:  # FT
             self.num_constrains_added -= 1
@@ -145,8 +132,6 @@ class Backtrack(Solver):
 
         # TF
         else:
-            print(self.assignment)
-            print(current_assignment)
             self.print_report()
             return magicNums.SUCCESS
 

@@ -16,7 +16,7 @@ class Constraints:
     """
 
     def __init__(self, preferences, non_workable_shifts, variable_names, minimum_wanted_shift_dict=None,
-                 constraint_heuristic_factory=None, maximum_workers_per_shift=2):
+                 constraint_heuristic_factory=None, maximum_workers_per_shift=2, no_soft=False):
         """
         Creates several dictionaries of constraints.
         :param preferences: A list of the workers preferences. For example:
@@ -33,6 +33,7 @@ class Constraints:
         self.__preferences = preferences
         self.__non_workable_shifts = non_workable_shifts
         self.__variable_names = variable_names
+        self.__no_soft = no_soft
 
         self.__all_constraints = {}  # (Variable names): [constraints on variables]
         self.__visible_constraints = {}  # (Variable names): [constraints on variables]
@@ -132,7 +133,8 @@ class Constraints:
         """
         self.__generate_hard_const()
         self.set_constraints_visible()
-        self.__generate_soft_const()
+        if not self.__no_soft:
+            self.__generate_soft_const()
 
     def __variable_names_by_shift(self, day, shift_number):
         """

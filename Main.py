@@ -84,10 +84,8 @@ def worker_solve(filename, algo, softs, variable_heuristic, domain_heuristic, ba
     res = algorithm.solve()
     printer = Printer()
     if res == magicNums.SUCCESS:
-        print("Successs")
         printer.print_by_days(algorithm.get_assignment())
     elif res == magicNums.TIMEOUT:
-        print("timeout")
         print("Timeout on the last constraint that was tried to be added.")
         printer.print_by_days(algorithm.get_assignment())
     elif res == magicNums.TIMEOUT_HARD_CONSTRAINT:
@@ -131,9 +129,9 @@ if __name__ == "__main__":
             soft_heuristic = DEGREE_SOFT_CONSTRAINT_HEURISTIC_TYPE
         else:
             soft_heuristic = RANDOM_SOFT_CONSTRAINT_HEURISTIC
-        for i in range(100):
-            print("####################################################################################################")
-            worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic, args.bt_t[0],
+        # for i in range(100):
+        #     print("####################################################################################################")
+        worker_solve(args.filename, BACKTRACK, args.no_soft, variable_heuristic, domain_heuristic, args.bt_t[0],
                      args.bt_no_forward_check, None, None, soft_heuristic, args.mws[0])
 
     elif args.ws:

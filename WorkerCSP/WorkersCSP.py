@@ -120,5 +120,5 @@ def create_workers_csp(filename, no_soft, variable_heuristic, domain_heuristic,
                                                                                       soft_constraint_heuristic_type)
     #
     constraints = Constraints(preferences, non_work_shift, variables, minimum_wanted_shifts, soft_constraint_heuristic,
-                              num_of_max_workers_in_shifts)
+                              num_of_max_workers_in_shifts, no_soft)
     return CspHandler(domain, variables, constraints, variable_factory, domain_factory, forward_check)
