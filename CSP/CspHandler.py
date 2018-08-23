@@ -73,7 +73,8 @@ class CspHandler:
                 raise Exception("Variable name repeats twice!")
 
     def shuffle(self):
-        self.variable_heuristic.shuffle()
+        if self.variable_heuristic:
+            self.variable_heuristic.shuffle()
 
     def restore_csp_handler(self):
         """
